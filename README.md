@@ -33,7 +33,9 @@ This is our current blog and website template hosted on netlify.
 
 ## TODO
 
+- refactor to use TS instead of JS
 - preprocess CSS with SCSS
+- integrate tailwind.css
 - use shadcn/svelte components
 - add hero section
 - filter blog posts with tags
@@ -42,4 +44,3 @@ This is our current blog and website template hosted on netlify.
 - refactor animations
 - use default light or darkmode based on a users system setting
 - add favicon
--
