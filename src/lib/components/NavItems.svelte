@@ -1,5 +1,5 @@
 <script>
-import { navItems } from '$lib/utils/config';
+import { navItems } from '$lib/config';
 import NavItem from './NavItem.svelte';
 </script>
 

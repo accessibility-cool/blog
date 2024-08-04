@@ -1,5 +1,5 @@
 <script>
-import { siteAuthor } from '$lib/utils/config';
+import { siteAuthor } from '$lib/config';
 import NavItems from './NavItems.svelte';
 </script>
 

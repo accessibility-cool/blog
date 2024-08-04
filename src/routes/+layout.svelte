@@ -3,11 +3,11 @@ import '../app.css';
 import Header from '$lib/components/Header.svelte';
 import Footer from '$lib/components/Footer.svelte';
 import { currentPage, isMenuOpen } from '../lib/stores/store.js';
-import { navItems } from '$lib/utils/config';
+import { navItems } from '$lib/config';
 import { preloadCode } from '$app/navigation';
 import { onMount } from 'svelte';
 import { fade } from 'svelte/transition';
-import { siteTitle, siteURL } from '$lib/utils/config.js';
+import { siteTitle, siteURL } from '$lib/config';
 export let data;
 
 const transitionIn = { delay: 150, duration: 150 };
