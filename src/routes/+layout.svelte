@@ -1,12 +1,13 @@
-<script>import "../app.css";
+<script>
+import '../app.css';
 import Header from '$lib/components/Header.svelte';
 import Footer from '$lib/components/Footer.svelte';
-import { currentPage, isMenuOpen } from '../lib/assets/js/store.js';
-import { navItems } from '$lib/config';
+import { currentPage, isMenuOpen } from '../lib/stores/store.js';
+import { navItems } from '$lib/utils/config';
 import { preloadCode } from '$app/navigation';
 import { onMount } from 'svelte';
 import { fade } from 'svelte/transition';
-import { siteTitle, siteURL } from '$lib/config.js';
+import { siteTitle, siteURL } from '$lib/utils/config.js';
 export let data;
 
 const transitionIn = { delay: 150, duration: 150 };
@@ -26,10 +27,12 @@ $: currentPage.set(data.path);
  * own preloadData() calls here, too.
  **/
 onMount(() => {
-    const navRoutes = navItems.map((item) => item.route);
-    preloadCode(...navRoutes);
-});</script><!-- This is the global layout file; it "wraps" every page on the site. (Or more accurately: is the parent component to every page component on the site.) -->
+	const navRoutes = navItems.map((item) => item.route);
+	preloadCode(...navRoutes);
+});
+</script>
 
+<!-- This is the global layout file; it "wraps" every page on the site. (Or more accurately: is the parent component to every page component on the site.) -->
 
 <svelte:head>
 	<link rel="stylesheet" href="/css/vars.css" />
@@ -44,17 +47,22 @@ onMount(() => {
 	<link rel="stylesheet" href="/css/utilities.css" />
 	<link rel="stylesheet" href="/css/code.css" />
 	<link rel="stylesheet" href="/css/prism.css" />
-	<link rel="alternate" type="application/rss+xml" title="{siteTitle}" href="http://{siteURL}/api/rss.xml" />
+	<link
+		rel="alternate"
+		type="application/rss+xml"
+		title={siteTitle}
+		href="http://{siteURL}/api/rss.xml"
+	/>
 </svelte:head>
 
 <!--
 	The below markup is used on every page in the site. The <slot> is where the page's
 	actual contents will show up.
 -->
-<div class="layout" class:open="{$isMenuOpen}">
+<div class="layout" class:open={$isMenuOpen}>
 	<Header></Header>
 	{#key data.path}
-		<main id="main" tabindex="-1" in:fade|global="{transitionIn}" out:fade|global="{transitionOut}">
+		<main id="main" tabindex="-1" in:fade|global={transitionIn} out:fade|global={transitionOut}>
 			<slot></slot>
 		</main>
 	{/key}

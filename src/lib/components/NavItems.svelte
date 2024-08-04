@@ -1,6 +1,6 @@
 <script>
-	import { navItems } from '$lib/config';
-	import NavItem from './NavItem.svelte';
+import { navItems } from '$lib/utils/config';
+import NavItem from './NavItem.svelte';
 </script>
 
 <ul>

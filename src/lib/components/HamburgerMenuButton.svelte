@@ -1,13 +1,13 @@
 <script>
-	import { isMenuOpen } from '../assets/js/store';
-	import HamburgerSVG from './svg/HamburgerSVG.svelte';
-	import XSVG from './svg/XSVG.svelte';
+import { isMenuOpen } from '../stores/store';
+import HamburgerSVG from './svg/HamburgerSVG.svelte';
+import XSVG from './svg/XSVG.svelte';
 
-	export let closeOnly = false;
+export let closeOnly = false;
 
-	const toggleIsMenuOpen = () => {
-		isMenuOpen.set(!$isMenuOpen);
-	};
+const toggleIsMenuOpen = () => {
+	isMenuOpen.set(!$isMenuOpen);
+};
 </script>
 
 <button

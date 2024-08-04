@@ -1,6 +1,6 @@
 <script>
-	import { siteAuthor } from '$lib/config';
-	import NavItems from './NavItems.svelte';
+import { siteAuthor } from '$lib/utils/config';
+import NavItems from './NavItems.svelte';
 </script>
 
 <footer>

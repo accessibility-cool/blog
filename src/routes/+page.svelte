@@ -1,5 +1,5 @@
 <script>
-import { siteTitle } from '$lib/config';
+import { siteTitle } from '$lib/utils/config';
 </script>
 
 <svelte:head>
