@@ -8,6 +8,8 @@ import { preloadCode } from '$app/navigation';
 import { onMount } from 'svelte';
 import { fade } from 'svelte/transition';
 import { siteTitle, siteURL } from '$lib/config';
+import './i18n';
+
 export let data;
 
 const transitionIn = { delay: 150, duration: 150 };
@@ -27,7 +29,7 @@ $: currentPage.set(data.path);
  * own preloadData() calls here, too.
  **/
 onMount(() => {
-	const navRoutes = navItems.map((item) => item.route);
+	const navRoutes: string[] = navItems.map((item) => item.route);
 	preloadCode(...navRoutes);
 });
 </script>
