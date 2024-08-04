@@ -1,6 +1,6 @@
 export const siteTitle = 'accessibility.cool blog';
 export const siteDescription = 'Built with the SvelteKit Static Blog Starter';
-export const siteURL = 'blog.accessibility.cool';
+export const siteURL = 'accessibility.cool';
 export const siteLink = 'https://github.com/accessibility-cool/blog';
 export const siteAuthor = '- find and change this text in src/lib/config.js';
 
@@ -12,9 +12,5 @@ export const navItems = [
 	{
 		title: 'Blog',
 		route: '/blog'
-	},
-	{
-		title: 'About',
-		route: '/about'
 	}
 ];

@@ -3,6 +3,14 @@
 	"include": [
 		"src/**/*.d.ts",
 		"src/**/*.js",
-		"src/**/*.svelte"
+		"src/**/*.svelte",
+		"src/routes/blog/category/page/[page]/+page.server.ts",
+		"src/routes/blog/[post]/+page.ts",
+		"src/routes/blog/category/[category]/page/[page]/+page.server.ts",
+		"src/routes/blog/category/[category]/page/+page.server.ts",
+		"src/routes/blog/category/[category]/+page.server.ts",
+		"src/routes/blog/category/+page.server.ts",
+		"src/routes/blog/+page.server.ts",
+		"src/routes/+page.ts"
 	]
 }

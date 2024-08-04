@@ -1,10 +1,10 @@
 <!-- This file renders each individual blog post for reading. Be sure to update the svelte:head below -->
-<script>
-	export let data;
+<script lang="ts">
+export let data;
 
-	const { title, excerpt, date, updated, coverImage, coverWidth, coverHeight, categories } =
-		data.meta;
-	const { PostContent } = data;
+const { title, excerpt, date, updated, coverImage, coverWidth, coverHeight, categories } =
+	data.meta;
+const { PostContent } = data;
 </script>
 
 <svelte:head>
