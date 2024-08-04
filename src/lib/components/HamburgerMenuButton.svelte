@@ -1,5 +1,5 @@
-<script>
-import { isMenuOpen } from '../stores/store';
+<script lang="ts">
+import { isMenuOpen } from '$lib/stores/store';
 import HamburgerSVG from './svg/HamburgerSVG.svelte';
 import XSVG from './svg/XSVG.svelte';
 

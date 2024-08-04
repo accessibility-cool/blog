@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { navItems } from '$lib/config';
 import NavItem from './NavItem.svelte';
 </script>

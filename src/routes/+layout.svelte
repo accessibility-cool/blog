@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 import '../app.css';
 import Header from '$lib/components/Header.svelte';
 import Footer from '$lib/components/Footer.svelte';
-import { currentPage, isMenuOpen } from '../lib/stores/store.js';
+import { currentPage, isMenuOpen } from '$lib/stores/store';
 import { navItems } from '$lib/config';
 import { preloadCode } from '$app/navigation';
 import { onMount } from 'svelte';

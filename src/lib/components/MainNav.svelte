@@ -1,5 +1,5 @@
-<script>
-import { isMenuOpen } from '../stores/store';
+<script lang="ts">
+import { isMenuOpen } from '$lib/stores/store';
 import HamburgerMenuButton from './HamburgerMenuButton.svelte';
 import NavItems from './NavItems.svelte';
 </script>

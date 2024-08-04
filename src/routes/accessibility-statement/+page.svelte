@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import Callout from '$lib/components/Callout.svelte';
 </script>
 

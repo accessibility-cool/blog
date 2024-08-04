@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { postsPerPage } from '$lib/config';
 
 export let currentPage;

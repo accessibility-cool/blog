@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { siteAuthor } from '$lib/config';
 import NavItems from './NavItems.svelte';
 </script>

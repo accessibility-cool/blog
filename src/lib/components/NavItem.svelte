@@ -1,5 +1,5 @@
-<script>
-import { currentPage, isMenuOpen } from '../stores/store';
+<script lang="ts">
+import { currentPage, isMenuOpen } from '$lib/stores/store';
 
 export let href;
 
