@@ -4,7 +4,7 @@
 	import { blogMetaData } from '$lib/blogMetaData';
 
 	const meta = {
-		title: `About | ${blogMetaData.blogTitle}`,
+		title: `Privacy Policy | ${blogMetaData.blogTitle}`,
 		description: blogMetaData.description,
 		url: envVariables.basePath,
 		siteName: blogMetaData.blogTitle,
@@ -42,10 +42,6 @@
 	}}
 />
 <div class="about-container">
-	<h1>About</h1>
-	<p>Welcome to our blog!</p>
-	<p>
-		Our expertise extends to providing guidance and advice on promoting good inclusive design
-		practices and developing accessible and compliant web and mobile applications.
-	</p>
+	<h1>Privacy Policy</h1>
+	<p>Add here...</p>
 </div>
