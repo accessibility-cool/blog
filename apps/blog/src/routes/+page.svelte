@@ -1,0 +1,11 @@
+<script lang="ts">
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+</script>
+
+{#if data}
+	<section class="space-y-4">
+		<h1 class="sr-only">Simon Phumin Schweikert Photography Portfolio</h1>
+	</section>
+{/if}

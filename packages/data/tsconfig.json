@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"paths": {
+			"@a11y.cool/data/*": ["./src/*"]
+		},
+		"esModuleInterop": true
+	}
+}

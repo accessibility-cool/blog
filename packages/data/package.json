@@ -1,0 +1,32 @@
+{
+	"name": "@a11y.cool/data",
+	"version": "0.0.1",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"scripts": {
+		"lint": "eslint . --max-warnings 0"
+	},
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"import": "./src/index.ts"
+		},
+		"./sanity/*": {
+			"types": "./src/sanity/*.ts",
+			"import": "./src/sanity/*.ts"
+		},
+		"./types/*": {
+			"types": "./src/types/*.ts",
+			"import": "./src/types/*.ts"
+		}
+	},
+	"devDependencies": {
+		"@a11y.cool/eslint-config": "workspace:*",
+		"@a11y.cool/typescript-config": "workspace:*",
+		"eslint": "^9.28.0",
+		"typescript": "^5.8.3",
+		"dotenv": "^16.5.0",
+		"svelte-meta-tags": "^4.4.0"
+	}
+}
