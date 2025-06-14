@@ -5,7 +5,7 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": [".svelte-kit/**", ".vercel/**"],
-			"env": ["PUBLIC_*", "SANITY_STUDIO_API_READ_TOKEN"]
+			"env": ["PUBLIC_*"]
 		}
 	}
 }

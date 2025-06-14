@@ -1,5 +1,4 @@
 <script lang="ts">
-	import AnimatedSection from '$lib/components/AnimatedSection.svelte';
 	import '../global.css';
 	import { Header, Footer } from '@a11y.cool/ui';
 	import { page } from '$app/state';

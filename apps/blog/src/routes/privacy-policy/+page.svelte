@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { PortableText } from '@portabletext/svelte';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -9,7 +8,7 @@
 <article class="max-w-2xl mx-auto space-y-4">
 	<h1>{page.title}</h1>
 	{#if page.body}
-		<PortableText components={{}} value={page.body} />
+		{page.body}
 	{:else}
 		<p>No page content</p>
 	{/if}

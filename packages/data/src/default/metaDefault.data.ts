@@ -3,32 +3,32 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 export const defaultMetaTags = (url: { pathname: string; origin: string }) =>
 	Object.freeze({
 		title: 'Page',
-		titleTemplate: '%s — Simon Phumin Photography',
-		description: "Simon Phumin's photography portfolio and shop.",
+		titleTemplate: '%s — Accessibility.cool',
+		description: 'Digital Accessibility Resources, Tips and Guidance.',
 		canonical: new URL(url.pathname, url.origin).href,
 		openGraph: {
 			type: 'website',
 			url: new URL(url.pathname, url.origin).href,
 			locale: 'en_US',
-			title: 'Simon Phumin Photography',
-			description: 'Simon Phumin Photography',
-			siteName: 'Simon Phumin Photography',
+			title: 'Accessibility.cool',
+			description: 'Digital Accessibility Resources, Tips and Guidance.',
+			siteName: 'Accessibility.cool',
 			images: [
 				{
-					url: 'https://photo.simonphum.in/simonphumin-photography-meta.jpg',
-					alt: 'Simon Phumin Photography Logo',
+					url: 'https://accessibility.cool/accessibility-cool-meta.jpg',
+					alt: 'Accessibility.cool Logo',
 					width: 1200,
 					height: 630,
-					secureUrl: 'https://photo.simonphum.in/simonphumin-photography-meta.jpg',
+					secureUrl: 'https://accessibility.cool/accessibility-cool-meta.jpg',
 					type: 'image/jpeg'
 				}
 			]
 		},
 		twitter: {
 			cardType: 'summary_large_image' as const,
-			title: 'Simon Phumin Photography',
-			description: 'Simon Phumin Photography',
-			image: 'https://photo.simonphum.in/simonphumin-photography-meta.jpg',
-			imageAlt: 'Simon Phumin Photography Logo'
+			title: 'Accessibility.cool',
+			description: 'Digital Accessibility Resources, Tips and Guidance.',
+			image: 'https://accessibility.cool/accessibility-cool-meta.jpg',
+			imageAlt: 'Accessibility.cool Logo'
 		}
 	}) satisfies MetaTagsProps;

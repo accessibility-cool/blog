@@ -1,5 +1,3 @@
-import type { Image } from '@sanity/types';
-import type { PortableTextBlock } from '@portabletext/types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 
 export interface SocialLink {
@@ -15,8 +13,7 @@ export interface Page {
 	slug: {
 		current: string;
 	};
-	image?: Image;
-	body?: PortableTextBlock[];
+	body?: string;
 	email?: string;
 	socialLinks?: SocialLink[];
 	meta?: MetaTagsProps;

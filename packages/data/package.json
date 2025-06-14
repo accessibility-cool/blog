@@ -12,10 +12,6 @@
 			"types": "./src/index.ts",
 			"import": "./src/index.ts"
 		},
-		"./sanity/*": {
-			"types": "./src/sanity/*.ts",
-			"import": "./src/sanity/*.ts"
-		},
 		"./types/*": {
 			"types": "./src/types/*.ts",
 			"import": "./src/types/*.ts"
