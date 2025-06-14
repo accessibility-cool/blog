@@ -4,6 +4,9 @@ export interface Post {
 	_id: string;
 	title: string;
 	slug: string;
-	body?: string;
+	excerpt?: string;
+	content: string;
+	publishedAt?: string;
+	coverImage?: string;
 	meta?: MetaTagsProps;
 }

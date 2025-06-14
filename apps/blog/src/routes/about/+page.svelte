@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import DOMPurify from 'dompurify';
 
 	let { data } = $props<{ data: PageData }>();
 	let { page } = $derived(data);
@@ -14,9 +15,9 @@
 			<h1 class="text-4xl md:text-5xl font-light mb-8">{page.title}</h1>
 		{/if}
 
-		{#if page.body}
+		{#if page.html}
 			<div class="space-y-6">
-				{page.body}
+				{@html DOMPurify.sanitize(page.html)}
 			</div>
 		{/if}
 

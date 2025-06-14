@@ -1,29 +1,36 @@
 <script lang="ts">
-	import type { PostOrPage } from '@tryghost/content-api';
 	import type { PageData } from './$types';
-	import { formatDate } from '@a11y.cool/utils';
+	import DOMPurify from 'dompurify';
 
 	export let data: PageData;
-
-	$: post = data.posts.find((post: PostOrPage) => post.slug == data.slug);
+	$: ({ post } = data);
 </script>
 
 {#if post}
-	<div class="flex min-h-screen w-screen flex-col items-center justify-center">
-		<div class="flex flex-col gap-8 p-4 py-32 lg:w-3/5">
-			<h1 class="text-xl font-bold lg:text-4xl">{post.title}</h1>
-			<div class="flex flex-row gap-4">
-				<div>
-					{#if post.authors}
-						<h4 class="text-sm font-semibold lg:text-xl">{post.authors[0].name}</h4>
-					{/if}
-					{#if post.created_at}
-						<div class="text-xs text-zinc-500 lg:text-sm">{formatDate(post.created_at)}</div>
-					{/if}
-				</div>
+	<main class="container mx-auto px-4 py-8">
+		<article class="max-w-3xl mx-auto">
+			<header class="mb-8">
+				<h1 class="text-4xl font-bold mb-4">{post.title}</h1>
+				{#if post.publishedAt}
+					<time datetime={post.publishedAt} class="text-gray-500">
+						{new Date(post.publishedAt).toLocaleDateString()}
+					</time>
+				{/if}
+			</header>
+
+			{#if post.coverImage}
+				<img
+					src={post.coverImage}
+					alt={post.title}
+					class="w-full h-auto rounded-lg mb-8"
+					width="800"
+					height="400"
+				/>
+			{/if}
+
+			<div class="prose prose-lg max-w-none">
+				{@html DOMPurify.sanitize(post.content)}
 			</div>
-			<img src={post?.feature_image} alt={post.title} />
-			<div class="text-base font-light lg:text-lg">{@html post.html}</div>
-		</div>
-	</div>
+		</article>
+	</main>
 {/if}

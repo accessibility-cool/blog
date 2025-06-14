@@ -1,16 +1,10 @@
-import { pageQuery as query } from '@a11y.cool/data/sanity/queries';
-import type { Page } from '@a11y.cool/data/types/page.type';
 import type { PageServerLoad } from './$types';
-import type { MetaTagsProps } from 'svelte-meta-tags';
 
-export const load: PageServerLoad = async ({ locals: { client, preview } }) => {
-	const options = { stega: preview ? true : false };
+export const load: PageServerLoad = (async ({ parent }) => {
+	const { pages } = await parent();
+	const page = pages.find((p) => p.slug === 'imprint');
 
-	const params = { slug: 'imprint' };
-
-	const page = await client.fetch<Page>(query, params, options);
-	// Pass meta tags to the page
-	const pageMetaTags = page?.meta satisfies MetaTagsProps | undefined;
-
-	return { page, pageMetaTags };
-};
+	return {
+		page
+	};
+}) satisfies PageServerLoad;
