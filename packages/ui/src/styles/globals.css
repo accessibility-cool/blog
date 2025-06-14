@@ -284,6 +284,13 @@
 		background: var(--foreground);
 		color: var(--background);
 	}
+
+	/* Remove list item dots from navigation lists */
+	nav ul,
+	nav li {
+		list-style: none !important;
+		padding-left: 0;
+	}
 }
 
 @layer components {

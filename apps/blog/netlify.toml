@@ -1,0 +1,17 @@
+[build]
+  command = "pnpm build"
+  publish = ".svelte-kit/netlify"
+  base = "apps/blog"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Deploy contexts
+[context.production]
+  command = "pnpm build"
+
+[context.branch-deploy]
+  command = "pnpm build"
+
+[context.deploy-preview]
+  command = "pnpm build" 

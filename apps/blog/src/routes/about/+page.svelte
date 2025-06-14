@@ -20,29 +20,5 @@
 				{@html DOMPurify.sanitize(page.html)}
 			</div>
 		{/if}
-
-		{#if page.socialLinks}
-			<div class="mt-12 space-y-4">
-				{#if page.socialLinks}
-					<div class="mt-8">
-						<h2 class="text-xl font-light mb-4">Social Media</h2>
-						<ul class="list-none space-y-2 ml-0">
-							{#each page.socialLinks as link (link.platform)}
-								<li class="text-base">
-									<a
-										href={link.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										class="hover:underline"
-									>
-										{link.displayTitle || link.platform}
-									</a>
-								</li>
-							{/each}
-						</ul>
-					</div>
-				{/if}
-			</div>
-		{/if}
 	</div>
 </article>

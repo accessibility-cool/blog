@@ -1,11 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { MetaTags } from 'svelte-meta-tags';
 
 	export let data: PageData;
 </script>
-
-<MetaTags tags={data.pageMetaTags} />
 
 <main class="container mx-auto px-4 py-8">
 	<h1 class="text-4xl font-bold mb-8">Blog</h1>
