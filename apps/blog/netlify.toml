@@ -3,9 +3,6 @@
   publish = ".svelte-kit/netlify"
   base = "apps/blog"
 
-[build.environment]
-  NODE_VERSION = "20"
-
 # Deploy contexts
 [context.production]
   command = "pnpm build"
