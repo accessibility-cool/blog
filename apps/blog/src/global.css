@@ -1,0 +1,4 @@
+@import 'tailwindcss';
+@import '@a11y.cool/ui/globals.css';
+
+@source '../node_modules/@a11y.cool/ui';

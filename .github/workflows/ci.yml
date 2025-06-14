@@ -1,0 +1,79 @@
+---
+name: CI/CD
+on:
+    pull_request:
+    push:
+        branches:
+            - 'main'
+            - 'dev'
+            - '**'
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Use Node.js 22
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+            - name: Install pnpm
+              uses: pnpm/action-setup@v3
+              with:
+                  version: 10
+            - name: Install dependencies
+              run: pnpm install
+            - name: Run linting
+              run: pnpm lint
+
+    # axe:
+    #     needs: lint
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - uses: actions/checkout@v4
+    #         - name: Use Node.js 22
+    #           uses: actions/setup-node@v4
+    #           with:
+    #               node-version: 22
+    #         - name: Install pnpm
+    #           uses: pnpm/action-setup@v3
+    #           with:
+    #               version: 10
+    #         - name: Remove any locally installed chromedriver 🚗
+    #           run: find . -type d -name "chromedriver*" -exec rm -rf {} +
+    #         - name: Get Chromium version 🌐
+    #           run: |
+    #               CHROMIUM_VERSION=$(wget -qO- https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE | cut -d. -f1)
+    #               echo "Chromium version: $CHROMIUM_VERSION"
+    #               echo "CHROMIUM_VERSION=$CHROMIUM_VERSION" >> $GITHUB_ENV
+    #         - name: Setup Chrome 🌐
+    #           id: setup-chrome
+    #           uses: browser-actions/setup-chrome@v1
+    #           with:
+    #               chrome-version: ${{ env.CHROMIUM_VERSION }}
+    #         - name: Install ChromeDriver via apt
+    #           run: |
+    #               sudo apt-get update
+    #               sudo apt-get install -y chromium-chromedriver
+    #               chromedriver --version
+    #         - name: Install dependencies
+    #           run: pnpm install
+    #         - name: Build portfolio app ⚒️
+    #           run: pnpm build
+    #         - name: Install axe-core/cli
+    #           run: pnpm install -g @axe-core/cli wait-on vite
+    #         - name: Run portfolio app 🏃‍♂️👩‍💻
+    #           working-directory: apps/portfolio
+    #           run: |
+    #               nohup pnpm dev --filter=portfolio > /dev/null 2>&1 &
+    #               pnpm dlx wait-on http://localhost:5173
+    #         - name: Run axe
+    #           run: >-
+    #               axe
+    #               http://localhost:5173
+    #               http://localhost:5173/about
+    #               http://localhost:5173/imprint
+    #               http://localhost:5173/privacy-policy
+    #               http://localhost:5173/accessibility-statement
+    #               --chromedriver-path=/usr/bin/chromedriver
+    #               --exit

@@ -1,0 +1,9 @@
+{
+	"compilerOptions": {
+		"paths": {
+			"@a11y.cool/ui": ["./src/"],
+			"@a11y.cool/ui/*": ["./src/*"],
+			"@a11y.cool/data/*": ["../data/src/*"]
+		}
+	}
+}
