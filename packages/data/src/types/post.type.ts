@@ -1,4 +1,4 @@
-import { MetaTagsProps } from 'svelte-meta-tags';
+import type { MetaTagsProps } from 'svelte-meta-tags';
 
 export interface Post {
 	_id: string;

@@ -2,7 +2,7 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 
 export const defaultMetaTags = (url: { pathname: string; origin: string }) =>
 	Object.freeze({
-		title: 'Page',
+		title: '',
 		titleTemplate: '%s — Accessibility.cool',
 		description: 'Digital Accessibility Resources, Tips and Guidance.',
 		canonical: new URL(url.pathname, url.origin).href,

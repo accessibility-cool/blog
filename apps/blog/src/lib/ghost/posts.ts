@@ -10,7 +10,7 @@ export const getPosts = async (): Promise<Post[]> => {
 		});
 
 		if (!Array.isArray(posts)) {
-			console.error('Ghost API returned non-array posts:', posts);
+			throw new Error(`Ghost API returned non-array posts: ${posts}`);
 			return [];
 		}
 
@@ -28,7 +28,7 @@ export const getPosts = async (): Promise<Post[]> => {
 				coverImage: post.feature_image || undefined
 			}));
 	} catch (error) {
-		console.error('Error fetching posts:', error);
+		throw new Error(`Error fetching posts: ${error}`);
 		return [];
 	}
 };
@@ -38,7 +38,7 @@ export const getPost = async (slug: string): Promise<Post | null> => {
 		const post = await contentApi.posts.read({ slug }, { include: ['tags', 'authors'] });
 
 		if (!post?.id || !post?.title || !post?.slug || !post?.html) {
-			console.error('Ghost API returned invalid post:', post);
+			throw new Error(`Ghost API returned invalid post: ${post}`);
 			return null;
 		}
 
@@ -52,7 +52,7 @@ export const getPost = async (slug: string): Promise<Post | null> => {
 			coverImage: post.feature_image || undefined
 		};
 	} catch (error) {
-		console.error(`Error fetching post with slug "${slug}":`, error);
+		throw new Error(`Error fetching post with slug "${slug}": ${error}`);
 		return null;
 	}
 };
