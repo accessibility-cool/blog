@@ -1,6 +1,7 @@
 @layer base {
 	/* Headings */
 	h1 {
+		font-size: 1.875rem;
 		@apply font-serif;
 		@apply text-2xl md:text-3xl lg:text-4xl tracking-wide text-foreground;
 	}
