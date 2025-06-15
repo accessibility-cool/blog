@@ -9,9 +9,10 @@ export const load = (async (event) => {
 		'X-Content-Type-Options': 'nosniff',
 		'Referrer-Policy': 'no-referrer-when-downgrade',
 		'Content-Security-Policy':
-			"default-src 'self' https://ghost.accessibility.cool; script-src 'self' https://ghost.accessibility.cool; style-src 'self' https://ghost.accessibility.cool 'unsafe-inline'; frame-ancestors 'none'; object-src 'none'; base-uri 'none'",
+			"default-src 'self' https://ghost.accessibility.cool; script-src 'self' https://ghost.accessibility.cool 'unsafe-inline'; style-src 'self' https://ghost.accessibility.cool 'unsafe-inline'; frame-ancestors 'none'; object-src 'none'; base-uri 'none'",
 		'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-		'Cross-Origin-Opener-Policy': 'same-origin'
+		'Cross-Origin-Opener-Policy': 'same-origin',
+		'Permissions-Policy': 'camera=(), microphone=(), geolocation=()'
 	});
 	const { title, description } = await contentApi.settings.browse();
 	const pages = await contentApi.pages.browse();
