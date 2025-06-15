@@ -9,15 +9,12 @@
 	<div
 		class="w-20 h-20 rounded-lg bg-muted flex items-center justify-center overflow-hidden mb-2"
 	>
-		<slot name="image">
-			<!-- Placeholder: Replace with your image -->
-			<span class="text-muted-foreground text-3xl">🖼️</span>
-		</slot>
+		<slot name="image"></slot>
 	</div>
 	<h3 class="text-lg font-semibold text-center mb-1 flex items-center gap-2">
 		<slot name="icon"></slot>
 		{title}
 	</h3>
-	<p class="text-muted-foreground text-center text-base mb-2">{description}</p>
+	<p class="text-center text-base mb-2">{description}</p>
 	<slot />
 </article>
