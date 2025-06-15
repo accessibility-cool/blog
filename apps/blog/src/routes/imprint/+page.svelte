@@ -6,11 +6,13 @@
 	let { page } = $derived(data);
 </script>
 
-<article class="max-w-2xl mx-auto space-y-4">
-	<h1>{page.title}</h1>
-	{#if page.html}
-		<Render html={page.html} />
-	{:else}
-		<p>No page content</p>
-	{/if}
-</article>
+<section class="col-span-12 col-start-1 flex justify-center">
+	<article class="max-w-[580px] w-full space-y-4 py-12 md:py-24">
+		<h1>{page.title}</h1>
+		{#if page.html}
+			<Render html={page.html} />
+		{:else}
+			<p>No page content</p>
+		{/if}
+	</article>
+</section>

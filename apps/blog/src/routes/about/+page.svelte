@@ -6,11 +6,8 @@
 	let { page } = $derived(data);
 </script>
 
-<article
-	class="container py-12 md:py-24 grid grid-cols-12 md:grid-cols-8 gap-8 md:gap-16 items-start"
->
-	<!-- Text Content Section -->
-	<div class="prose prose-lg max-w-none">
+<section class="col-span-12 col-start-1 flex justify-center">
+	<article class="max-w-[580px] w-full py-12 md:py-24">
 		{#if page.title}
 			<h1 class="text-4xl md:text-5xl font-light mb-8">{page.title}</h1>
 		{/if}
@@ -20,5 +17,5 @@
 				<Render html={page.html} />
 			</div>
 		{/if}
-	</div>
-</article>
+	</article>
+</section>
