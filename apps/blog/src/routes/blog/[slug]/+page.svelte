@@ -1,9 +1,11 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import DOMPurify from 'dompurify';
+	import { Render } from '@jill64/svelte-sanitize';
 
-	export let data: PageData;
-	$: ({ post } = data);
+	let { data } = $props<{
+		data: PageData;
+	}>();
+	let { post } = $derived(data);
 </script>
 
 {#if post}
@@ -29,7 +31,7 @@
 			{/if}
 
 			<div class="prose prose-lg max-w-none">
-				{@html DOMPurify.sanitize(post.content)}
+				<Render html={post.content} />
 			</div>
 		</article>
 	</main>

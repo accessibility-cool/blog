@@ -12,13 +12,16 @@ export const load = (async ({ params }) => {
 		};
 	}
 
+	const html: string = post.content;
+
 	const pageMetaTags = {
-		title: `${post.title} - Accessibility.cool Blog`,
+		title: `${post.title}`,
 		description: post.excerpt || 'Read this article on Accessibility.cool'
 	} satisfies MetaTagsProps | undefined;
 
 	return {
 		post,
+		html,
 		pageMetaTags
 	};
 }) satisfies PageServerLoad;

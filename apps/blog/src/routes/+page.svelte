@@ -7,7 +7,7 @@
 
 {#if page}
 	<section
-		class="col-span-12 md:col-span-8 md:col-start-3 flex flex-col justify-center items-center py-24"
+		class="col-span-12 md:col-span-6 md:col-start-3 flex flex-col justify-center items-center py-24"
 	>
 		<div class="mb-8">
 			<span
