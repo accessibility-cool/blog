@@ -8,8 +8,7 @@ export const load: PageServerLoad = (async ({ parent }) => {
 
 	// Pass meta tags to the page
 	const pageMetaTags = {
-		title: page?.title,
-		description: page?.meta_description as string
+		title: page?.title
 	} satisfies MetaTagsProps | undefined;
 
 	return { page, pageMetaTags };
