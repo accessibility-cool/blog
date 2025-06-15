@@ -1,6 +1,0 @@
-/*
-  X-Frame-Options: DENY
-  Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'none'
-  Strict-Transport-Security: max-age=86400; includeSubDomains; preload
-
-</rewritten_file> 
