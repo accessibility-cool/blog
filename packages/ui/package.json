@@ -33,7 +33,11 @@
 		"typescript": "^5.8.3"
 	},
 	"dependencies": {
-		"bits-ui": "^2.7.0",
-		"phosphor-svelte": "^3.0.1"
+		"bits-ui": "^2.8.0",
+		"phosphor-svelte": "^3.0.1",
+		"rehype": "^13.0.2",
+		"rehype-parse": "^9.0.1",
+		"svelte-highlight": "^7.8.3",
+		"unified": "^11.0.5"
 	}
 }
