@@ -6,10 +6,10 @@
 
 <h1 class="text-4xl font-bold mb-8">Blog</h1>
 
-<section class="grid gap-8">
+<section class="gap-8 max-w-3xl mx-auto">
 	{#each posts as post (post._id)}
 		<article class="border-b pb-8">
-			<h2 class="font-semibold mb-2">
+			<h2 class="mb-2">
 				<a href="/blog/{post.slug}" class="hover:underline">
 					{post.title}
 				</a>

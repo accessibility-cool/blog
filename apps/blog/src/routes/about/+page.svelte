@@ -10,7 +10,7 @@
 	class="container py-12 md:py-24 grid grid-cols-12 md:grid-cols-8 gap-8 md:gap-16 items-start"
 >
 	<!-- Text Content Section -->
-	<div class="prose prose-lg max-w-none col-span-8">
+	<div class="prose prose-lg max-w-none">
 		{#if page.title}
 			<h1 class="text-4xl md:text-5xl font-light mb-8">{page.title}</h1>
 		{/if}
