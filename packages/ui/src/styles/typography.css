@@ -2,6 +2,7 @@
 	/* Headings */
 	h1 {
 		@apply font-serif;
+		@apply text-2xl md:text-3xl lg:text-4xl tracking-wide text-foreground;
 	}
 	h2,
 	h3,
