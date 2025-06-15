@@ -180,6 +180,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@types/hast':
+        specifier: ^3.0.4
+        version: 3.0.4
       bits-ui:
         specifier: ^2.8.0
         version: 2.8.0(@internationalized/date@3.8.2)(svelte@5.34.3)
