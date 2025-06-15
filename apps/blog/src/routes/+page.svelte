@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { Card } from '@a11y.cool/ui';
 
 	let { data } = $props<{ data: PageData }>();
 	let { page } = $derived(data);
@@ -32,3 +33,27 @@
 		</article>
 	</section>
 {/if}
+
+<section class="col-span-12 mt-8">
+	<div class="grid grid-cols-12">
+		<h2
+			class="text-center mb-10 font-bold text-2xl md:text-3xl col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
+		>
+			Stay tuned for these exciting upcoming resources and helpers
+		</h2>
+	</div>
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+		<Card title="Articles" description="Cool Articles">
+			<span slot="icon" class="text-xl">📝</span>
+		</Card>
+		<Card title="Design & Development Checklists" description="Cool">
+			<span slot="icon" class="text-xl">✅</span>
+		</Card>
+		<Card
+			title="Resources"
+			description="A collection of links for different digital accessibility topics."
+		>
+			<span slot="icon" class="text-xl">🔗</span>
+		</Card>
+	</div>
+</section>
