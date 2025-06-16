@@ -33,7 +33,7 @@
 
 			<div class="prose prose-lg max-w-none">
 				{#if ast()}
-					<HtmlRender node={ast()} />
+					<HtmlRender node={ast()!} />
 				{/if}
 			</div>
 		</article>
