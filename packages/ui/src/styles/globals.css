@@ -306,3 +306,15 @@
 		@apply hover:text-foreground/80 focus-visible:ring-foreground focus-visible:ring-offset-background rounded-xs focus-visible:outline-hidden inline-flex items-center gap-1 font-medium underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-offset-2;
 	}
 }
+
+/* Remove svelte-highlight custom code block and langtag styles */
+
+pre[data-language] {
+	font-size: 0.875rem;
+	@apply rounded-xl overflow-auto mb-4;
+}
+
+.sh-langtag,
+::after {
+	font-size: 0.875rem;
+}
