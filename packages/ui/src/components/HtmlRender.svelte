@@ -8,7 +8,7 @@
 	import xml from 'svelte-highlight/languages/xml';
 	import bash from 'svelte-highlight/languages/bash';
 	import markdown from 'svelte-highlight/languages/markdown';
-	import horizonDark from 'svelte-highlight/styles/horizon-dark';
+	import ashes from 'svelte-highlight/styles/ashes';
 
 	type HighlightLanguage =
 		| typeof typescript
@@ -57,7 +57,7 @@
 </script>
 
 <svelte:head>
-	{@html horizonDark}
+	{@html ashes}
 </svelte:head>
 
 {#if node}

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Card } from '@a11y.cool/ui';
+	import { Card, Eyes } from '@a11y.cool/ui';
+	import { ArticleNyTimes, ListChecks, CursorClick } from 'phosphor-svelte';
+	import { browser } from '$app/environment';
 
 	let { data } = $props<{ data: PageData }>();
 	let { page } = $derived(data);
@@ -43,17 +45,25 @@
 		</h2>
 	</div>
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-		<Card title="Articles" description="Cool Articles">
-			<span slot="icon" class="text-xl">📝</span>
-		</Card>
-		<Card title="Design & Development Checklists" description="Cool">
-			<span slot="icon" class="text-xl">✅</span>
-		</Card>
+		<Card
+			title="Articles"
+			iconComponent={ArticleNyTimes}
+			description="Blog posts and articles about digital accessibility."
+		></Card>
+		<Card
+			title="Checklists"
+			iconComponent={ListChecks}
+			description="(Inclusive) Design and Development Checklists."
+		></Card>
 		<Card
 			title="Resources"
+			iconComponent={CursorClick}
 			description="A collection of links for different digital accessibility topics."
-		>
-			<span slot="icon" class="text-xl">🔗</span>
-		</Card>
+		></Card>
 	</div>
+</section>
+
+<!-- Eyes section at the bottom of the page -->
+<section class="col-span-12 flex justify-center items-center my-24">
+	<Eyes {browser} />
 </section>
