@@ -6,7 +6,7 @@
 	export let excerptLength: number = 30;
 </script>
 
-<article class="border-b pb-12 mb-12 last:border-b-0 last:pb-0 last:mb-0">
+<article class="mb-6 mt-12 first:mt-0 last:mb-0">
 	<h2 class="mb-2 text-xl font-semibold">
 		<a href="/blog/{post.slug}" class="hover:underline">
 			{post.title}
@@ -23,3 +23,10 @@
 		</p>
 	{/if}
 </article>
+<hr class="border-t-1 mb-6 mt-6" />
+
+<style>
+	:global(article:last-child hr) {
+		display: none;
+	}
+</style>

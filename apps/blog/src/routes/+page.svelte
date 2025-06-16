@@ -9,6 +9,7 @@
 </script>
 
 {#if page}
+	<!-- Hero (intro) section -->
 	<section
 		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
 	>
@@ -36,7 +37,8 @@
 	</section>
 {/if}
 
-<section class="col-span-12 mt-16 md:mt-24 lg:mt-32">
+<!-- Teaser cards section -->
+<section class="col-span-12 my-16 md:my-24 lg:my-32">
 	<div class="grid grid-cols-12">
 		<h2
 			class="text-center mb-10 font-bold text-2xl md:text-3xl col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
@@ -48,7 +50,7 @@
 		<Card
 			title="Articles"
 			iconComponent={ArticleNyTimes}
-			description="Blog posts and articles about digital accessibility."
+			description="Blog posts about digital accessibility."
 		></Card>
 		<Card
 			title="Checklists"
@@ -58,12 +60,12 @@
 		<Card
 			title="Resources"
 			iconComponent={CursorClick}
-			description="A collection of links for different digital accessibility topics."
+			description="Link collections for different accessibility topics."
 		></Card>
 	</div>
 </section>
 
 <!-- Eyes section at the bottom of the page -->
-<section class="col-span-12 flex justify-center items-center my-24">
+<section class="col-span-12 flex justify-center items-center mt-16 md:mt-24 lg:mt-32">
 	<Eyes {browser} />
 </section>
