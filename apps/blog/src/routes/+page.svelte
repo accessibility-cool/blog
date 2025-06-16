@@ -1,12 +1,15 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Card } from '@a11y.cool/ui';
+	import { Card, Eyes } from '@a11y.cool/ui';
+	import { ArticleNyTimes, ListChecks, CursorClick } from 'phosphor-svelte';
+	import { browser } from '$app/environment';
 
 	let { data } = $props<{ data: PageData }>();
 	let { page } = $derived(data);
 </script>
 
 {#if page}
+	<!-- Hero (intro) section -->
 	<section
 		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
 	>
@@ -34,7 +37,8 @@
 	</section>
 {/if}
 
-<section class="col-span-12 mt-16 md:mt-24 lg:mt-32">
+<!-- Teaser cards section -->
+<section class="col-span-12 my-16 md:my-24 lg:my-32">
 	<div class="grid grid-cols-12">
 		<h2
 			class="text-center mb-10 font-bold text-2xl md:text-3xl col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
@@ -43,17 +47,25 @@
 		</h2>
 	</div>
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-		<Card title="Articles" description="Cool Articles">
-			<span slot="icon" class="text-xl">📝</span>
-		</Card>
-		<Card title="Design & Development Checklists" description="Cool">
-			<span slot="icon" class="text-xl">✅</span>
-		</Card>
+		<Card
+			title="Articles"
+			iconComponent={ArticleNyTimes}
+			description="Blog posts about digital accessibility."
+		></Card>
+		<Card
+			title="Checklists"
+			iconComponent={ListChecks}
+			description="(Inclusive) Design and Development Checklists."
+		></Card>
 		<Card
 			title="Resources"
-			description="A collection of links for different digital accessibility topics."
-		>
-			<span slot="icon" class="text-xl">🔗</span>
-		</Card>
+			iconComponent={CursorClick}
+			description="Link collections for different accessibility topics."
+		></Card>
 	</div>
+</section>
+
+<!-- Eyes section at the bottom of the page -->
+<section class="col-span-12 flex justify-center items-center mt-16 md:mt-24 lg:mt-32">
+	<Eyes {browser} />
 </section>

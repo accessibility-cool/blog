@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { NavigationMenu, DropdownMenu } from 'bits-ui';
+	import { List } from 'phosphor-svelte';
 	// Accepts an array of menu items: { label: string; href: string }[]
 	let { items = [] }: { items: { label: string; href: string }[] } = $props();
 </script>
@@ -29,19 +30,11 @@
 			class="p-2 rounded-md hover:bg-muted focus:bg-muted focus:outline-none"
 		>
 			<!-- Hamburger Icon -->
-			<svg
-				class="h-6 w-6"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				viewBox="0 0 24 24"
-			>
-				<path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-			</svg>
+			<List class="h-6 w-6" size={24} />
 			<span class="sr-only">Open menu</span>
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content
-			class="min-w-[10rem] p-2 bg-background border border-muted rounded-xl shadow-[0px_7px_12px_3px_rgba(24,24,27,0.1)] mt-2"
+			class="min-w-[10rem] p-2 bg-background border border-muted rounded-xl shadow-[0px_7px_12px_3px_rgba(24,24,27,0.1)] mt-2 mr-2"
 		>
 			{#each items as item (item.href)}
 				<DropdownMenu.Item>

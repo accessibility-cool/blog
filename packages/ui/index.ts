@@ -5,3 +5,6 @@ export { default as Avatar } from './src/components/Avatar.svelte';
 export { default as Navigation } from './src/components/Navigation.svelte';
 export { default as Card } from './src/components/Card.svelte';
 export { default as HtmlRender } from './src/components/HtmlRender.svelte';
+export { default as Eyes } from './src/components/Eyes.svelte';
+export { default as PostInfo } from './src/components/PostInfo.svelte';
+export { default as PostPreview } from './src/components/PostPreview.svelte';

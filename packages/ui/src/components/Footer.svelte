@@ -2,7 +2,7 @@
 	const year: number = new Date().getFullYear();
 </script>
 
-<hr class="border-t border-gray-500 mb-6 w-full col-span-12" />
+<hr class="mt-24 md:mt-32 lg:mt-40 border-t border-border-input mb-6 w-full col-span-12" />
 
 <footer class="col-span-12 grid grid-cols-12 gap-4 md:gap-3 sm:gap-2 xs:gap-1 py-6">
 	<p class="col-span-6">&copy; Accessibility.cool — {year}</p>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Text, Node } from 'hast';
+	import type { Root, Element, Text } from 'hast';
 	import Highlight from 'svelte-highlight';
 	import typescript from 'svelte-highlight/languages/typescript';
 	import javascript from 'svelte-highlight/languages/javascript';
@@ -8,7 +8,7 @@
 	import xml from 'svelte-highlight/languages/xml';
 	import bash from 'svelte-highlight/languages/bash';
 	import markdown from 'svelte-highlight/languages/markdown';
-	import horizonDark from 'svelte-highlight/styles/horizon-dark';
+	import ashes from 'svelte-highlight/styles/ashes';
 
 	type HighlightLanguage =
 		| typeof typescript
@@ -20,7 +20,7 @@
 		| typeof markdown
 		| undefined;
 
-	export let node: Node;
+	export let node: Root | Element | Text;
 
 	// Map language string to svelte-highlight language import
 	const languageMap: Record<string, HighlightLanguage> = {
@@ -44,32 +44,50 @@
 		const match = className?.match?.(/language-([\w-]+)/);
 		return match ? match[1] : 'plaintext';
 	}
+
+	function isRoot(n: unknown): n is Root {
+		return !!n && typeof n === 'object' && (n as Root).type === 'root';
+	}
+	function isElement(n: unknown): n is Element {
+		return !!n && typeof n === 'object' && (n as Element).type === 'element';
+	}
+	function isText(n: unknown): n is Text {
+		return !!n && typeof n === 'object' && (n as Text).type === 'text';
+	}
 </script>
 
 <svelte:head>
-	{@html horizonDark}
+	{@html ashes}
 </svelte:head>
 
 {#if node}
-	{#if node.type === 'root'}
+	{#if isRoot(node)}
 		{#each node.children as child, i (child.position?.start?.offset ?? i)}
-			<svelte:self node={child} />
+			{#if isElement(child) || isRoot(child)}
+				<svelte:self node={child} />
+			{:else if isText(child)}
+				{@html child.value}
+			{/if}
 		{/each}
-	{:else if node.type === 'element'}
-		{#if node.tagName === 'pre' && node.children?.[0]?.tagName === 'code'}
+	{:else if isElement(node)}
+		{#if node.tagName === 'pre' && node.children?.[0] && isElement(node.children[0]) && node.children[0].tagName === 'code'}
 			<Highlight
 				language={languageMap[getLang(node.children[0].properties?.className?.[0])] ||
 					undefined}
-				code={node.children[0].children?.map((c) => c.value || '').join('')}
+				code={node.children[0].children?.map((c) => (isText(c) ? c.value : '')).join('')}
 			/>
 		{:else}
 			<svelte:element this={node.tagName} {...node.properties}>
 				{#each node.children as child, i (child.position?.start?.offset ?? i)}
-					<svelte:self node={child} />
+					{#if isElement(child) || isRoot(child)}
+						<svelte:self node={child} />
+					{:else if isText(child)}
+						{@html child.value}
+					{/if}
 				{/each}
 			</svelte:element>
 		{/if}
-	{:else if node.type === 'text'}
-		{@html (node as Text).value}
+	{:else if isText(node)}
+		{@html node.value}
 	{/if}
 {/if}
