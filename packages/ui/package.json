@@ -20,6 +20,7 @@
 	},
 	"devDependencies": {
 		"@a11y.cool/data": "workspace:*",
+		"@a11y.cool/utils": "workspace:*",
 		"@a11y.cool/eslint-config": "workspace:*",
 		"@a11y.cool/typescript-config": "workspace:*",
 		"@tailwindcss/postcss": "^4.1.10",

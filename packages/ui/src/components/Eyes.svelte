@@ -3,7 +3,10 @@
 	export let browser: boolean | undefined = undefined;
 	const isBrowser = browser ?? typeof window !== 'undefined';
 
-	export let size: number = 160; // default smaller size, can be overridden
+	// Make size responsive with a default that can be overridden
+	export let size: number | undefined = undefined;
+	let defaultSize = 160;
+	let isTouchDevice = false;
 	let svgEl: SVGSVGElement;
 	let leftPupil: SVGPathElement;
 	let rightPupil: SVGPathElement;
@@ -13,8 +16,8 @@
 	const SVG_HEIGHT = 320;
 
 	// Eye centers in SVG coordinates (from your SVG)
-	const leftEye = { x: 191.572, y: 132.838 };
-	const rightEye = { x: 543.826, y: 132.838 };
+	const leftEye = { x: 153.107, y: 159.691 };
+	const rightEye = { x: 505.361, y: 159.691 };
 	const pupilMaxDist = 32; // max px the pupil can move from center (SVG units)
 
 	// Store current and target positions for smooth animation
@@ -43,7 +46,7 @@
 	};
 
 	const handleMouseMove = (e: MouseEvent) => {
-		if (!svgEl) return;
+		if (!svgEl || isTouchDevice) return;
 		const rect = svgEl.getBoundingClientRect();
 		const svgX = ((e.clientX - rect.left) / rect.width) * SVG_WIDTH;
 		const svgY = ((e.clientY - rect.top) / rect.height) * SVG_HEIGHT;
@@ -52,6 +55,7 @@
 	};
 
 	const animate = () => {
+		if (isTouchDevice) return;
 		// Lerp current position toward target
 		leftCurrent.x = lerp(leftCurrent.x, leftTarget.x, 0.18);
 		leftCurrent.y = lerp(leftCurrent.y, leftTarget.y, 0.18);
@@ -63,20 +67,55 @@
 		}
 	};
 
-	onMount(() => {
-		// Center pupils initially
-		leftCurrent = { x: 0, y: 0 };
-		rightCurrent = { x: 0, y: 0 };
-		leftTarget = { x: 0, y: 0 };
-		rightTarget = { x: 0, y: 0 };
+	// Handle resize for responsive sizing
+	let resizeObserver: ResizeObserver;
+	const updateSize = () => {
+		if (!isBrowser) return;
+		const width = window.innerWidth;
+		defaultSize = width < 640 ? 120 : width < 768 ? 140 : 160;
+	};
+
+	function setPupilsUpperRight() {
+		// 45 degrees up and right: angle = -π/4
+		const angle = Math.atan2(-1, 1);
+		const x = Math.cos(angle) * pupilMaxDist;
+		const y = Math.sin(angle) * pupilMaxDist;
+		leftTarget = { x, y };
+		rightTarget = { x, y };
+		leftCurrent = { x, y };
+		rightCurrent = { x, y };
 		setPupilTransform();
+	}
+
+	onMount(() => {
 		if (isBrowser) {
+			// Check for touch device
+			isTouchDevice = window.matchMedia('(hover: none)').matches;
+
+			// Set up resize observer
+			updateSize();
+			resizeObserver = new ResizeObserver(updateSize);
+			resizeObserver.observe(document.body);
+
+			if (isTouchDevice) {
+				setPupilsUpperRight();
+				return;
+			}
+
+			// Center pupils initially
+			leftCurrent = { x: 0, y: 0 };
+			rightCurrent = { x: 0, y: 0 };
+			leftTarget = { x: 0, y: 0 };
+			rightTarget = { x: 0, y: 0 };
+			setPupilTransform();
 			animationFrame = requestAnimationFrame(animate);
 		}
 	});
+
 	onDestroy(() => {
 		if (isBrowser) {
-			cancelAnimationFrame(animationFrame);
+			if (animationFrame) cancelAnimationFrame(animationFrame);
+			if (resizeObserver) resizeObserver.disconnect();
 		}
 	});
 </script>
@@ -86,8 +125,8 @@
 	<svg
 		bind:this={svgEl}
 		class="block mx-auto"
-		width={size}
-		height={(size * SVG_HEIGHT) / SVG_WIDTH}
+		width={size ?? defaultSize}
+		height={((size ?? defaultSize) * SVG_HEIGHT) / SVG_WIDTH}
 		viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
@@ -97,24 +136,24 @@
 		<!-- Left eye white/dark -->
 		<path
 			class="fill-black dark:fill-white"
-			d="M153.107 0.40918C246.948 0.409218 303.745 64.6161 303.745 159.691C303.745 255.384 246.947 319.591 153.107 319.591C58.6503 319.591 0.000171163 255.384 0 159.691C0 64.6162 58.6502 0.409378 153.107 0.40918Z"
+			d="M153.107 0.40918C246.948 0.409218 303.745 64.6161 303.745 159.691C303.745 255.384 246.947 319.591 153.107 319.591C58.6503 319.591 0.000171163 255.384 0 159.691C0 64.6162 58.6502 0.409373 153.107 0.40918Z"
 		/>
 		<!-- Right eye white/dark -->
 		<path
 			class="fill-black dark:fill-white"
 			d="M505.361 0.40918C599.201 0.40918 656 64.6161 656 159.691C656 255.384 599.201 319.591 505.361 319.591C410.904 319.591 352.254 255.384 352.254 159.691C352.254 64.6162 410.904 0.409322 505.361 0.40918Z"
 		/>
-		<!-- Left pupil (egg shape, matches inner path) -->
+		<!-- Left pupil -->
 		<path
 			bind:this={leftPupil}
 			class="pupil fill-white dark:fill-black"
-			d="M191.572 73.1621C157.756 73.1623 145.839 91.9488 145.839 132.838C145.839 174.095 157.756 192.883 191.572 192.883C225.067 192.883 236.661 174.096 236.661 132.838C236.661 91.9486 225.067 73.1621 191.572 73.1621Z"
+			d="M152.732 100C118.916 100 107 118.787 107 159.676C107 200.933 118.916 219.72 152.732 219.721C186.227 219.721 197.822 200.933 197.822 159.676C197.822 118.787 186.227 100 152.732 100Z"
 		/>
-		<!-- Right pupil (egg shape, matches inner path) -->
+		<!-- Right pupil -->
 		<path
 			bind:this={rightPupil}
 			class="pupil fill-white dark:fill-black"
-			d="M543.826 73.1621C510.009 73.1622 498.093 91.9487 498.093 132.838C498.093 174.095 510.009 192.883 543.826 192.883C577.321 192.883 588.915 174.095 588.915 132.838C588.915 91.9488 577.321 73.1623 543.826 73.1621Z"
+			d="M504.733 100C470.917 100 459 118.787 459 159.676C459 200.933 470.917 219.721 504.733 219.721C538.228 219.721 549.822 200.933 549.822 159.676C549.822 118.787 538.228 100 504.733 100Z"
 		/>
 	</svg>
 </div>

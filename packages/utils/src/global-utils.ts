@@ -15,3 +15,9 @@ export const formatDate = (date: string): string => {
 		year: 'numeric'
 	});
 };
+
+export const shortenExcerpt = (text: string, wordCount: number = 30): string => {
+	if (!text) return '';
+	const words = text.split(/\s+/);
+	return words.length > wordCount ? words.slice(0, wordCount).join(' ') + '…' : text;
+};

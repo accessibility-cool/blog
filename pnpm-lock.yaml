@@ -214,6 +214,9 @@ importers:
       '@a11y.cool/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@a11y.cool/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@tailwindcss/postcss':
         specifier: ^4.1.10
         version: 4.1.10
