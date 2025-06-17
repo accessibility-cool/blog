@@ -314,12 +314,12 @@ pre[data-language] {
 	border-radius: 1rem;
 	border: 1px solid #40474d;
 	@apply rounded-xl overflow-auto mb-4;
-	code {
-		padding: 1.5rem;
+	code.hljs {
+		padding: 1.675rem;
 	}
 }
 
 .sh-langtag,
 ::after {
-	font-size: 0.875rem;
+	font-size: 0.75rem;
 }
