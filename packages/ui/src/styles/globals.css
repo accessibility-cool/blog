@@ -5,7 +5,7 @@
 :root {
 	/* Colors */
 	--background: hsl(0 0% 100%);
-	--background-alt: hsl(0 0% 100%);
+	--background-alt: hsl(0 0% 97%);
 	--foreground: hsl(0 0% 9%);
 	--foreground-alt: hsl(0 0% 32%);
 	--muted: hsl(0, 0%, 96%);
@@ -292,13 +292,35 @@
 		list-style: none !important;
 		padding-left: 0;
 	}
+
+	a {
+		@apply no-underline text-foreground transition-colors;
+	}
+	a:hover {
+		@apply underline;
+	}
+
+	p code,
+	span code,
+	h1 code,
+	h2 code,
+	h3 code,
+	h4 code,
+	h5 code,
+	h6 code {
+		border: 1px solid #6d6d6d;
+		background: var(--background-alt);
+		border-radius: 0.25rem;
+		padding: 0.15em 0.4em;
+		font-size: 14px;
+	}
 }
 
 @layer components {
 	*:not(body):not(.focus-override) {
 		outline: none !important;
 		&:focus-visible {
-			@apply focus-visible:ring-foreground focus-visible:ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1;
+			@apply focus-visible:ring-foreground focus-visible:ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 rounded-xs;
 		}
 	}
 
@@ -311,10 +333,32 @@
 
 pre[data-language] {
 	font-size: 0.875rem;
+	border-radius: 1rem;
+	border: 1px solid #d1d5db;
 	@apply rounded-xl overflow-auto mb-4;
+	code.hljs {
+		padding: 1.675rem;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	pre[data-language] {
+		border: 1px solid #40474d;
+	}
+	p code,
+	span code,
+	h1 code,
+	h2 code,
+	h3 code,
+	h4 code,
+	h5 code,
+	h6 code {
+		border: 1px solid #40474d;
+		background: #1d2023;
+	}
 }
 
 .sh-langtag,
 ::after {
-	font-size: 0.875rem;
+	font-size: 0.75rem;
 }
