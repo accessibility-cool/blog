@@ -9,6 +9,9 @@
 	import bash from 'svelte-highlight/languages/bash';
 	import markdown from 'svelte-highlight/languages/markdown';
 	import ashes from 'svelte-highlight/styles/ashes';
+	import cupertino from 'svelte-highlight/styles/cupertino';
+	import HtmlRender from './HtmlRender.svelte';
+	import { slugify } from '@a11y.cool/utils';
 
 	type HighlightLanguage =
 		| typeof typescript
@@ -20,7 +23,7 @@
 		| typeof markdown
 		| undefined;
 
-	export let node: Root | Element | Text;
+	let { node } = $props<{ node: Root | Element | Text }>();
 
 	// Map language string to svelte-highlight language import
 	const languageMap: Record<string, HighlightLanguage> = {
@@ -77,17 +80,35 @@
 	const mergeClasses = (existing: string | undefined, extra: string) => {
 		return existing ? `${existing} ${extra}` : extra;
 	};
+
+	const isBrowser = typeof window !== 'undefined';
+
+	let themeCss = $state(ashes); // Always start with dark theme for SSR consistency
+
+	$effect(() => {
+		if (!isBrowser || typeof window.matchMedia !== 'function') return;
+
+		const mql = window.matchMedia('(prefers-color-scheme: dark)');
+		const updateTheme = () => {
+			themeCss = mql.matches ? ashes : cupertino;
+		};
+		updateTheme();
+		mql.addEventListener('change', updateTheme);
+
+		// Cleanup
+		return () => mql.removeEventListener('change', updateTheme);
+	});
 </script>
 
 <svelte:head>
-	{@html ashes}
+	{@html themeCss}
 </svelte:head>
 
 {#if node}
 	{#if isRoot(node)}
 		{#each node.children as child, i (child.position?.start?.offset ?? i)}
 			{#if isElement(child) || isRoot(child)}
-				<svelte:self node={child} />
+				<HtmlRender node={child} />
 			{:else if isText(child)}
 				{@html child.value}
 			{/if}
@@ -102,9 +123,9 @@
 				--langtag-background="#111"
 				--langtag-color="#fff"
 				--langtag-border-radius="0.5rem"
-				--langtag-padding="0.25rem 0.75rem"
-				--langtag-top="0.5rem"
-				--langtag-right="0.5rem"
+				--langtag-padding="0.25rem 0.5rem"
+				--langtag-top="0.25rem"
+				--langtag-right="0.25rem"
 			/>
 		{:else if voidElements.has(node.tagName)}
 			{#if node.tagName === 'img'}
@@ -117,24 +138,36 @@
 				<svelte:element this={node.tagName} {...node.properties} />
 			{/if}
 		{:else if ['h2', 'h3', 'h4', 'h5', 'h6'].includes(node.tagName)}
-			<svelte:element
-				this={node.tagName}
-				{...node.properties}
-				class={mergeClasses(node.properties?.class, 'mt-8 mb-4')}
-			>
-				{#each node.children as child, i (child.position?.start?.offset ?? i)}
-					{#if isElement(child) || isRoot(child)}
-						<svelte:self node={child} />
-					{:else if isText(child)}
-						{@html child.value}
-					{/if}
-				{/each}
-			</svelte:element>
+			{#if node.children?.[0]}
+				{@const headingText = node.children
+					.map((child) => (isText(child) ? child.value : ''))
+					.join('')}
+				{@const headingId = slugify(headingText)}
+				<a
+					href="#{headingId}"
+					class="no-underline hover:underline focus:underline focus-visible:outline-none"
+				>
+					<svelte:element
+						this={node.tagName}
+						id={headingId}
+						{...node.properties}
+						class={mergeClasses(node.properties?.class, 'mt-8 mb-4')}
+					>
+						{#each node.children as child, i (child.position?.start?.offset ?? i)}
+							{#if isElement(child) || isRoot(child)}
+								<HtmlRender node={child} />
+							{:else if isText(child)}
+								{@html child.value}
+							{/if}
+						{/each}
+					</svelte:element>
+				</a>
+			{/if}
 		{:else if node.tagName === 'code'}
 			<svelte:element this={node.tagName} {...node.properties}>
 				{#each node.children as child, i (child.position?.start?.offset ?? i)}
 					{#if isElement(child) || isRoot(child)}
-						<svelte:self node={child} />
+						<HtmlRender node={child} />
 					{:else if isText(child)}
 						{@html child.value}
 					{/if}
@@ -144,7 +177,7 @@
 			<svelte:element this={node.tagName} {...node.properties}>
 				{#each node.children as child, i (child.position?.start?.offset ?? i)}
 					{#if isElement(child) || isRoot(child)}
-						<svelte:self node={child} />
+						<HtmlRender node={child} />
 					{:else if isText(child)}
 						{@html child.value}
 					{/if}

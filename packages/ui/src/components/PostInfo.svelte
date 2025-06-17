@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Avatar from './Avatar.svelte';
+	import { formatDate } from '@a11y.cool/utils';
 	export let authors: { id: string; name: string; profile_image?: string }[] = [];
 	export let publishedAt: string | undefined = undefined;
 	export let readingTime: number | undefined = undefined;
@@ -17,12 +18,13 @@
 			/>
 		{/each}
 	{/if}
-	{#if publishedAt}
-		<time datetime={publishedAt} class="ml-1">
-			{new Date(publishedAt).toLocaleDateString()}
-		</time>
-	{/if}
 	{#if readingTime}
-		<span class="ml-1">{readingTime} min read</span>
+		<span>{readingTime} min read</span>
+	{/if}
+	{#if readingTime && publishedAt}
+		<span class="mx-1">&middot;</span>
+	{/if}
+	{#if publishedAt}
+		<time datetime={publishedAt}>{formatDate(publishedAt)}</time>
 	{/if}
 </div>

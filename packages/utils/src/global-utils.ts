@@ -9,7 +9,8 @@ export const slugify = (str: string): string => {
 };
 
 export const formatDate = (date: string): string => {
-	return new Date(date).toLocaleDateString('en-US', {
+	const d = new Date(date);
+	return d.toLocaleDateString('en-US', {
 		month: 'short',
 		day: 'numeric',
 		year: 'numeric'

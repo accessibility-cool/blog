@@ -923,3 +923,9 @@ With these adjusted guidelines, your AI can now generate SvelteKit 2 code accura
 
 - Strict mode. Avoid `any`.
 - Use optional chaining, union types (no enums).
+
+## Deprecated functions, stores and props
+
+Don't use any deprecated functions, stores and props in the app.
+
+E.g. `import { navigating } from '$app/store';` navigating from the store is deprecated use `import { navigating } from '$app/state';` instead. Always check for Svelte 5's warnings if something is deprecated and not recommended to use anymore and refer to the fix recommended in the warning message.
