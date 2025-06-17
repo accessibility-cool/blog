@@ -15,7 +15,7 @@
 >
 	<button on:click={togglePause}>
 		<div
-			class="relative mb-2 h-10 w-10"
+			class="relative mb-2 h-10 w-10 mx-auto"
 			style={paused ? '' : 'animation: spin 1s linear infinite;'}
 		>
 			<div
@@ -26,7 +26,9 @@
 				style="z-index:1;"
 			></div>
 		</div>
-		<span class="text-gray-700 dark:text-gray-200 text-base font-medium">{label}</span>
+		<span class="mt-4 w-full text-center text-gray-700 dark:text-gray-200 text-base font-medium"
+			>{label}</span
+		>
 	</button>
 </div>
 

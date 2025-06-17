@@ -24,7 +24,11 @@
 	<!-- Main Content -->
 	<main class="grid grid-cols-12 col-span-12 col-start-1 pb-4 md:pb-6 lg:pb-8">
 		{#if navigating.to}
-			<Loader label="Loading..." />
+			<section
+				class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
+			>
+				<Loader label="Loading..." />
+			</section>
 		{:else}
 			{@render children?.()}
 		{/if}
