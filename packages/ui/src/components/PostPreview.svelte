@@ -8,7 +8,11 @@
 
 <article class="mb-6 mt-12 first:mt-0 last:mb-0">
 	<h2 class="mb-2 text-xl font-semibold">
-		<a href="/blog/{post.slug}" class="hover:underline">
+		<a
+			href="/blog/{post.slug}"
+			class="hover:underline focus-visible:underline focus-visible:outline-none focus-visible:ring-0"
+			tabindex="0"
+		>
 			{post.title}
 		</a>
 	</h2>

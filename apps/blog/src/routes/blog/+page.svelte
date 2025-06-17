@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { PostPreview, Loader } from '@a11y.cool/ui';
+	import { PostPreview } from '@a11y.cool/ui';
 	let { data } = $props<{ data: PageData }>();
 	let { posts } = $derived(data);
 </script>

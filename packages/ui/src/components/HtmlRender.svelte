@@ -102,9 +102,9 @@
 				--langtag-background="#111"
 				--langtag-color="#fff"
 				--langtag-border-radius="0.5rem"
-				--langtag-padding="0.25rem 0.75rem"
-				--langtag-top="0.5rem"
-				--langtag-right="0.5rem"
+				--langtag-padding="0.25rem 0.5rem"
+				--langtag-top="0.25rem"
+				--langtag-right="0.25rem"
 			/>
 		{:else if voidElements.has(node.tagName)}
 			{#if node.tagName === 'img'}

@@ -1,15 +1,90 @@
 <script lang="ts">
 	import { Avatar as BitsAvatar } from 'bits-ui';
-	export let src: string | undefined = undefined;
-	export let alt: string | undefined = undefined;
-	export let name: string | undefined = undefined;
-	export let initials: string | undefined = undefined;
-	export let size: number = 40;
-	let showName = false;
+	import { onMount, onDestroy, tick } from 'svelte';
+
+	const isBrowser = typeof window !== 'undefined';
+	let {
+		src = undefined,
+		alt = undefined,
+		name = undefined,
+		initials = undefined,
+		size = 40
+	} = $props<{
+		src?: string;
+		alt?: string;
+		name?: string;
+		initials?: string;
+		size?: number;
+	}>();
+	let showName = $state(false);
+	let buttonEl: HTMLButtonElement;
+	let tooltipPosition = $state('center');
+	let tooltipEl = $state<HTMLSpanElement | undefined>(undefined);
+
+	let updateTooltipPosition = () => {
+		if (!isBrowser || !tooltipEl || !buttonEl) return;
+
+		const buttonRect = buttonEl.getBoundingClientRect();
+		const tooltipRect = tooltipEl.getBoundingClientRect();
+		const viewportWidth = window.innerWidth;
+
+		// Calculate the space available on each side
+		const spaceLeft = buttonRect.left;
+		const spaceRight = viewportWidth - buttonRect.right;
+		const tooltipWidth = tooltipRect.width;
+
+		// Center position would place the tooltip at this X coordinate
+		const centerX = buttonRect.left + buttonRect.width / 2;
+
+		// Check if centered tooltip would overflow
+		if (centerX + tooltipWidth / 2 > viewportWidth) {
+			tooltipPosition = 'right';
+		} else if (centerX - tooltipWidth / 2 < 0) {
+			tooltipPosition = 'left';
+		} else {
+			tooltipPosition = 'center';
+		}
+	};
+
+	let resizeObserver: ResizeObserver | undefined;
+
+	onMount(() => {
+		if (!isBrowser) return;
+
+		// Create a resize observer to watch for container size changes
+		resizeObserver = new ResizeObserver(() => {
+			if (showName) {
+				updateTooltipPosition();
+			}
+		});
+
+		if (buttonEl) {
+			resizeObserver.observe(buttonEl);
+		}
+
+		// Also watch for window resize events
+		window.addEventListener('resize', updateTooltipPosition);
+	});
+
+	onDestroy(() => {
+		if (!isBrowser) return;
+		if (resizeObserver) {
+			resizeObserver.disconnect();
+		}
+		window.removeEventListener('resize', updateTooltipPosition);
+	});
+
+	$effect(async () => {
+		if (showName && isBrowser) {
+			await tick();
+			updateTooltipPosition();
+		}
+	});
 </script>
 
 <button
-	class="relative inline-block appearance-none border-none bg-transparent p-0 m-0 focus:outline-none"
+	bind:this={buttonEl}
+	class="relative inline-block appearance-none border-none bg-transparent p-0 m-0 focus:outline-none focus-visible:rounded-full focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2"
 	onmouseenter={() => (showName = true)}
 	onmouseleave={() => (showName = false)}
 	onfocus={() => (showName = true)}
@@ -28,7 +103,13 @@
 	</BitsAvatar.Root>
 	{#if showName && name}
 		<span
-			class="absolute left-1/2 -translate-x-1/2 mt-2 px-3 py-1 rounded bg-gray-900 text-white text-xs whitespace-nowrap z-10 shadow-lg"
+			bind:this={tooltipEl}
+			class="absolute mt-2 px-3 py-1 rounded bg-muted text-foreground text-xs whitespace-nowrap z-10 shadow-lg {tooltipPosition ===
+			'center'
+				? 'left-1/2 -translate-x-1/2'
+				: tooltipPosition === 'left'
+					? 'left-0 translate-x-0'
+					: 'right-0 translate-x-0'}"
 		>
 			{name}
 		</span>
