@@ -11,6 +11,7 @@
 	import ashes from 'svelte-highlight/styles/ashes';
 	import cupertino from 'svelte-highlight/styles/cupertino';
 	import HtmlRender from './HtmlRender.svelte';
+	import { slugify } from '@a11y.cool/utils';
 
 	type HighlightLanguage =
 		| typeof typescript
@@ -137,19 +138,31 @@
 				<svelte:element this={node.tagName} {...node.properties} />
 			{/if}
 		{:else if ['h2', 'h3', 'h4', 'h5', 'h6'].includes(node.tagName)}
-			<svelte:element
-				this={node.tagName}
-				{...node.properties}
-				class={mergeClasses(node.properties?.class, 'mt-8 mb-4')}
-			>
-				{#each node.children as child, i (child.position?.start?.offset ?? i)}
-					{#if isElement(child) || isRoot(child)}
-						<HtmlRender node={child} />
-					{:else if isText(child)}
-						{@html child.value}
-					{/if}
-				{/each}
-			</svelte:element>
+			{#if node.children?.[0]}
+				{@const headingText = node.children
+					.map((child) => (isText(child) ? child.value : ''))
+					.join('')}
+				{@const headingId = slugify(headingText)}
+				<a
+					href="#{headingId}"
+					class="no-underline hover:underline focus:underline focus-visible:outline-none"
+				>
+					<svelte:element
+						this={node.tagName}
+						id={headingId}
+						{...node.properties}
+						class={mergeClasses(node.properties?.class, 'mt-8 mb-4')}
+					>
+						{#each node.children as child, i (child.position?.start?.offset ?? i)}
+							{#if isElement(child) || isRoot(child)}
+								<HtmlRender node={child} />
+							{:else if isText(child)}
+								{@html child.value}
+							{/if}
+						{/each}
+					</svelte:element>
+				</a>
+			{/if}
 		{:else if node.tagName === 'code'}
 			<svelte:element this={node.tagName} {...node.properties}>
 				{#each node.children as child, i (child.position?.start?.offset ?? i)}
