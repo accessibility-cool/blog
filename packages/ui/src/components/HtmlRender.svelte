@@ -9,6 +9,8 @@
 	import bash from 'svelte-highlight/languages/bash';
 	import markdown from 'svelte-highlight/languages/markdown';
 	import ashes from 'svelte-highlight/styles/ashes';
+	import cupertino from 'svelte-highlight/styles/cupertino';
+	import HtmlRender from './HtmlRender.svelte';
 
 	type HighlightLanguage =
 		| typeof typescript
@@ -20,7 +22,7 @@
 		| typeof markdown
 		| undefined;
 
-	export let node: Root | Element | Text;
+	let { node } = $props<{ node: Root | Element | Text }>();
 
 	// Map language string to svelte-highlight language import
 	const languageMap: Record<string, HighlightLanguage> = {
@@ -77,17 +79,35 @@
 	const mergeClasses = (existing: string | undefined, extra: string) => {
 		return existing ? `${existing} ${extra}` : extra;
 	};
+
+	const isBrowser = typeof window !== 'undefined';
+
+	let themeCss = $state(ashes); // Always start with dark theme for SSR consistency
+
+	$effect(() => {
+		if (!isBrowser || typeof window.matchMedia !== 'function') return;
+
+		const mql = window.matchMedia('(prefers-color-scheme: dark)');
+		const updateTheme = () => {
+			themeCss = mql.matches ? ashes : cupertino;
+		};
+		updateTheme();
+		mql.addEventListener('change', updateTheme);
+
+		// Cleanup
+		return () => mql.removeEventListener('change', updateTheme);
+	});
 </script>
 
 <svelte:head>
-	{@html ashes}
+	{@html themeCss}
 </svelte:head>
 
 {#if node}
 	{#if isRoot(node)}
 		{#each node.children as child, i (child.position?.start?.offset ?? i)}
 			{#if isElement(child) || isRoot(child)}
-				<svelte:self node={child} />
+				<HtmlRender node={child} />
 			{:else if isText(child)}
 				{@html child.value}
 			{/if}
@@ -124,7 +144,7 @@
 			>
 				{#each node.children as child, i (child.position?.start?.offset ?? i)}
 					{#if isElement(child) || isRoot(child)}
-						<svelte:self node={child} />
+						<HtmlRender node={child} />
 					{:else if isText(child)}
 						{@html child.value}
 					{/if}
@@ -134,7 +154,7 @@
 			<svelte:element this={node.tagName} {...node.properties}>
 				{#each node.children as child, i (child.position?.start?.offset ?? i)}
 					{#if isElement(child) || isRoot(child)}
-						<svelte:self node={child} />
+						<HtmlRender node={child} />
 					{:else if isText(child)}
 						{@html child.value}
 					{/if}
@@ -144,7 +164,7 @@
 			<svelte:element this={node.tagName} {...node.properties}>
 				{#each node.children as child, i (child.position?.start?.offset ?? i)}
 					{#if isElement(child) || isRoot(child)}
-						<svelte:self node={child} />
+						<HtmlRender node={child} />
 					{:else if isText(child)}
 						{@html child.value}
 					{/if}

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { Avatar as BitsAvatar } from 'bits-ui';
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { tick } from 'svelte';
 
-	const isBrowser = typeof window !== 'undefined';
 	let {
 		src = undefined,
 		alt = undefined,
@@ -22,15 +21,13 @@
 	let tooltipEl = $state<HTMLSpanElement | undefined>(undefined);
 
 	let updateTooltipPosition = () => {
-		if (!isBrowser || !tooltipEl || !buttonEl) return;
+		if (typeof window === 'undefined' || !tooltipEl || !buttonEl) return;
 
 		const buttonRect = buttonEl.getBoundingClientRect();
 		const tooltipRect = tooltipEl.getBoundingClientRect();
 		const viewportWidth = window.innerWidth;
 
 		// Calculate the space available on each side
-		const spaceLeft = buttonRect.left;
-		const spaceRight = viewportWidth - buttonRect.right;
 		const tooltipWidth = tooltipRect.width;
 
 		// Center position would place the tooltip at this X coordinate
@@ -48,8 +45,8 @@
 
 	let resizeObserver: ResizeObserver | undefined;
 
-	onMount(() => {
-		if (!isBrowser) return;
+	$effect(() => {
+		if (typeof window === 'undefined') return;
 
 		// Create a resize observer to watch for container size changes
 		resizeObserver = new ResizeObserver(() => {
@@ -64,18 +61,18 @@
 
 		// Also watch for window resize events
 		window.addEventListener('resize', updateTooltipPosition);
-	});
 
-	onDestroy(() => {
-		if (!isBrowser) return;
-		if (resizeObserver) {
-			resizeObserver.disconnect();
-		}
-		window.removeEventListener('resize', updateTooltipPosition);
+		// Cleanup
+		return () => {
+			if (resizeObserver) {
+				resizeObserver.disconnect();
+			}
+			window.removeEventListener('resize', updateTooltipPosition);
+		};
 	});
 
 	$effect(async () => {
-		if (showName && isBrowser) {
+		if (showName && typeof window !== 'undefined') {
 			await tick();
 			updateTooltipPosition();
 		}
