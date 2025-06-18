@@ -26,6 +26,6 @@
 		<span class="mx-1">&middot;</span>
 	{/if}
 	{#if publishedAt}
-		Posted on <time datetime={publishedAt}>{formatDate(publishedAt)}</time>
+		<span>Posted on <time datetime={publishedAt}>{formatDate(publishedAt)}</time></span>
 	{/if}
 </div>

@@ -46,3 +46,24 @@ export const copyCode = async (
 		onError?.(error as Error);
 	}
 };
+
+export const getLangLabel = (lang: string) => {
+	if (!lang) return 'plaintext';
+	// Map to display names if needed
+	const map: Record<string, string> = {
+		js: 'JavaScript',
+		javascript: 'JavaScript',
+		ts: 'TypeScript',
+		typescript: 'TypeScript',
+		css: 'CSS',
+		json: 'JSON',
+		xml: 'XML/HTML',
+		html: 'HTML',
+		bash: 'Bash',
+		sh: 'Shell',
+		shell: 'Shell',
+		markdown: 'Markdown',
+		md: 'Markdown'
+	};
+	return map[lang] || lang;
+};

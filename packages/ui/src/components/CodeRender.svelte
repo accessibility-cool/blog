@@ -9,7 +9,7 @@
 	import markdown from 'highlight.js/lib/languages/markdown';
 	import Button from './Button.svelte';
 	import { CopySimple, Check } from 'phosphor-svelte';
-	import { copyCode } from '@a11y.cool/utils';
+	import { copyCode, getLangLabel } from '@a11y.cool/utils';
 
 	// Register languages
 	hljs.registerLanguage('javascript', javascript);
@@ -50,39 +50,6 @@
 			highlighted = hljs.highlight(code, { language: lang }).value;
 		}
 	});
-
-	function getLangLabel(lang: string) {
-		if (!lang) return 'plaintext';
-		// Map to display names if needed
-		const map: Record<string, string> = {
-			js: 'JavaScript',
-			javascript: 'JavaScript',
-			ts: 'TypeScript',
-			typescript: 'TypeScript',
-			css: 'CSS',
-			json: 'JSON',
-			xml: 'XML/HTML',
-			html: 'HTML',
-			bash: 'Bash',
-			sh: 'Shell',
-			shell: 'Shell',
-			markdown: 'Markdown',
-			md: 'Markdown'
-		};
-		return map[lang] || lang;
-	}
-
-	async function handleCopy() {
-		await copyCode(code, {
-			onCopy: () => {
-				copied = true;
-			},
-			onError: (error) => {
-				console.error('Failed to copy code:', error);
-			}
-		});
-		copied = false;
-	}
 </script>
 
 <div class="code-block mb-4 rounded-2xl border-2 border-border-input overflow-hidden">
