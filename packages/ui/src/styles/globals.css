@@ -131,10 +131,11 @@
 	--animate-exit-to-right: exit-to-right 0.2s ease;
 
 	--font-sans: 'Geist', 'sans-serif';
-	--font-serif: 'Clash Grotesk', 'serif';
+	--font-highlight: 'Clash Grotesk', 'serif';
 	--font-mono: 'Geist Mono', 'monospace';
 	--font-alt: 'Clash Grotesk', 'sans-serif';
 	--font-display: 'Geist', 'sans-serif';
+	--font-serif: 'serif';
 
 	@keyframes accordion-down {
 		from {

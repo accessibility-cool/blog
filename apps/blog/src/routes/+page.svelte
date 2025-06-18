@@ -11,7 +11,7 @@
 {#if page}
 	<!-- Hero (intro) section -->
 	<section
-		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
+		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-8 lg:col-start-3"
 	>
 		<article class="flex flex-col justify-center items-center py-24">
 			<div class="mb-8">
@@ -25,7 +25,7 @@
 					</span>
 				</span>
 			</div>
-			<h1 class="text-4xl md:text-6xl text-center mb-8">
+			<h1 class="text-6xl md:text-8xl text-center mb-8">
 				Digital accessibility is more important than ever
 			</h1>
 			<p class="max-w-2xl text-center text-lg">
