@@ -1,37 +1,41 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	export let browser: boolean | undefined = undefined;
+	let { browser = undefined, size = undefined } = $props<{
+		browser?: boolean;
+		size?: number;
+	}>();
+
 	const isBrowser = browser ?? typeof window !== 'undefined';
 
-	// Make size responsive with a default that can be overridden
-	export let size: number | undefined = undefined;
-	let defaultSize = 160;
-	let isTouchDevice = false;
-	let svgEl: SVGSVGElement;
-	let leftPupil: SVGPathElement;
-	let rightPupil: SVGPathElement;
+	let defaultSize = $state(160);
+	let isTouchDevice = $state(false);
+	let svgEl = $state<SVGSVGElement | undefined>(undefined);
+	let leftPupil = $state<SVGPathElement | undefined>(undefined);
+	let rightPupil = $state<SVGPathElement | undefined>(undefined);
+	let animationFrame = $state<number | undefined>(undefined);
+	let resizeObserver = $state<ResizeObserver | undefined>(undefined);
+	let mounted = $state(false);
 
 	// SVG viewBox size
 	const SVG_WIDTH = 656;
 	const SVG_HEIGHT = 320;
 
-	// Eye centers in SVG coordinates (from your SVG)
+	// Eye centers in SVG coordinates
 	const leftEye = { x: 153.107, y: 159.691 };
 	const rightEye = { x: 505.361, y: 159.691 };
 	const pupilMaxDist = 32; // max px the pupil can move from center (SVG units)
 
 	// Store current and target positions for smooth animation
-	let leftCurrent = { x: 0, y: 0 };
-	let rightCurrent = { x: 0, y: 0 };
-	let leftTarget = { x: 0, y: 0 };
-	let rightTarget = { x: 0, y: 0 };
-	let animationFrame: number;
+	let leftCurrent = $state({ x: 0, y: 0 });
+	let rightCurrent = $state({ x: 0, y: 0 });
+	let leftTarget = $state({ x: 0, y: 0 });
+	let rightTarget = $state({ x: 0, y: 0 });
 
 	const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 	const setPupilTransform = () => {
-		leftPupil?.setAttribute('transform', `translate(${leftCurrent.x},${leftCurrent.y})`);
-		rightPupil?.setAttribute('transform', `translate(${rightCurrent.x},${rightCurrent.y})`);
+		if (!leftPupil || !rightPupil) return;
+		leftPupil.setAttribute('transform', `translate(${leftCurrent.x},${leftCurrent.y})`);
+		rightPupil.setAttribute('transform', `translate(${rightCurrent.x},${rightCurrent.y})`);
 	};
 
 	const updatePupilTargets = (eye: { x: number; y: number }, mouse: { x: number; y: number }) => {
@@ -46,7 +50,7 @@
 	};
 
 	const handleMouseMove = (e: MouseEvent) => {
-		if (!svgEl || isTouchDevice) return;
+		if (!svgEl || isTouchDevice || !mounted) return;
 		const rect = svgEl.getBoundingClientRect();
 		const svgX = ((e.clientX - rect.left) / rect.width) * SVG_WIDTH;
 		const svgY = ((e.clientY - rect.top) / rect.height) * SVG_HEIGHT;
@@ -55,24 +59,16 @@
 	};
 
 	const animate = () => {
-		if (isTouchDevice) return;
+		if (isTouchDevice || !mounted) return;
 		// Lerp current position toward target
 		leftCurrent.x = lerp(leftCurrent.x, leftTarget.x, 0.18);
 		leftCurrent.y = lerp(leftCurrent.y, leftTarget.y, 0.18);
 		rightCurrent.x = lerp(rightCurrent.x, rightTarget.x, 0.18);
 		rightCurrent.y = lerp(rightCurrent.y, rightTarget.y, 0.18);
 		setPupilTransform();
-		if (isBrowser) {
+		if (isBrowser && mounted) {
 			animationFrame = requestAnimationFrame(animate);
 		}
-	};
-
-	// Handle resize for responsive sizing
-	let resizeObserver: ResizeObserver;
-	const updateSize = () => {
-		if (!isBrowser) return;
-		const width = window.innerWidth;
-		defaultSize = width < 640 ? 120 : width < 768 ? 140 : 160;
 	};
 
 	function setPupilsUpperRight() {
@@ -87,8 +83,21 @@
 		setPupilTransform();
 	}
 
-	onMount(() => {
-		if (isBrowser) {
+	// Handle resize for responsive sizing
+	const updateSize = () => {
+		if (!isBrowser || !mounted) return;
+		const width = window.innerWidth;
+		defaultSize = width < 640 ? 120 : width < 768 ? 140 : 160;
+	};
+
+	// Initialize browser-side functionality after mount
+	$effect(() => {
+		if (!isBrowser) return;
+
+		// Wait for next tick to ensure DOM is ready
+		setTimeout(() => {
+			mounted = true;
+
 			// Check for touch device
 			isTouchDevice = window.matchMedia('(hover: none)').matches;
 
@@ -109,14 +118,14 @@
 			rightTarget = { x: 0, y: 0 };
 			setPupilTransform();
 			animationFrame = requestAnimationFrame(animate);
-		}
-	});
+		}, 0);
 
-	onDestroy(() => {
-		if (isBrowser) {
+		// Cleanup
+		return () => {
+			mounted = false;
 			if (animationFrame) cancelAnimationFrame(animationFrame);
 			if (resizeObserver) resizeObserver.disconnect();
-		}
+		};
 	});
 </script>
 

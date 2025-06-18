@@ -7,23 +7,28 @@
 		alt = undefined,
 		name = undefined,
 		initials = undefined,
-		size = 40
+		size = 40,
+		browser = undefined
 	} = $props<{
 		src?: string;
 		alt?: string;
 		name?: string;
 		initials?: string;
 		size?: number;
+		browser?: boolean;
 	}>();
+
+	const isBrowser = browser ?? typeof window !== 'undefined';
 
 	let showName = $state(false);
 	let buttonEl = $state<HTMLButtonElement | undefined>(undefined);
 	let tooltipPosition = $state('center');
 	let tooltipEl = $state<HTMLSpanElement | undefined>(undefined);
 	let resizeObserver = $state<ResizeObserver | undefined>(undefined);
+	let mounted = $state(false);
 
 	const updateTooltipPosition = () => {
-		if (typeof window === 'undefined' || !tooltipEl || !buttonEl) return;
+		if (!isBrowser || !tooltipEl || !buttonEl || !mounted) return;
 
 		const buttonRect = buttonEl.getBoundingClientRect();
 		const tooltipRect = tooltipEl.getBoundingClientRect();
@@ -45,25 +50,32 @@
 		}
 	};
 
+	// Initialize browser-side functionality after mount
 	$effect(() => {
-		if (typeof window === 'undefined') return;
+		if (!isBrowser) return;
 
-		// Create a resize observer to watch for container size changes
-		resizeObserver = new ResizeObserver(() => {
-			if (showName) {
-				updateTooltipPosition();
+		// Wait for next tick to ensure DOM is ready
+		setTimeout(() => {
+			mounted = true;
+
+			// Create a resize observer to watch for container size changes
+			resizeObserver = new ResizeObserver(() => {
+				if (showName) {
+					updateTooltipPosition();
+				}
+			});
+
+			if (buttonEl) {
+				resizeObserver.observe(buttonEl);
 			}
-		});
 
-		if (buttonEl) {
-			resizeObserver.observe(buttonEl);
-		}
-
-		// Also watch for window resize events
-		window.addEventListener('resize', updateTooltipPosition);
+			// Also watch for window resize events
+			window.addEventListener('resize', updateTooltipPosition);
+		}, 0);
 
 		// Cleanup
 		return () => {
+			mounted = false;
 			if (resizeObserver) {
 				resizeObserver.disconnect();
 			}
@@ -72,7 +84,7 @@
 	});
 
 	$effect(async () => {
-		if (showName && typeof window !== 'undefined') {
+		if (showName && isBrowser && mounted) {
 			await tick();
 			updateTooltipPosition();
 		}

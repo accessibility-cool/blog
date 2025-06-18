@@ -1,68 +1,51 @@
 <script lang="ts">
-	import { Button as ButtonPrimitive } from 'bits-ui';
-	import type { ComponentType } from 'svelte';
+	import type { Component, Snippet } from 'svelte';
 
 	let {
-		variant = 'default' as
-			| 'default'
-			| 'destructive'
-			| 'outline'
-			| 'secondary'
-			| 'ghost'
-			| 'link',
-		size = 'default' as 'default' | 'sm' | 'lg',
-		className = undefined as string | undefined,
-		icon = undefined as ComponentType | undefined,
-		iconSize = 16,
-		iconPosition = 'start' as 'start' | 'end',
-		href = undefined as string | undefined,
+		variant = 'default',
+		size = 'default',
+		class: className = '',
 		disabled = false,
-		fullWidth = false,
-		...restProps
+		type = 'button',
+		leftIcon = null as Component | null,
+		rightIcon = null as Component | null,
+		children = undefined as Snippet | undefined,
+		...props
 	} = $props();
 
-	const variantClasses = {
-		default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-		destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-		outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
-		secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-		ghost: 'hover:bg-muted hover:text-accent-foreground focus:bg-muted focus:text-accent-foreground',
-		link: 'underline-offset-4 hover:underline text-primary'
+	const variants = {
+		default:
+			'bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+		destructive:
+			'bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-2 focus-visible:ring-destructive focus-visible:ring-offset-2',
+		outline:
+			'border border-input hover:bg-muted hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+		secondary:
+			'bg-secondary text-secondary-foreground hover:bg-secondary/80 focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2',
+		ghost: 'hover:bg-muted hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+		link: 'text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
 	};
 
-	const sizeClasses = {
+	const sizes = {
 		default: 'h-10 px-4 py-2',
 		sm: 'h-9 rounded-md px-3',
-		lg: 'h-11 rounded-md px-8'
+		lg: 'h-11 rounded-md px-8',
+		icon: 'h-10 w-10'
 	};
 
-	let classes = $derived(
-		`items-center gap-2 min-w-0 inline-flex ${fullWidth ? 'w-full' : 'min-w-fit'} items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className ?? ''}`
+	const buttonClass = $derived(
+		`inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`
 	);
 </script>
 
-<ButtonPrimitive.Root {href} {disabled} class={classes} data-button-root="" {...restProps}>
-	{#if icon && iconPosition === 'start'}
-		<svelte:component
-			this={icon}
-			{disabled}
-			width={iconSize}
-			height={iconSize}
-			aria-hidden="true"
-			class="shrink-0"
-		/>
+<button {type} class={buttonClass} {disabled} {...props}>
+	{#if leftIcon}
+		{@render leftIcon({ class: 'mr-2 h-4 w-4', 'aria-hidden': 'true' })}
 	{/if}
-	<span class={fullWidth ? 'break-words' : 'truncate'}>
-		<slot />
-	</span>
-	{#if icon && iconPosition === 'end'}
-		<svelte:component
-			this={icon}
-			{disabled}
-			width={iconSize}
-			height={iconSize}
-			aria-hidden="true"
-			class="shrink-0"
-		/>
+	{#if children}
+		{@render children()}
 	{/if}
-</ButtonPrimitive.Root>
+	{#if rightIcon}
+		{@render rightIcon({ class: 'ml-2 h-4 w-4', 'aria-hidden': 'true' })}
+	{/if}
+</button>

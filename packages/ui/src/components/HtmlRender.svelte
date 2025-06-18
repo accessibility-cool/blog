@@ -1,25 +1,12 @@
 <script lang="ts">
-	import type { Root, Element, Text } from 'hast';
+	import type { Element, Root, Text } from 'hast';
+	import { slugify } from '@a11y.cool/utils';
 	import CodeRender from './CodeRender.svelte';
 	import HtmlRender from './HtmlRender.svelte';
-	import { slugify } from '@a11y.cool/utils';
 
-	let { node } = $props<{ node: Root | Element | Text }>();
-
-	const getLang = (className: string) => {
-		const match = className?.match?.(/language-([\w-]+)/);
-		return match ? match[1].toLowerCase() : '';
-	};
-
-	const isRoot = (n: unknown): n is Root => {
-		return !!n && typeof n === 'object' && (n as Root).type === 'root';
-	};
-	const isElement = (n: unknown): n is Element => {
-		return !!n && typeof n === 'object' && (n as Element).type === 'element';
-	};
-	const isText = (n: unknown): n is Text => {
-		return !!n && typeof n === 'object' && (n as Text).type === 'text';
-	};
+	let { node = undefined as Element | Root | undefined } = $props<{
+		node?: Element | Root;
+	}>();
 
 	const voidElements = new Set([
 		'area',
@@ -38,17 +25,125 @@
 		'wbr'
 	]);
 
-	const mergeClasses = (existing: string | undefined, extra: string) => {
-		return existing ? `${existing} ${extra}` : extra;
-	};
+	function isElement(node: any): node is Element {
+		return node && node.type === 'element';
+	}
 
-	// Helper to normalize class property to string
-	const normalizeClass = (cls: unknown): string | undefined => {
-		if (typeof cls === 'string') return cls;
-		if (Array.isArray(cls)) return cls.filter(Boolean).join(' ');
-		if (typeof cls === 'number' || typeof cls === 'boolean') return String(cls);
-		return undefined;
-	};
+	function isRoot(node: any): node is Root {
+		return node && node.type === 'root';
+	}
+
+	function isText(node: any): node is Text {
+		return node && node.type === 'text';
+	}
+
+	function getLang(className: string | undefined) {
+		if (!className) return '';
+		const match = className.match(/language-(\w+)/);
+		return match ? match[1] : '';
+	}
+
+	function normalizeClass(value: string | string[] | undefined): string {
+		if (!value) return '';
+		if (Array.isArray(value)) return value.join(' ');
+		return value;
+	}
+
+	function mergeClasses(...classes: string[]): string {
+		return classes.filter(Boolean).join(' ');
+	}
+
+	function renderChildren(children: (Element | Text)[]) {
+		return children
+			.map((child, i) => {
+				if (isElement(child)) {
+					return renderNode(child);
+				} else if (isText(child)) {
+					return child.value;
+				}
+				return '';
+			})
+			.join('');
+	}
+
+	function renderNode(node: Element | Root): string {
+		if (isRoot(node)) {
+			return renderChildren(node.children);
+		}
+
+		if (
+			node.tagName === 'pre' &&
+			node.children?.[0] &&
+			isElement(node.children[0]) &&
+			node.children[0].tagName === 'code'
+		) {
+			// Handle code blocks separately through CodeRender component
+			return '';
+		}
+
+		if (voidElements.has(node.tagName)) {
+			const props = Object.entries(node.properties || {})
+				.map(([key, value]) => {
+					if (key === 'className') key = 'class';
+					if (key === 'class' && node.tagName === 'img') {
+						value = mergeClasses(
+							normalizeClass(value as string | string[]),
+							'rounded-2xl'
+						);
+					}
+					return `${key}="${value}"`;
+				})
+				.join(' ');
+			return `<${node.tagName} ${props}>`;
+		}
+
+		if (['h2', 'h3', 'h4', 'h5', 'h6'].includes(node.tagName) && node.children?.[0]) {
+			const headingText = node.children
+				.map((child) => (isText(child) ? child.value : ''))
+				.join('');
+			const headingId = slugify(headingText);
+			const props = Object.entries(node.properties || {})
+				.map(([key, value]) => {
+					if (key === 'className') key = 'class';
+					if (key === 'class') {
+						value = mergeClasses(
+							normalizeClass(value as string | string[]),
+							'mt-8 mb-4'
+						);
+					}
+					return `${key}="${value}"`;
+				})
+				.join(' ');
+			return `<a href="#${headingId}" class="no-underline hover:underline focus:underline focus-visible:outline-none">
+				<${node.tagName} id="${headingId}" ${props}>${renderChildren(node.children)}</${node.tagName}>
+			</a>`;
+		}
+
+		const props = Object.entries(node.properties || {})
+			.map(([key, value]) => {
+				if (key === 'className') key = 'class';
+				return `${key}="${value}"`;
+			})
+			.join(' ');
+		return `<${node.tagName} ${props}>${renderChildren(node.children)}</${node.tagName}>`;
+	}
+
+	$effect(() => {
+		if (!node) return;
+		if (isElement(node) || isRoot(node)) {
+			const content = renderNode(node);
+			if (content) {
+				// Update the DOM with the rendered content
+				const container = document.createElement('div');
+				container.innerHTML = content;
+				// Replace the current element with the rendered content
+				const currentElement = document.currentScript?.parentElement;
+				if (currentElement) {
+					currentElement.replaceWith(...container.childNodes);
+				}
+			}
+		}
+	});
 </script>
 
 {#if node}
@@ -103,16 +198,6 @@
 					</svelte:element>
 				</a>
 			{/if}
-		{:else if node.tagName === 'code'}
-			<svelte:element this={node.tagName} {...node.properties}>
-				{#each node.children as child, i (child.position?.start?.offset ?? i)}
-					{#if isElement(child) || isRoot(child)}
-						<HtmlRender node={child} />
-					{:else if isText(child)}
-						{@html child.value}
-					{/if}
-				{/each}
-			</svelte:element>
 		{:else}
 			<svelte:element this={node.tagName} {...node.properties}>
 				{#each node.children as child, i (child.position?.start?.offset ?? i)}
@@ -124,7 +209,5 @@
 				{/each}
 			</svelte:element>
 		{/if}
-	{:else if isText(node)}
-		{@html node.value}
 	{/if}
 {/if}

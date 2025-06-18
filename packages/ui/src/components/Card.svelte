@@ -1,7 +1,5 @@
 <script lang="ts">
 	import type { Component, Snippet } from 'svelte';
-	import { components } from 'svelte';
-	const { Dynamic } = components;
 
 	let {
 		title = '',
@@ -20,12 +18,11 @@
 		class="text-xl md:text-2xl lg:text-2xl font-semibold text-left mb-1 flex items-center gap-2 w-full"
 	>
 		{#if iconComponent}
-			<Dynamic
-				component={iconComponent}
-				size={iconSize}
-				class="w-auto h-auto"
-				aria-hidden="true"
-			/>
+			{@render iconComponent({
+				size: iconSize,
+				class: 'w-auto h-auto',
+				'aria-hidden': 'true'
+			})}
 		{/if}
 		{title}
 	</h3>
