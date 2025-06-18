@@ -1,52 +1,14 @@
 <script lang="ts">
 	import type { Root, Element, Text } from 'hast';
-	import Highlight from 'svelte-highlight';
-	import typescript from 'svelte-highlight/languages/typescript';
-	import javascript from 'svelte-highlight/languages/javascript';
-	import css from 'svelte-highlight/languages/css';
-	import json from 'svelte-highlight/languages/json';
-	import xml from 'svelte-highlight/languages/xml';
-	import bash from 'svelte-highlight/languages/bash';
-	import markdown from 'svelte-highlight/languages/markdown';
-	import ashes from 'svelte-highlight/styles/ashes';
-	import cupertino from 'svelte-highlight/styles/cupertino';
+	import CodeRender from './Code/CodeRender.svelte';
 	import HtmlRender from './HtmlRender.svelte';
 	import { slugify } from '@a11y.cool/utils';
 
-	type HighlightLanguage =
-		| typeof typescript
-		| typeof javascript
-		| typeof css
-		| typeof json
-		| typeof xml
-		| typeof bash
-		| typeof markdown
-		| undefined;
-
 	let { node } = $props<{ node: Root | Element | Text }>();
-
-	// Map language string to svelte-highlight language import
-	const languageMap: Record<string, HighlightLanguage> = {
-		typescript,
-		javascript,
-		js: javascript,
-		ts: typescript,
-		css,
-		json,
-		xml,
-		html: xml,
-		bash,
-		sh: bash,
-		shell: bash,
-		markdown,
-		md: markdown,
-		plaintext: undefined
-		// add more as needed
-	};
 
 	const getLang = (className: string) => {
 		const match = className?.match?.(/language-([\w-]+)/);
-		return match ? match[1].toLowerCase() : 'plaintext';
+		return match ? match[1].toLowerCase() : '';
 	};
 
 	const isRoot = (n: unknown): n is Root => {
@@ -76,33 +38,10 @@
 		'wbr'
 	]);
 
-	// Helper to merge classes
 	const mergeClasses = (existing: string | undefined, extra: string) => {
 		return existing ? `${existing} ${extra}` : extra;
 	};
-
-	const isBrowser = typeof window !== 'undefined';
-
-	let themeCss = $state(ashes); // Always start with dark theme for SSR consistency
-
-	$effect(() => {
-		if (!isBrowser || typeof window.matchMedia !== 'function') return;
-
-		const mql = window.matchMedia('(prefers-color-scheme: dark)');
-		const updateTheme = () => {
-			themeCss = mql.matches ? ashes : cupertino;
-		};
-		updateTheme();
-		mql.addEventListener('change', updateTheme);
-
-		// Cleanup
-		return () => mql.removeEventListener('change', updateTheme);
-	});
 </script>
-
-<svelte:head>
-	{@html themeCss}
-</svelte:head>
 
 {#if node}
 	{#if isRoot(node)}
@@ -115,17 +54,9 @@
 		{/each}
 	{:else if isElement(node)}
 		{#if node.tagName === 'pre' && node.children?.[0] && isElement(node.children[0]) && node.children[0].tagName === 'code'}
-			<Highlight
-				language={languageMap[getLang(node.children[0].properties?.className?.[0])] ||
-					undefined}
+			<CodeRender
 				code={node.children[0].children?.map((c) => (isText(c) ? c.value : '')).join('')}
-				langtag={true}
-				--langtag-background="#111"
-				--langtag-color="#fff"
-				--langtag-border-radius="0.5rem"
-				--langtag-padding="0.25rem 0.5rem"
-				--langtag-top="0.25rem"
-				--langtag-right="0.25rem"
+				language={getLang(node.children[0].properties?.className?.[0])}
 			/>
 		{:else if voidElements.has(node.tagName)}
 			{#if node.tagName === 'img'}
@@ -144,7 +75,7 @@
 					.join('')}
 				{@const headingId = slugify(headingText)}
 				<a
-					href="#{headingId}"
+					href={`#${headingId}`}
 					class="no-underline hover:underline focus:underline focus-visible:outline-none"
 				>
 					<svelte:element
