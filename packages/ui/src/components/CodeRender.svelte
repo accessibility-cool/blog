@@ -25,25 +25,6 @@
 
 	let { code = '', language = '' } = $props<{ code?: string; language?: string }>();
 
-	// Theme CSS imports from .ts files (now just CSS strings)
-	import ashesCss from './styles/ashes/ashes';
-	import cupertinoCss from './styles/cupertino/cupertino';
-
-	let themeCss = $state(ashesCss); // Default to dark for SSR
-
-	const isBrowser = typeof window !== 'undefined';
-
-	$effect(() => {
-		if (!isBrowser || typeof window.matchMedia !== 'function') return;
-		const mql = window.matchMedia('(prefers-color-scheme: dark)');
-		const updateTheme = () => {
-			themeCss = mql.matches ? ashesCss : cupertinoCss;
-		};
-		updateTheme();
-		mql.addEventListener('change', updateTheme);
-		return () => mql.removeEventListener('change', updateTheme);
-	});
-
 	let highlighted = $state('');
 
 	$effect(() => {
@@ -61,8 +42,6 @@
 			highlighted = hljs.highlight(code, { language: lang }).value;
 		}
 	});
-
-	const styleTag = $derived(() => `<style>${themeCss}</style>`);
 
 	function getLangLabel(lang: string) {
 		if (!lang) return 'plaintext';
@@ -86,16 +65,9 @@
 	}
 </script>
 
-<svelte:head>
-	{@html styleTag}
-</svelte:head>
-
-<div class="code-block-wrapper" style="position:relative;">
+<div class="code-block-wrapper">
 	{#if language}
-		<span
-			class="lang-tag"
-			style="position:absolute;top:0.25rem;right:0.5rem;background:rgba(0,0,0,0.7);color:#fff;border-radius:0.5rem;padding:0.25rem 0.5rem;font-size:0.75rem;z-index:2;"
-		>
+		<span class="lang-tag">
 			{getLangLabel(language)}
 		</span>
 	{/if}

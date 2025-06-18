@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Root, Element, Text } from 'hast';
-	import CodeRender from './Code/CodeRender.svelte';
+	import CodeRender from './CodeRender.svelte';
 	import HtmlRender from './HtmlRender.svelte';
 	import { slugify } from '@a11y.cool/utils';
 
@@ -41,6 +41,14 @@
 	const mergeClasses = (existing: string | undefined, extra: string) => {
 		return existing ? `${existing} ${extra}` : extra;
 	};
+
+	// Helper to normalize class property to string
+	const normalizeClass = (cls: unknown): string | undefined => {
+		if (typeof cls === 'string') return cls;
+		if (Array.isArray(cls)) return cls.filter(Boolean).join(' ');
+		if (typeof cls === 'number' || typeof cls === 'boolean') return String(cls);
+		return undefined;
+	};
 </script>
 
 {#if node}
@@ -63,7 +71,7 @@
 				<svelte:element
 					this={node.tagName}
 					{...node.properties}
-					class={mergeClasses(node.properties?.class, 'rounded-2xl')}
+					class={mergeClasses(normalizeClass(node.properties?.class), 'rounded-2xl')}
 				/>
 			{:else}
 				<svelte:element this={node.tagName} {...node.properties} />
@@ -82,7 +90,7 @@
 						this={node.tagName}
 						id={headingId}
 						{...node.properties}
-						class={mergeClasses(node.properties?.class, 'mt-8 mb-4')}
+						class={mergeClasses(normalizeClass(node.properties?.class), 'mt-8 mb-4')}
 					>
 						{#each node.children as child, i (child.position?.start?.offset ?? i)}
 							{#if isElement(child) || isRoot(child)}

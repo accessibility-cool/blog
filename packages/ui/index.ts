@@ -9,4 +9,4 @@ export { default as Eyes } from './src/components/Eyes.svelte';
 export { default as PostInfo } from './src/components/PostInfo.svelte';
 export { default as PostPreview } from './src/components/PostPreview.svelte';
 export { default as Loader } from './src/components/Loader.svelte';
-export { default as CodeRender } from './src/components/Code/CodeRender.svelte';
+export { default as CodeRender } from './src/components/CodeRender.svelte';

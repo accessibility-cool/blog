@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import './fonts.css';
 @import './typography.css';
+@import './code-themes/ashes.css';
+@import './code-themes/cupertino.css';
 
 :root {
 	/* Colors */
