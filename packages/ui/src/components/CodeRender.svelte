@@ -35,6 +35,19 @@
 	let highlighted = $state('');
 	let copied = $state(false);
 
+	const handleCopy = () => {
+		copyCode(code, {
+			onCopy: () => {
+				copied = true;
+			},
+			onError: () => {
+				copied = false;
+			}
+		}).then(() => {
+			copied = false;
+		});
+	};
+
 	$effect(() => {
 		if (!code) {
 			highlighted = '';
