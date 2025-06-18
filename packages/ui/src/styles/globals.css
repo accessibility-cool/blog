@@ -1,12 +1,12 @@
 @import 'tailwindcss';
 @import './fonts.css';
 @import './typography.css';
-@import './code-themes/ashes.css';
-@import './code-themes/cupertino.css';
+@import './code-themes/a11y-dark.css';
+@import './code-themes/a11y-light.css';
 
 :root {
 	/* Colors */
-	--background: hsl(0 0% 100%);
+	--background: hsl(0 0% 99%);
 	--background-alt: hsl(0 0% 97%);
 	--foreground: hsl(0 0% 9%);
 	--foreground-alt: hsl(0 0% 32%);
@@ -291,7 +291,7 @@
 	/* Remove list item dots from navigation lists */
 	nav ul,
 	nav li {
-		list-style: none !important;
+		list-style: none;
 		padding-left: 0;
 	}
 
@@ -314,7 +314,7 @@
 	h4 code,
 	h5 code,
 	h6 code {
-		border: 1px solid #6d6d6d;
+		border: 1px solid var(--border-input);
 		background: var(--background-alt);
 		border-radius: 0.25rem;
 		padding: 0.15em 0.4em;
@@ -324,7 +324,7 @@
 
 @layer components {
 	*:not(body):not(.focus-override) {
-		outline: none !important;
+		outline: none;
 		&:focus-visible {
 			@apply focus-visible:ring-foreground focus-visible:ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 rounded-xs;
 		}
@@ -338,28 +338,7 @@
 /* Remove svelte-highlight custom code block and langtag styles */
 
 pre[data-language] {
-	font-size: 0.875rem;
-	border-radius: 1rem;
-	border: 1px solid #d1d5db;
-	@apply rounded-xl overflow-auto mb-4;
 	code.hljs {
-		padding: 1.675rem;
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	pre[data-language] {
-		border: 1px solid #40474d;
-	}
-	p code,
-	span code,
-	h1 code,
-	h2 code,
-	h3 code,
-	h4 code,
-	h5 code,
-	h6 code {
-		border: 1px solid #40474d;
-		background: #1d2023;
+		overflow-x: auto;
 	}
 }

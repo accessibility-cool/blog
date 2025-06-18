@@ -9,6 +9,7 @@
 	import markdown from 'highlight.js/lib/languages/markdown';
 	import Button from './Button.svelte';
 	import { CopySimple, Check } from 'phosphor-svelte';
+	import { copyCode } from '@a11y.cool/utils';
 
 	// Register languages
 	hljs.registerLanguage('javascript', javascript);
@@ -33,7 +34,6 @@
 
 	let highlighted = $state('');
 	let copied = $state(false);
-	let copyTimeout: ReturnType<typeof setTimeout>;
 
 	$effect(() => {
 		if (!code) {
@@ -72,29 +72,22 @@
 		return map[lang] || lang;
 	}
 
-	function copyCode() {
-		if (!code) return;
-
-		navigator.clipboard.writeText(code).then(() => {
-			copied = true;
-			if (copyTimeout) clearTimeout(copyTimeout);
-			copyTimeout = setTimeout(() => {
-				copied = false;
-			}, 2000);
+	async function handleCopy() {
+		await copyCode(code, {
+			onCopy: () => {
+				copied = true;
+			},
+			onError: (error) => {
+				console.error('Failed to copy code:', error);
+			}
 		});
+		copied = false;
 	}
-
-	// Cleanup timeout on component destroy
-	$effect.root(() => {
-		return () => {
-			if (copyTimeout) clearTimeout(copyTimeout);
-		};
-	});
 </script>
 
-<div class="code-block mb-4 rounded-2xl border-2 border-gray-900 dark:border-gray-700">
+<div class="code-block mb-4 rounded-2xl border-2 border-border-input overflow-hidden">
 	<div
-		class="code-block-header flex items-center justify-between gap-2 border-b-2 border-transparent p-2 text-sm"
+		class="code-block-header flex items-center justify-between gap-2 border-b-2 border-transparent pr-2 pl-3 py-2 text-sm bg-background-alt"
 	>
 		{#if language}
 			<span class="lang-tag rounded-lg bg-muted px-2 py-1 text-sm">
@@ -105,7 +98,7 @@
 			<Button
 				variant="ghost"
 				size="sm"
-				onclick={copyCode}
+				onclick={handleCopy}
 				icon={copied ? Check : CopySimple}
 				iconSize={16}
 				iconPosition="start"
@@ -115,8 +108,8 @@
 		{/if}
 	</div>
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-	<pre class="overflow-hidden text-sm rounded-b-2xl"><code
-			class="hljs"
+	<pre class="overflow-hidden text-sm"><code
+			class="hljs p-4"
 			tabindex="0"
 			aria-label={language || 'code'}>{@html highlighted}</code
 		></pre>
