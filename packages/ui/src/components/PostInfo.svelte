@@ -9,6 +9,7 @@
 <div class="flex items-center gap-3 text-zinc-800 dark:text-zinc-200 text-sm">
 	{#if authors && authors.length > 0}
 		{#each authors as author (author.id)}
+			<span class="sr-only">Article written by</span>
 			<Avatar
 				src={author.profile_image}
 				alt={author.name}
@@ -25,6 +26,6 @@
 		<span class="mx-1">&middot;</span>
 	{/if}
 	{#if publishedAt}
-		<time datetime={publishedAt}>{formatDate(publishedAt)}</time>
+		<span>Posted on <time datetime={publishedAt}>{formatDate(publishedAt)}</time></span>
 	{/if}
 </div>
