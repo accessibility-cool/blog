@@ -2,16 +2,24 @@
 	import { Button as ButtonPrimitive } from 'bits-ui';
 	import type { ComponentType } from 'svelte';
 
-	export let variant: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' =
-		'default';
-	export let size: 'default' | 'sm' | 'lg' = 'default';
-	export let className: string | undefined = undefined;
-	export let icon: ComponentType | undefined = undefined;
-	export let iconSize: number = 16;
-	export let iconPosition: 'start' | 'end' = 'start';
-	export let href: string | undefined = undefined;
-	export let disabled: boolean = false;
-	export let fullWidth: boolean = false;
+	let {
+		variant = 'default' as
+			| 'default'
+			| 'destructive'
+			| 'outline'
+			| 'secondary'
+			| 'ghost'
+			| 'link',
+		size = 'default' as 'default' | 'sm' | 'lg',
+		className = undefined as string | undefined,
+		icon = undefined as ComponentType | undefined,
+		iconSize = 16,
+		iconPosition = 'start' as 'start' | 'end',
+		href = undefined as string | undefined,
+		disabled = false,
+		fullWidth = false,
+		...restProps
+	} = $props();
 
 	const variantClasses = {
 		default: 'bg-primary text-primary-foreground hover:bg-primary/90',
@@ -28,10 +36,12 @@
 		lg: 'h-11 rounded-md px-8'
 	};
 
-	$: classes = `items-center gap-2 min-w-0 inline-flex ${fullWidth ? 'w-full' : 'min-w-fit'} items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className ?? ''}`;
+	let classes = $derived(
+		`items-center gap-2 min-w-0 inline-flex ${fullWidth ? 'w-full' : 'min-w-fit'} items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className ?? ''}`
+	);
 </script>
 
-<ButtonPrimitive.Root {href} {disabled} class={classes} data-button-root="" {...$$restProps}>
+<ButtonPrimitive.Root {href} {disabled} class={classes} data-button-root="" {...restProps}>
 	{#if icon && iconPosition === 'start'}
 		<svelte:component
 			this={icon}

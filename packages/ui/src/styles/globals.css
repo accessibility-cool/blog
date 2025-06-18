@@ -292,6 +292,7 @@
 	/* Remove list item dots from navigation lists */
 	nav ul,
 	nav li {
+		margin-left: 0;
 		list-style: none;
 		padding-left: 0;
 	}

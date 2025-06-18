@@ -2,6 +2,7 @@
 	import { Card } from '@a11y.cool/ui';
 	import type { PageData } from './$types';
 	import { Render } from '@jill64/svelte-sanitize';
+	import { PersonSimpleCircle } from 'phosphor-svelte';
 
 	let { data } = $props<{ data: PageData }>();
 	let { page } = $derived(data);
@@ -51,6 +52,7 @@
 <section class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4">
 	<div class="flex flex-col justify-center items-center py-24">
 		<h2 class="text-6xl md:text-8xl text-center mb-8 font-highlight">Join Us on the Journey</h2>
+		<PersonSimpleCircle size={128} weight="light" class="pb-8" />
 		<p class="max-w-2xl text-center text-lg">
 			We invite you to explore our resources, engage with our articles, and join us in building a
 			more inclusive and accessible digital future. Whether you're just starting your accessibility

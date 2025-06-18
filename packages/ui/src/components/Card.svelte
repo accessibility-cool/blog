@@ -1,8 +1,16 @@
 <script lang="ts">
-	import type { Component } from 'svelte';
-	export let title: string = '';
-	export let description: string = '';
-	export let iconComponent: Component | null = null;
+	import type { Component, Snippet } from 'svelte';
+	import { components } from 'svelte';
+	const { Dynamic } = components;
+
+	let {
+		title = '',
+		description = '',
+		iconComponent = null as Component | null,
+		iconSize = '24',
+		image = undefined as Snippet | undefined,
+		children = undefined as Snippet | undefined
+	} = $props();
 </script>
 
 <article
@@ -12,15 +20,24 @@
 		class="text-xl md:text-2xl lg:text-2xl font-semibold text-left mb-1 flex items-center gap-2 w-full"
 	>
 		{#if iconComponent}
-			<svelte:component this={iconComponent} class="w-6 h-6" aria-hidden="true" />
+			<Dynamic
+				component={iconComponent}
+				size={iconSize}
+				class="w-auto h-auto"
+				aria-hidden="true"
+			/>
 		{/if}
 		{title}
 	</h3>
 	<div
 		class="w-full h-auto rounded-lg bg-muted flex items-center justify-center overflow-hidden mb-2"
 	>
-		<slot name="image"></slot>
+		{#if image}
+			{@render image()}
+		{/if}
 	</div>
 	<p class="text-left text-base mb-2 w-full">{description}</p>
-	<slot />
+	{#if children}
+		{@render children()}
+	{/if}
 </article>

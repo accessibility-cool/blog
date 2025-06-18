@@ -25,7 +25,7 @@
 					</span>
 				</span>
 			</div>
-			<h1 class="text-6xl md:text-8xl text-center mb-8">
+			<h1 class="text-4xl sm:text-6xl md:text-8xl text-center mb-8">
 				Digital accessibility is more important than ever
 			</h1>
 			<p class="max-w-2xl text-center text-lg">

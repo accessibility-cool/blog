@@ -15,12 +15,14 @@
 		initials?: string;
 		size?: number;
 	}>();
+
 	let showName = $state(false);
-	let buttonEl: HTMLButtonElement;
+	let buttonEl = $state<HTMLButtonElement | undefined>(undefined);
 	let tooltipPosition = $state('center');
 	let tooltipEl = $state<HTMLSpanElement | undefined>(undefined);
+	let resizeObserver = $state<ResizeObserver | undefined>(undefined);
 
-	let updateTooltipPosition = () => {
+	const updateTooltipPosition = () => {
 		if (typeof window === 'undefined' || !tooltipEl || !buttonEl) return;
 
 		const buttonRect = buttonEl.getBoundingClientRect();
@@ -42,8 +44,6 @@
 			tooltipPosition = 'center';
 		}
 	};
-
-	let resizeObserver: ResizeObserver | undefined;
 
 	$effect(() => {
 		if (typeof window === 'undefined') return;
