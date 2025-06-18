@@ -65,6 +65,7 @@
 			<CodeRender
 				code={node.children[0].children?.map((c) => (isText(c) ? c.value : '')).join('')}
 				language={getLang(node.children[0].properties?.className?.[0])}
+				copyButton={true}
 			/>
 		{:else if voidElements.has(node.tagName)}
 			{#if node.tagName === 'img'}

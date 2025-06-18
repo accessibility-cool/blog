@@ -296,10 +296,14 @@
 	}
 
 	a {
-		@apply no-underline text-foreground transition-colors;
+		@apply no-underline text-foreground transition-colors cursor-pointer;
 	}
 	a:hover {
 		@apply underline;
+	}
+
+	button {
+		@apply cursor-pointer;
 	}
 
 	p code,
@@ -358,9 +362,4 @@ pre[data-language] {
 		border: 1px solid #40474d;
 		background: #1d2023;
 	}
-}
-
-.sh-langtag,
-::after {
-	font-size: 0.75rem;
 }

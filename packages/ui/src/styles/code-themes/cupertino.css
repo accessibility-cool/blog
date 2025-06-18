@@ -25,7 +25,7 @@
 	}
 	.hljs-comment,
 	.hljs-tag {
-		color: #808080;
+		color: #010101;
 	}
 	.hljs-subst,
 	.hljs-punctuation,
@@ -57,9 +57,9 @@
 	.hljs-strong {
 		color: #826b28;
 	}
-	.hljs-strong {
+	/* .hljs-strong {
 		font-weight: bold;
-	}
+	} */
 	.hljs-code,
 	.hljs-addition,
 	.hljs-title.class_.inherited__,
@@ -87,16 +87,16 @@
 	.hljs-emphasis {
 		color: #a90d91;
 	}
-	.hljs-emphasis {
+	/* .hljs-emphasis {
 		font-style: italic;
-	}
+	} */
 	.hljs-meta,
 	.hljs-meta .hljs-keyword,
 	.hljs-meta .hljs-string {
 		color: #826b28;
 	}
-	.hljs-meta .hljs-keyword,
+	/* .hljs-meta .hljs-keyword,
 	.hljs-meta-keyword {
 		font-weight: bold;
-	}
+	} */
 }
