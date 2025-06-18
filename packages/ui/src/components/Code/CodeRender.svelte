@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import hljs from 'highlight.js/lib/core';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
@@ -26,9 +25,9 @@
 
 	let { code = '', language = '' } = $props<{ code?: string; language?: string }>();
 
-	// Theme CSS imports
-	import ashesCss from './styles/ashes.css?inline';
-	import cupertinoCss from './styles/cupertino.css?inline';
+	// Theme CSS imports from .ts files (now just CSS strings)
+	import ashesCss from './styles/ashes/ashes';
+	import cupertinoCss from './styles/cupertino/cupertino';
 
 	let themeCss = $state(ashesCss); // Default to dark for SSR
 
@@ -45,7 +44,7 @@
 		return () => mql.removeEventListener('change', updateTheme);
 	});
 
-	let highlighted = '';
+	let highlighted = $state('');
 
 	$effect(() => {
 		if (!code) {
@@ -62,6 +61,8 @@
 			highlighted = hljs.highlight(code, { language: lang }).value;
 		}
 	});
+
+	const styleTag = $derived(() => `<style>${themeCss}</style>`);
 
 	function getLangLabel(lang: string) {
 		if (!lang) return 'plaintext';
@@ -86,7 +87,7 @@
 </script>
 
 <svelte:head>
-	{@html themeCss}
+	{@html styleTag}
 </svelte:head>
 
 <div class="code-block-wrapper" style="position:relative;">
