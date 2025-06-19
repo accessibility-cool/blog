@@ -31,6 +31,7 @@
 		"eslint": "^9.29.0",
 		"svelte": "^5.34.3",
 		"tailwindcss": "^4.1.10",
+		"tw-animate-css": "^1.3.4",
 		"typescript": "^5.8.3"
 	},
 	"dependencies": {

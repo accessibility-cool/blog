@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { NavigationMenu, DropdownMenu } from 'bits-ui';
 	import { List } from 'phosphor-svelte';
-	// Accepts an array of menu items: { label: string; href: string }[]
-	let { items = [] }: { items: { label: string; href: string }[] } = $props();
+
+	let { items = [] as { label: string; href: string }[] } = $props();
 </script>
 
 <!-- Desktop/Tablet Navigation -->
