@@ -22,16 +22,6 @@
 	</div>
 </section>
 
-<section class="col-span-12 col-start-1 flex justify-center">
-	<article class="max-w-[580px] w-full py-12 md:py-24">
-		{#if page.html}
-			<div class="space-y-6">
-				<Render html={page.html} />
-			</div>
-		{/if}
-	</article>
-</section>
-
 <section class="col-span-12 my-16 md:my-24 lg:my-32">
 	<div class="grid grid-cols-12">
 		<h2
@@ -41,18 +31,21 @@
 		</h2>
 	</div>
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-		<Card title="Oliver Schwamb" description="Blog posts about digital accessibility."></Card>
+		<Card
+			title="Oliver Schwamb"
+			description="Oliver is a driving force behind Accessibility.cool, bringing a wealth of experience as a Senior Consultant focusing on UX/UI Design and Front-end Development. Working with SVA, one of Germany's largest system integrators, he advises major German public sector clients on creating user-centric and accessible digital solutions. Oliver is a recognized voice in the community, speaking at events like enterjs and authoring articles for respected publications such as heise online. His expertise lies in translating complex requirements into semantic, accessible user interfaces that truly work for people."
+		></Card>
 		<Card
 			title="Simon Phumin Schweikert"
-			description="(Inclusive) Design and Development Checklists."
+			description="Simon co-founded Accessibility.cool with a deep commitment to user-centered and inclusive design. As a Senior Product Designer operating as a freelancer and contractor, he has a rich history of collaborating with a diverse range of clients – from innovative startups and significant public institutions (like the German Federal Archives and the Parliament of the Federal Republic of Germany) to globally recognized brands such as IBM and Stihl. Simon excels at transforming complex challenges into elegant, accessible digital platforms that serve all users effectively. He is actively pursuing his CPACC certification, further solidifying his dedication to the field."
 		></Card>
 	</div>
 </section>
 
 <section class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4">
 	<div class="flex flex-col justify-center items-center py-24">
-		<h2 class="text-6xl md:text-8xl text-center mb-8 font-highlight">Join Us on the Journey</h2>
 		<PersonSimpleCircle size={128} weight="light" class="pb-8" />
+		<h2 class="text-6xl md:text-8xl text-center mb-8 font-highlight">Join Us on our Journey</h2>
 		<p class="max-w-2xl text-center text-lg">
 			We invite you to explore our resources, engage with our articles, and join us in building a
 			more inclusive and accessible digital future. Whether you're just starting your accessibility

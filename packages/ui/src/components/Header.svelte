@@ -6,11 +6,11 @@
 	class="col-span-12 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 xl:grid-cols-12 gap-4 md:gap-3 sm:gap-2 xs:gap-1 py-6"
 >
 	<div
-		class="col-span-3 sm:col-span-3 md:col-span-4 xl:col-span-6 flex justify-start items-center"
+		class="col-span-3 sm:col-span-3 md:col-span-4 xl:col-span-6 pt-1 flex justify-start items-center"
 	>
-		<a href="/" class="flex items-center p-1 mr-0 md:mr-4">
+		<a href="/" class="flex p-1 mr-0 md:mr-4">
 			<svg
-				class="h-4 sm:h-5 md:h-6 xl:h-6 w-auto fill-[var(--foreground)] max-w-full"
+				class="h-5 sm:h-6 md:h-6 xl:h-6 w-auto fill-[var(--foreground)] max-w-full"
 				viewBox="0 0 1143 127"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"

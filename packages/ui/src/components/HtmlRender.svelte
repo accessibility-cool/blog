@@ -25,33 +25,28 @@
 		'wbr'
 	]);
 
-	function isElement(node: any): node is Element {
-		return node && node.type === 'element';
-	}
+	const isElement = (node: unknown): node is Element =>
+		node && typeof node === 'object' && 'type' in node && node.type === 'element';
 
-	function isRoot(node: any): node is Root {
-		return node && node.type === 'root';
-	}
+	const isRoot = (node: unknown): node is Root =>
+		node && typeof node === 'object' && 'type' in node && node.type === 'root';
 
-	function isText(node: any): node is Text {
-		return node && node.type === 'text';
-	}
+	const isText = (node: unknown): node is Text =>
+		node && typeof node === 'object' && 'type' in node && node.type === 'text';
 
-	function getLang(className: string | undefined) {
+	const getLang = (className: string | undefined) => {
 		if (!className) return '';
 		const match = className.match(/language-(\w+)/);
 		return match ? match[1] : '';
-	}
+	};
 
-	function normalizeClass(value: string | string[] | undefined): string {
+	const normalizeClass = (value: string | string[] | undefined): string => {
 		if (!value) return '';
 		if (Array.isArray(value)) return value.join(' ');
 		return value;
-	}
+	};
 
-	function mergeClasses(...classes: string[]): string {
-		return classes.filter(Boolean).join(' ');
-	}
+	const mergeClasses = (...classes: string[]): string => classes.filter(Boolean).join(' ');
 
 	function renderChildren(children: (Element | Text)[]) {
 		return children
@@ -148,7 +143,7 @@
 
 {#if node}
 	{#if isRoot(node)}
-		{#each node.children as child, i (child.position?.start?.offset ?? i)}
+		{#each node.children as child (child.position?.start?.offset)}
 			{#if isElement(child) || isRoot(child)}
 				<HtmlRender node={child} />
 			{:else if isText(child)}
@@ -188,7 +183,7 @@
 						{...node.properties}
 						class={mergeClasses(normalizeClass(node.properties?.class), 'mt-8 mb-4')}
 					>
-						{#each node.children as child, i (child.position?.start?.offset ?? i)}
+						{#each node.children as child (child.position?.start?.offset)}
 							{#if isElement(child) || isRoot(child)}
 								<HtmlRender node={child} />
 							{:else if isText(child)}
@@ -200,7 +195,7 @@
 			{/if}
 		{:else}
 			<svelte:element this={node.tagName} {...node.properties}>
-				{#each node.children as child, i (child.position?.start?.offset ?? i)}
+				{#each node.children as child (child.position?.start?.offset)}
 					{#if isElement(child) || isRoot(child)}
 						<HtmlRender node={child} />
 					{:else if isText(child)}
