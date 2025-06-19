@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../global.css';
-	import { Header, Footer, Loader } from '@a11y.cool/ui';
-	import { navigating, page } from '$app/state';
+	import { Header, Footer } from '@a11y.cool/ui';
+	import { page } from '$app/state';
 	import { MetaTags, deepMerge, type MetaTagsProps } from 'svelte-meta-tags';
 	import type { Snippet } from 'svelte';
 
@@ -23,15 +23,7 @@
 	<Header />
 	<!-- Main Content -->
 	<main class="grid grid-cols-12 col-span-12 col-start-1 pb-4 md:pb-6 lg:pb-8">
-		{#if navigating.to}
-			<section
-				class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
-			>
-				<Loader label="Loading..." />
-			</section>
-		{:else}
-			{@render children?.()}
-		{/if}
+		{@render children?.()}
 	</main>
 	<Footer />
 </div>
