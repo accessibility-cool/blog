@@ -50,16 +50,19 @@
 		<Card
 			title="Articles"
 			iconComponent={ArticleNyTimes}
+			iconAriaLabel="Article icon"
 			description="Blog posts about digital accessibility."
 		></Card>
 		<Card
 			title="Checklists"
 			iconComponent={ListChecks}
+			iconAriaLabel="Checklist icon"
 			description="(Inclusive) Design and Development Checklists."
 		></Card>
 		<Card
 			title="Resources"
 			iconComponent={CursorClick}
+			iconAriaLabel="Cursor click icon"
 			description="Link collections for different accessibility topics."
 		></Card>
 	</div>
