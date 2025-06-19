@@ -6,6 +6,7 @@
 		description = '',
 		iconComponent = null as Component | null,
 		iconSize = '24',
+		iconAriaLabel = 'Icon',
 		image = undefined as Snippet | undefined,
 		children = undefined as Snippet | undefined
 	} = $props();
@@ -21,7 +22,7 @@
 			{@render iconComponent({
 				size: iconSize,
 				class: 'w-auto h-auto',
-				'aria-hidden': 'true'
+				'aria-label': iconAriaLabel
 			})}
 		{/if}
 		{title}

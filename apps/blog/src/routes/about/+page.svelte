@@ -44,7 +44,12 @@
 
 <section class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4">
 	<div class="flex flex-col justify-center items-center py-24">
-		<PersonSimpleCircle size={128} weight="light" class="pb-8" />
+		<PersonSimpleCircle
+			size={128}
+			weight="light"
+			aria-label="Person with impairments icon"
+			class="pb-8"
+		/>
 		<h2 class="text-6xl md:text-8xl text-center mb-8 font-highlight">Join Us on our Journey</h2>
 		<p class="max-w-2xl text-center text-lg">
 			We invite you to explore our resources, engage with our articles, and join us in building a
