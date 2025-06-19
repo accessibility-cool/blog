@@ -50,7 +50,7 @@
 
 	function renderChildren(children: (Element | Text)[]) {
 		return children
-			.map((child, i) => {
+			.map((child) => {
 				if (isElement(child)) {
 					return renderNode(child);
 				} else if (isText(child)) {

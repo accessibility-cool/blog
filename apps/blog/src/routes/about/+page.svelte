@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Card } from '@a11y.cool/ui';
 	import type { PageData } from './$types';
-	import { Render } from '@jill64/svelte-sanitize';
 	import { PersonSimpleCircle } from 'phosphor-svelte';
 
 	let { data } = $props<{ data: PageData }>();
