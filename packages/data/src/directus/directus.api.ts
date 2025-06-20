@@ -3,6 +3,8 @@ dotenv.config();
 
 import { error } from '@sveltejs/kit';
 import type { Page } from '../types/page.type';
+import type { About } from '../types/about.type';
+import type { Home } from '../types/home.type';
 
 export const apiToken = process.env.VITE_API_TOKEN;
 export const apiUrl = process.env.VITE_API_URL;
@@ -53,39 +55,43 @@ export const dataQueryImage = (imageId: string): string => `query {
 export const dataQueryAbout: string = `query {
     about {
         id
-        introduction
-        content
-        founders {
-            id
+        title
+        about_intro
+		members_headline
+        members {
             name
+			certification
+			description
             image {
                 id
-                url
+                description
             }
         }
+		about_outro_headline
+		about_outro_description
     }
 }`;
 
 // home graphql query
 export const dataQueryHome: string = `query {
     home {
-        introduction
-        introduction_headline
-        expertise_headline
-        social_headline
-        portfolio_headline
-        credits_headline
-        home_aria
-        social_aria
-        social_links {
-            id
-            link
-            text
-        }
-        expertise {
-            id
-            skill
-        }
+		id
+        title
+        logo_aria
+        intro_chip
+        intro_headline
+        intro_description
+        cards_headline
+		cards {
+			title
+			icon
+			icon_aria
+			description
+			background_image {
+                id
+                description
+            }
+		}
     }
 }`;
 
@@ -135,4 +141,20 @@ export const getPage = async (title: string): Promise<Page> => {
 		return data.pages[0];
 	}
 	error(404, `Page with title "${title}" not found.`);
+};
+
+export const getAbout = async (): Promise<About> => {
+	const data = (await directusFetch(dataQueryAbout)) as { about: About };
+	if (data?.about) {
+		return data.about;
+	}
+	error(404, `About page data not found.`);
+};
+
+export const getHome = async (): Promise<Home> => {
+	const data = (await directusFetch(dataQueryHome)) as { home: Home };
+	if (data?.home) {
+		return data.home;
+	}
+	error(404, `Home page data not found.`);
 };
