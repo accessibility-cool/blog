@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
-import { getPost } from '$lib/ghost/posts';
+import { getPost } from '@a11y.cool/data';
 
 export const load = (async ({ params }) => {
 	const post = await getPost(params.slug);

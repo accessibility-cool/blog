@@ -9,9 +9,8 @@
 
 <section class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4">
 	<div class="flex flex-col justify-center items-center py-24">
-		{#if page.title}
-			<h1 class="text-6xl md:text-8xl text-center mb-8">{page.title}</h1>
-		{/if}
+		<h1 class="text-6xl md:text-8xl text-center mb-8">About Us</h1>
+
 		<p class="max-w-2xl text-center text-lg">
 			Launched in June 2025, Accessibility.cool is an independent publication born from a shared
 			passion: making the digital world truly accessible to everyone. We believe that inclusive
