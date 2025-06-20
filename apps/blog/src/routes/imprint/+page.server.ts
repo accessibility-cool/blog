@@ -1,9 +1,9 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { PageServerLoad } from './$types';
+import { getPage, type Page } from '@a11y.cool/data';
 
-export const load: PageServerLoad = (async ({ parent }) => {
-	const { pages } = await parent();
-	const page = pages.find((p) => p.slug === 'imprint');
+export const load: PageServerLoad = (async () => {
+	const page: Page = await getPage('Imprint');
 
 	// Pass meta tags to the page
 	const pageMetaTags = {

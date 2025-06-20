@@ -24,7 +24,8 @@ export const config = ts.config(
 			}
 		},
 		rules: {
-			'svelte/no-at-html-tags': 'off'
+			'svelte/no-at-html-tags': 'off',
+			'svelte/prefer-writable-derived': 'off'
 		}
 	}
 );
