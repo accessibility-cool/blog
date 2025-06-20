@@ -60,7 +60,7 @@
 			{/if}
 			{#if home.cards.length >= 1}
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-					{#each home.cards as card (card.id)}
+					{#each home.cards as card (card.title)}
 						<Card
 							title={card.title}
 							iconComponent={iconComponents[card.icon as keyof typeof iconComponents]}
