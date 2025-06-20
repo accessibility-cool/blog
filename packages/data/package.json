@@ -15,11 +15,20 @@
 		"./types/*": {
 			"types": "./src/types/*.ts",
 			"import": "./src/types/*.ts"
+		},
+		"./directus/*": {
+			"types": "./src/directus/*.ts",
+			"import": "./src/directus/*.ts"
+		},
+		"./ghost/*": {
+			"types": "./src/ghost/*.ts",
+			"import": "./src/ghost/*.ts"
 		}
 	},
 	"devDependencies": {
 		"@a11y.cool/eslint-config": "workspace:*",
 		"@a11y.cool/typescript-config": "workspace:*",
+		"@sveltejs/kit": "^2.21.5",
 		"dotenv": "^16.5.0",
 		"eslint": "^9.29.0",
 		"svelte-meta-tags": "^4.4.0",

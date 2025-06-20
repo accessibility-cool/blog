@@ -1,5 +1,5 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
-import { getPosts } from '$lib/ghost/posts';
+import { getPosts } from '@a11y.cool/data';
 import type { PageServerLoad } from './$types';
 
 export const load = (async () => {

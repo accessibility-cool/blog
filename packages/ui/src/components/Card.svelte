@@ -1,14 +1,15 @@
 <script lang="ts">
+	import type { IconComponentProps } from 'phosphor-svelte';
 	import type { Component, Snippet } from 'svelte';
 
 	let {
 		title = '',
 		description = '',
-		iconComponent = null as Component | null,
+		iconComponent = null satisfies Component<IconComponentProps> | null,
 		iconSize = '24',
 		iconAriaLabel = 'Icon',
-		image = undefined as Snippet | undefined,
-		children = undefined as Snippet | undefined
+		image = undefined satisfies Snippet | undefined,
+		children = undefined satisfies Snippet | undefined
 	} = $props();
 </script>
 
@@ -19,11 +20,8 @@
 		class="text-xl md:text-2xl lg:text-2xl font-semibold text-left mb-1 flex items-center gap-2 w-full"
 	>
 		{#if iconComponent}
-			{@render iconComponent({
-				size: iconSize,
-				class: 'w-auto h-auto',
-				'aria-label': iconAriaLabel
-			})}
+			{@const Component: Component<IconComponentProps> = iconComponent}
+			<Component size={iconSize} class="w-auto h-auto" aria-label={iconAriaLabel} />
 		{/if}
 		{title}
 	</h3>

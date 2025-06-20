@@ -2,16 +2,14 @@ import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = (async ({ parent }) => {
-	const { pages } = await parent();
-	const page = pages.find((p) => p.slug === 'about');
-
-	// Pass meta tags to the page
+	const { about } = await parent();
 	const pageMetaTags = {
-		title: page?.title
-	} satisfies MetaTagsProps | undefined;
+		title: about?.title,
+		description: about?.about_intro
+	} satisfies MetaTagsProps;
 
 	return {
-		page,
+		about,
 		pageMetaTags
 	};
 }) satisfies PageServerLoad;

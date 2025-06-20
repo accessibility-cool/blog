@@ -139,6 +139,9 @@ importers:
       '@a11y.cool/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@sveltejs/kit':
+        specifier: ^2.21.5
+        version: 2.21.5(@sveltejs/vite-plugin-svelte@5.1.0(svelte@5.34.3)(vite@6.3.5(@types/node@24.0.2)(jiti@2.4.2)(lightningcss@1.30.1)))(svelte@5.34.3)(vite@6.3.5(@types/node@24.0.2)(jiti@2.4.2)(lightningcss@1.30.1))
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
@@ -535,6 +538,7 @@ packages:
 
   '@jill64/svelte-sanitize@2.1.4':
     resolution: {integrity: sha512-VLui9ZCpg92+/gNWy8I/bpt1mKOfdjdvku71VurS3w2Umkj9Awzcp4cBGoALFWScsVU3ExrfiWVec6CXOB5gQw==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
     peerDependencies:
       svelte: ^5.0.0
 
