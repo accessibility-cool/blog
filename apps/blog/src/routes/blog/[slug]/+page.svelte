@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { PostInfo, HtmlRender } from '@a11y.cool/ui';
+	import { animate } from '@a11y.cool/utils';
 	import { unified } from 'unified';
 	import rehypeParse from 'rehype-parse';
 	import { slugify } from '@a11y.cool/utils';
@@ -20,9 +21,12 @@
 </script>
 
 {#if post()}
-	<section class="col-span-12 col-start-1 flex justify-center">
+	<section
+		class="col-span-12 col-start-1 flex justify-center"
+		use:animate={{ delay: 0, triggerOnMount: true }}
+	>
 		<article class="max-w-[580px] w-full">
-			<header class="mb-8">
+			<header class="mb-8" use:animate={{ delay: 50, triggerOnMount: true }}>
 				<a
 					href="#{titleId()}"
 					class="no-underline hover:underline focus:underline focus-visible:outline-none"
@@ -37,10 +41,12 @@
 			</header>
 
 			{#if post().coverImage}
-				<img src={post().coverImage} alt={post().title} class="w-full h-auto rounded-lg mb-8" />
+				<div use:animate={{ delay: 100, triggerOnMount: true }}>
+					<img src={post().coverImage} alt={post().title} class="w-full h-auto rounded-lg mb-8" />
+				</div>
 			{/if}
 
-			<div class="prose prose-lg max-w-none">
+			<div class="prose prose-lg max-w-none" use:animate={{ delay: 150, triggerOnMount: true }}>
 				{#if ast()}
 					<HtmlRender node={ast()!} />
 				{/if}
