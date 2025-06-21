@@ -24,7 +24,7 @@
 </div>
 
 <!-- Mobile Navigation: Hamburger Dropdown -->
-<div class="flex md:hidden justify-end w-full">
+<div class="flex z-100 md:hidden justify-end w-full">
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger
 			class="p-2 rounded-md hover:bg-muted focus:bg-muted focus:outline-none"

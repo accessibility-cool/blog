@@ -65,9 +65,9 @@
 	});
 </script>
 
-<div class="code-block mb-4 rounded-2xl border-2 border-border-input overflow-hidden">
+<div class="code-block mb-4 rounded-2xl border-2 border-border-input">
 	<div
-		class="code-block-header flex items-center justify-between gap-2 border-b-2 border-transparent pr-2 pl-3 py-2 text-sm bg-background-alt"
+		class="code-block-header flex items-center justify-between gap-2 border-b-2 border-transparent pr-2 pl-3 py-2 text-sm bg-background-alt overflow-hidden rounded-t-2xl"
 	>
 		{#if language}
 			<span class="lang-tag rounded-lg bg-muted px-2 py-1 text-sm">
@@ -88,8 +88,8 @@
 		{/if}
 	</div>
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-	<pre class="overflow-hidden text-sm"><code
-			class="hljs p-4"
+	<pre class="text-sm p-1 overflow-hidden"><code
+			class="hljs p-4 focus:outline-1 focus:outline-border-input-hover focus:outline-offset-1 rounded-b-xl"
 			tabindex="0"
 			aria-label={language || 'code'}>{@html highlighted}</code
 		></pre>

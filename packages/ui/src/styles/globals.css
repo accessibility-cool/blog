@@ -353,6 +353,18 @@
 
 /* Remove svelte-highlight custom code block and langtag styles */
 
+@media (prefers-color-scheme: dark) {
+	.code-block {
+		background-color: hsla(0 0% 15% /1);
+	}
+}
+
+@media (prefers-color-scheme: light) {
+	.code-block {
+		background-color: hsla(0, 0%, 100%, 1);
+	}
+}
+
 pre[data-language] {
 	code.hljs {
 		overflow-x: auto;
