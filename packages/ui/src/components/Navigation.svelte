@@ -30,8 +30,8 @@
 			class="p-2 rounded-md hover:bg-muted focus:bg-muted focus:outline-none"
 		>
 			<!-- Hamburger Icon -->
-			<List class="h-6 w-6" size={24} />
-			<span class="sr-only">Open menu</span>
+			<List aria-labelledby="open-menu" class="h-6 w-6" size={24} />
+			<span id="open-menu" class="sr-only">Open menu</span>
 		</DropdownMenu.Trigger>
 		<DropdownMenu.Content
 			class="min-w-[10rem] p-2 bg-background border border-muted rounded-xl shadow-[0px_7px_12px_3px_rgba(24,24,27,0.1)] mt-2 mr-2"

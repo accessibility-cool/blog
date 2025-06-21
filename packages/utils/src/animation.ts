@@ -5,6 +5,7 @@ export interface AnimationOptions {
 	rootMargin?: string;
 	initialTransform?: string;
 	finalTransform?: string;
+	triggerOnMount?: boolean;
 }
 
 export interface AnimationState {
@@ -23,7 +24,8 @@ export const createAnimation = (options: AnimationOptions = {}) => {
 		threshold = 0.1,
 		rootMargin = '0px 0px -50px 0px',
 		initialTransform = 'translateY(30px)',
-		finalTransform = 'translateY(0)'
+		finalTransform = 'translateY(0)',
+		triggerOnMount = false
 	} = options;
 
 	let element: HTMLElement | undefined;
@@ -47,6 +49,15 @@ export const createAnimation = (options: AnimationOptions = {}) => {
 	const setElement = (el: HTMLElement) => {
 		element = el;
 		if (typeof window === 'undefined' || !element) return;
+
+		if (triggerOnMount) {
+			setTimeout(() => {
+				isVisible = true;
+				hasAnimated = true;
+				updateStyle();
+			}, delay);
+			return;
+		}
 
 		const observer = new IntersectionObserver(
 			(entries) => {
@@ -80,9 +91,17 @@ export const createAnimation = (options: AnimationOptions = {}) => {
 	};
 };
 
-export const createStaggeredAnimation = (count: number, baseDelay = 0, interval = 100) => {
+export const createStaggeredAnimation = (
+	count: number,
+	baseDelay = 0,
+	interval = 100,
+	triggerOnMount = false
+) => {
 	const animations = Array.from({ length: count }, (_, index) =>
-		createAnimation({ delay: baseDelay + index * interval })
+		createAnimation({
+			delay: baseDelay + index * interval,
+			triggerOnMount
+		})
 	);
 
 	return {
@@ -108,7 +127,8 @@ export const animate = (node: HTMLElement, options: AnimationOptions = {}) => {
 		threshold = 0.1,
 		rootMargin = '0px 0px -50px 0px',
 		initialTransform = 'translateY(30px)',
-		finalTransform = 'translateY(0)'
+		finalTransform = 'translateY(0)',
+		triggerOnMount = false
 	} = options;
 
 	let isVisible = false;
@@ -127,37 +147,43 @@ export const animate = (node: HTMLElement, options: AnimationOptions = {}) => {
 			: 'none';
 	};
 
-	// Set up intersection observer
 	if (typeof window !== 'undefined') {
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting && !hasAnimated) {
-						isVisible = true;
-						hasAnimated = true;
-						updateStyles();
+		if (triggerOnMount) {
+			setTimeout(() => {
+				isVisible = true;
+				hasAnimated = true;
+				updateStyles();
+			}, delay);
+		} else {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting && !hasAnimated) {
+							isVisible = true;
+							hasAnimated = true;
+							updateStyles();
+						}
+					});
+				},
+				{ threshold, rootMargin }
+			);
+
+			observer.observe(node);
+
+			return {
+				update: (newOptions: AnimationOptions) => {
+					const newDelay = newOptions.delay ?? delay;
+					const newDuration = newOptions.duration ?? duration;
+
+					if (hasAnimated) {
+						node.style.transition = `opacity ${newDuration}ms ease-out ${newDelay}ms, transform ${newDuration}ms ease-out ${newDelay}ms`;
 					}
-				});
-			},
-			{ threshold, rootMargin }
-		);
-
-		observer.observe(node);
-
-		return {
-			update: (newOptions: AnimationOptions) => {
-				// Recreate animation with new options
-				const newDelay = newOptions.delay ?? delay;
-				const newDuration = newOptions.duration ?? duration;
-
-				if (hasAnimated) {
-					node.style.transition = `opacity ${newDuration}ms ease-out ${newDelay}ms, transform ${newDuration}ms ease-out ${newDelay}ms`;
+				},
+				destroy: () => {
+					observer.disconnect();
 				}
-			},
-			destroy: () => {
-				observer.disconnect();
-			}
-		};
+			};
+		}
 	}
 
 	return {
