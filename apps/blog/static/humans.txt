@@ -1,0 +1,13 @@
+/* TEAM */
+    Developer: Simon Phumin Schweikert & Oliver Schwamb
+    Contact: accessibility.cool
+    From: Germany
+
+/* SITE */
+    Last update: 2025
+    Language: English
+    Doctype: HTML5
+    IDE: Cursor
+    Standards: HTML5, CSS3, JavaScript ES6+
+    Components: SvelteKit 5, TypeScript, Tailwind CSS
+    Software: Vite, Turbo, pnpm 

@@ -3,16 +3,14 @@
 	:where(h1) {
 		@apply font-highlight;
 		@apply text-2xl md:text-3xl lg:text-4xl tracking-wide text-foreground;
+		margin-block: 0.67em;
+		font-size: 2em;
 	}
 	h2,
 	h3,
 	h4,
 	h5 {
 		@apply font-sans font-medium;
-	}
-
-	h1 {
-		@apply text-2xl md:text-3xl lg:text-4xl tracking-tight text-foreground;
 	}
 
 	h2 {
