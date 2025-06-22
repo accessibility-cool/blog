@@ -8,11 +8,13 @@
 
 	let defaultSize = $state(160);
 	let isTouchDevice = $state(false);
+	let prefersReducedMotion = $state(false);
 	let svgEl = $state<SVGSVGElement | undefined>(undefined);
 	let leftPupil = $state<SVGPathElement | undefined>(undefined);
 	let rightPupil = $state<SVGPathElement | undefined>(undefined);
 	let animationFrame = $state<number | undefined>(undefined);
 	let resizeObserver = $state<ResizeObserver | undefined>(undefined);
+	let mediaQuery = $state<MediaQueryList | undefined>(undefined);
 	let mounted = $state(false);
 
 	// SVG viewBox size
@@ -50,7 +52,7 @@
 	};
 
 	const handleMouseMove = (e: MouseEvent) => {
-		if (!svgEl || isTouchDevice || !mounted) return;
+		if (!svgEl || isTouchDevice || !mounted || prefersReducedMotion) return;
 		const rect = svgEl.getBoundingClientRect();
 		const svgX = ((e.clientX - rect.left) / rect.width) * SVG_WIDTH;
 		const svgY = ((e.clientY - rect.top) / rect.height) * SVG_HEIGHT;
@@ -59,7 +61,7 @@
 	};
 
 	const animate = () => {
-		if (isTouchDevice || !mounted) return;
+		if (isTouchDevice || !mounted || prefersReducedMotion) return;
 		// Lerp current position toward target
 		leftCurrent.x = lerp(leftCurrent.x, leftTarget.x, 0.18);
 		leftCurrent.y = lerp(leftCurrent.y, leftTarget.y, 0.18);
@@ -94,6 +96,17 @@
 	$effect(() => {
 		if (!isBrowser) return;
 
+		// Set up media query listener for reduced motion preference
+		const handleReducedMotionChange = (e: MediaQueryListEvent) => {
+			prefersReducedMotion = e.matches;
+			if (prefersReducedMotion && animationFrame) {
+				cancelAnimationFrame(animationFrame);
+				animationFrame = undefined;
+			} else if (!prefersReducedMotion && !isTouchDevice && mounted) {
+				animationFrame = requestAnimationFrame(animate);
+			}
+		};
+
 		// Wait for next tick to ensure DOM is ready
 		setTimeout(() => {
 			mounted = true;
@@ -101,12 +114,19 @@
 			// Check for touch device
 			isTouchDevice = window.matchMedia('(hover: none)').matches;
 
+			// Check for reduced motion preference
+			mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+			prefersReducedMotion = mediaQuery.matches;
+
+			// Set up media query listener for reduced motion preference
+			mediaQuery.addEventListener('change', handleReducedMotionChange);
+
 			// Set up resize observer
 			updateSize();
 			resizeObserver = new ResizeObserver(updateSize);
 			resizeObserver.observe(document.body);
 
-			if (isTouchDevice) {
+			if (isTouchDevice || prefersReducedMotion) {
 				setPupilsUpperRight();
 				return;
 			}
@@ -125,6 +145,9 @@
 			mounted = false;
 			if (animationFrame) cancelAnimationFrame(animationFrame);
 			if (resizeObserver) resizeObserver.disconnect();
+			if (mediaQuery) {
+				mediaQuery.removeEventListener('change', handleReducedMotionChange);
+			}
 		};
 	});
 </script>
