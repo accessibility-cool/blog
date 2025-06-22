@@ -1,15 +1,13 @@
 import type { PageServerLoad } from './$types';
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import { getPost } from '@a11y.cool/data';
+import { error } from '@sveltejs/kit';
 
 export const load = (async ({ params }) => {
 	const post = await getPost(params.slug);
 
 	if (!post) {
-		return {
-			status: 404,
-			error: 'Post not found'
-		};
+		error(404, 'Post not found');
 	}
 
 	const html: string = post.content || '';

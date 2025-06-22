@@ -3,19 +3,30 @@ export interface AnimationOptions {
 	duration?: number;
 	threshold?: number;
 	rootMargin?: string;
-	initialTransform?: string;
-	finalTransform?: string;
+	animationClass?: string;
 	triggerOnMount?: boolean;
 }
 
 export interface AnimationState {
 	isVisible: boolean;
-	style: {
-		opacity: number;
-		transform: string;
-		transition: string;
-	};
+	className: string;
 }
+
+// Animation class mappings to CSS keyframes
+export const ANIMATION_CLASSES = {
+	'fly-in-up': 'animate-fly-in-up',
+	'fly-in-up-fast': 'animate-fly-in-up-fast',
+	'fade-in': 'animate-fade-in',
+	'fade-out': 'animate-fade-out',
+	'scale-in': 'animate-scale-in',
+	'scale-out': 'animate-scale-out',
+	'enter-from-left': 'animate-enter-from-left',
+	'enter-from-right': 'animate-enter-from-right',
+	'exit-to-left': 'animate-exit-to-left',
+	'exit-to-right': 'animate-exit-to-right'
+} as const;
+
+export type AnimationType = keyof typeof ANIMATION_CLASSES;
 
 export const createAnimation = (options: AnimationOptions = {}) => {
 	const {
@@ -23,8 +34,7 @@ export const createAnimation = (options: AnimationOptions = {}) => {
 		duration = 600,
 		threshold = 0.1,
 		rootMargin = '0px 0px -50px 0px',
-		initialTransform = 'translateY(30px)',
-		finalTransform = 'translateY(0)',
+		animationClass = 'fly-in-up',
 		triggerOnMount = false
 	} = options;
 
@@ -32,29 +42,51 @@ export const createAnimation = (options: AnimationOptions = {}) => {
 	let isVisible = false;
 	let hasAnimated = false;
 
-	const style = {
-		opacity: 0,
-		transform: initialTransform,
-		transition: 'none'
+	// Get the corresponding CSS class for the animation
+	const cssClass =
+		ANIMATION_CLASSES[animationClass as AnimationType] || ANIMATION_CLASSES['fly-in-up'];
+
+	// Get initial state class based on animation type
+	const getInitialClass = (animClass: string) => {
+		switch (animClass) {
+			case 'fade-in':
+			case 'fade-out':
+				return 'animate-initial-fade';
+			case 'scale-in':
+			case 'scale-out':
+				return 'animate-initial-scale';
+			case 'enter-from-left':
+			case 'exit-to-left':
+				return 'animate-initial-left';
+			case 'enter-from-right':
+			case 'exit-to-right':
+				return 'animate-initial-right';
+			default:
+				return 'animate-initial';
+		}
 	};
 
-	const updateStyle = () => {
-		style.opacity = isVisible ? 1 : 0;
-		style.transform = isVisible ? finalTransform : initialTransform;
-		style.transition = hasAnimated
-			? `opacity ${duration}ms ease-out ${delay}ms, transform ${duration}ms ease-out ${delay}ms`
-			: 'none';
+	const initialClass = getInitialClass(animationClass);
+
+	const className = isVisible ? cssClass : initialClass;
+
+	const updateClassName = () => {
+		return isVisible ? cssClass : initialClass;
 	};
 
 	const setElement = (el: HTMLElement) => {
 		element = el;
 		if (typeof window === 'undefined' || !element) return;
 
+		// Apply initial state
+		element.classList.add(initialClass);
+
 		if (triggerOnMount) {
 			setTimeout(() => {
 				isVisible = true;
 				hasAnimated = true;
-				updateStyle();
+				element!.classList.remove(initialClass);
+				element!.classList.add(cssClass);
 			}, delay);
 			return;
 		}
@@ -65,7 +97,8 @@ export const createAnimation = (options: AnimationOptions = {}) => {
 					if (entry.isIntersecting && !hasAnimated) {
 						isVisible = true;
 						hasAnimated = true;
-						updateStyle();
+						element!.classList.remove(initialClass);
+						element!.classList.add(cssClass);
 					}
 				});
 			},
@@ -79,14 +112,17 @@ export const createAnimation = (options: AnimationOptions = {}) => {
 	const trigger = () => {
 		isVisible = true;
 		hasAnimated = true;
-		updateStyle();
+		if (element) {
+			element.classList.remove(initialClass);
+			element.classList.add(cssClass);
+		}
 	};
 
 	return {
 		setElement,
 		trigger,
-		get style() {
-			return style;
+		get className() {
+			return updateClassName();
 		}
 	};
 };
@@ -95,11 +131,13 @@ export const createStaggeredAnimation = (
 	count: number,
 	baseDelay = 0,
 	interval = 100,
+	animationClass: AnimationType = 'fly-in-up',
 	triggerOnMount = false
 ) => {
 	const animations = Array.from({ length: count }, (_, index) =>
 		createAnimation({
 			delay: baseDelay + index * interval,
+			animationClass,
 			triggerOnMount
 		})
 	);
@@ -123,36 +161,49 @@ export const createStaggeredAnimation = (
 export const animate = (node: HTMLElement, options: AnimationOptions = {}) => {
 	const {
 		delay = 0,
-		duration = 600,
 		threshold = 0.1,
 		rootMargin = '0px 0px -50px 0px',
-		initialTransform = 'translateY(30px)',
-		finalTransform = 'translateY(0)',
+		animationClass = 'fly-in-up',
 		triggerOnMount = false
 	} = options;
 
 	let isVisible = false;
 	let hasAnimated = false;
 
-	// Apply initial styles
-	node.style.opacity = '0';
-	node.style.transform = initialTransform;
-	node.style.transition = 'none';
+	// Get the corresponding CSS class for the animation
+	const cssClass =
+		ANIMATION_CLASSES[animationClass as AnimationType] || ANIMATION_CLASSES['fly-in-up'];
 
-	const updateStyles = () => {
-		node.style.opacity = isVisible ? '1' : '0';
-		node.style.transform = isVisible ? finalTransform : initialTransform;
-		node.style.transition = hasAnimated
-			? `opacity ${duration}ms ease-out ${delay}ms, transform ${duration}ms ease-out ${delay}ms`
-			: 'none';
+	// Apply initial state based on animation type
+	const getInitialClass = (animClass: string) => {
+		switch (animClass) {
+			case 'fade-in':
+			case 'fade-out':
+				return 'animate-initial-fade';
+			case 'scale-in':
+			case 'scale-out':
+				return 'animate-initial-scale';
+			case 'enter-from-left':
+			case 'exit-to-left':
+				return 'animate-initial-left';
+			case 'enter-from-right':
+			case 'exit-to-right':
+				return 'animate-initial-right';
+			default:
+				return 'animate-initial';
+		}
 	};
+
+	const initialClass = getInitialClass(animationClass);
+	node.classList.add(initialClass);
 
 	if (typeof window !== 'undefined') {
 		if (triggerOnMount) {
 			setTimeout(() => {
 				isVisible = true;
 				hasAnimated = true;
-				updateStyles();
+				node.classList.remove(initialClass);
+				node.classList.add(cssClass);
 			}, delay);
 		} else {
 			const observer = new IntersectionObserver(
@@ -161,7 +212,8 @@ export const animate = (node: HTMLElement, options: AnimationOptions = {}) => {
 						if (entry.isIntersecting && !hasAnimated) {
 							isVisible = true;
 							hasAnimated = true;
-							updateStyles();
+							node.classList.remove(initialClass);
+							node.classList.add(cssClass);
 						}
 					});
 				},
@@ -172,11 +224,15 @@ export const animate = (node: HTMLElement, options: AnimationOptions = {}) => {
 
 			return {
 				update: (newOptions: AnimationOptions) => {
-					const newDelay = newOptions.delay ?? delay;
-					const newDuration = newOptions.duration ?? duration;
+					const newAnimationClass = newOptions.animationClass || animationClass;
+					const newCssClass =
+						ANIMATION_CLASSES[newAnimationClass as AnimationType] || cssClass;
+					const newInitialClass = getInitialClass(newAnimationClass);
 
-					if (hasAnimated) {
-						node.style.transition = `opacity ${newDuration}ms ease-out ${newDelay}ms, transform ${newDuration}ms ease-out ${newDelay}ms`;
+					// Remove old classes and add new ones if animation class changed
+					if (newCssClass !== cssClass && hasAnimated) {
+						node.classList.remove(cssClass, initialClass);
+						node.classList.add(newCssClass, newInitialClass);
 					}
 				},
 				destroy: () => {
@@ -190,4 +246,17 @@ export const animate = (node: HTMLElement, options: AnimationOptions = {}) => {
 		update: () => {},
 		destroy: () => {}
 	};
+};
+
+// Utility function to create custom animation classes
+export const createCustomAnimation = (
+	name: string,
+	keyframes: string,
+	options: { duration?: string; timing?: string; delay?: string } = {}
+) => {
+	const { duration = '0.6s', timing = 'ease-out', delay = '0s' } = options;
+
+	// This would typically be used with a CSS-in-JS solution or by injecting styles
+	// For now, we'll return a class name that should be defined in CSS
+	return `animate-${name}`;
 };

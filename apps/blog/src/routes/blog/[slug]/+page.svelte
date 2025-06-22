@@ -25,7 +25,7 @@
 		class="col-span-12 col-start-1 flex justify-center"
 		use:animate={{ delay: 0, triggerOnMount: true }}
 	>
-		<article class="max-w-[580px] w-full">
+		<article class="pt-10 max-w-[580px] w-full">
 			<header class="mb-8" use:animate={{ delay: 50, triggerOnMount: true }}>
 				<a
 					href="#{titleId()}"

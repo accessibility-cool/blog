@@ -106,7 +106,6 @@ export const getPost = async (slug: string): Promise<Post | null> => {
 		const post = await contentApi.posts.read({ slug }, { include: ['tags', 'authors'] });
 
 		if (!post?.id || !post?.title || !post?.slug || !post?.html) {
-			throw new Error(`Ghost API returned invalid post: ${post}`);
 			return null;
 		}
 
@@ -125,8 +124,8 @@ export const getPost = async (slug: string): Promise<Post | null> => {
 			primary_author: post.primary_author ? mapAuthor(post.primary_author) : undefined,
 			primary_tag: post.primary_tag ? mapTag(post.primary_tag) : undefined
 		};
-	} catch (error) {
-		throw new Error(`Error fetching post with slug "${slug}": ${error}`);
+	} catch {
+		// Return null instead of throwing for not found errors
 		return null;
 	}
 };
