@@ -27,3 +27,11 @@
 	</main>
 	<Footer />
 </div>
+
+<style>
+	/* Override the default h1 font size to fix https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements#specifying_a_uniform_font_size_for_h1 */
+	:where(h1) {
+		margin-block: 0.67em;
+		font-size: 2em;
+	}
+</style>

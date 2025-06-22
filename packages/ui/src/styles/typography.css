@@ -1,10 +1,9 @@
 @layer base {
 	/* Headings */
-	:where(h1) {
+	h1 {
 		@apply font-highlight;
+		@apply tracking-wide
 		@apply text-2xl md:text-3xl lg:text-4xl tracking-wide text-foreground;
-		margin-block: 0.67em;
-		font-size: 2em;
 	}
 	h2,
 	h3,
