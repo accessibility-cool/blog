@@ -65,7 +65,7 @@
 	});
 </script>
 
-<div class="code-block mb-4 rounded-2xl border-2 border-border-input">
+<div class="code-block mb-4 rounded-2xl border-2 border-code-block-border">
 	<div
 		class="code-block-header flex items-center justify-between gap-2 border-b-2 border-transparent pr-2 pl-3 py-2 text-sm bg-background-alt overflow-hidden rounded-t-2xl"
 	>
