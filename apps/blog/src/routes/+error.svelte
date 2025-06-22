@@ -5,15 +5,15 @@
 	let { errors } = $props<{ errors?: Error }>();
 
 	// Safely extract status and message with fallbacks
-	let status = $derived(errors?.status || 404);
-	let message = $derived(errors?.message || '');
+	let status: number = $derived(errors?.status || 404);
+	let message: string = $derived(errors?.message || '');
 
 	// Determine if this is a 404 error
-	let is404 = $derived(status === 404);
+	let is404: boolean = $derived(status === 404);
 
 	// Set appropriate error message and title
-	let errorTitle = $derived(is404 ? 'Page Not Found' : 'Something Went Wrong');
-	let errorMessage = $derived(
+	let errorTitle: string = $derived(is404 ? 'Page Not Found' : 'Something Went Wrong');
+	let errorMessage: string = $derived(
 		is404
 			? "The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL."
 			: message || 'An unexpected error occurred. Please try again later.'
@@ -32,11 +32,6 @@
 		<!-- Warning icon with accessibility label -->
 		<Warning size={128} weight="light" aria-label="Warning icon indicating an error" class="pb-8" />
 
-		<!-- Error status code for screen readers -->
-		<div class="sr-only">
-			Error {status}: {errorTitle}
-		</div>
-
 		<!-- Main error heading -->
 		<h1 id="error-title" class="text-6xl md:text-8xl text-center mb-8 font-highlight">
 			{errorTitle}
@@ -44,7 +39,7 @@
 
 		<!-- Error message -->
 		<p id="error-message" class="max-w-2xl text-center text-lg mb-8">
-			{errorMessage}
+			Error code: {status} - {errorMessage}
 		</p>
 
 		<!-- Navigation back to home -->
@@ -52,7 +47,6 @@
 			<a
 				href="/"
 				class="inline-flex items-center px-6 py-3 bg-foreground text-background rounded-lg hover:bg-foreground/90 transition-colors focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
-				aria-label="Return to homepage"
 			>
 				Go back home
 			</a>

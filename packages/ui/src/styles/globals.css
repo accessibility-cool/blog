@@ -337,8 +337,8 @@
 		border: 1px solid var(--border-input);
 		background: var(--background-alt);
 		border-radius: 0.25rem;
-		padding: 0.15em 0.4em;
-		font-size: 14px;
+		padding: 0.25rem;
+		font-size: 0.875rem;
 	}
 }
 
@@ -373,4 +373,97 @@ pre[data-language] {
 	code.hljs {
 		overflow-x: auto;
 	}
+}
+
+/* Animation utility classes */
+.animate-fly-in-up {
+	animation: var(--animate-fly-in-up);
+}
+
+.animate-fly-in-up-fast {
+	animation: var(--animate-fly-in-up-fast);
+}
+
+.animate-fade-in {
+	animation: var(--animate-fade-in);
+}
+
+.animate-fade-out {
+	animation: var(--animate-fade-out);
+}
+
+.animate-scale-in {
+	animation: var(--animate-scale-in);
+}
+
+.animate-scale-out {
+	animation: var(--animate-scale-out);
+}
+
+.animate-enter-from-left {
+	animation: var(--animate-enter-from-left);
+}
+
+.animate-enter-from-right {
+	animation: var(--animate-enter-from-right);
+}
+
+.animate-exit-to-left {
+	animation: var(--animate-exit-to-left);
+}
+
+.animate-exit-to-right {
+	animation: var(--animate-exit-to-right);
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+	.animate-fly-in-up,
+	.animate-fly-in-up-fast,
+	.animate-fade-in,
+	.animate-fade-out,
+	.animate-scale-in,
+	.animate-scale-out,
+	.animate-enter-from-left,
+	.animate-enter-from-right,
+	.animate-exit-to-left,
+	.animate-exit-to-right {
+		animation: none;
+		opacity: 1;
+		transform: none;
+	}
+
+	.animate-initial,
+	.animate-initial-fade,
+	.animate-initial-scale,
+	.animate-initial-left,
+	.animate-initial-right {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+/* Initial states for animations */
+.animate-initial {
+	opacity: 0;
+	transform: translateY(30px);
+}
+
+.animate-initial-fade {
+	opacity: 0;
+}
+
+.animate-initial-scale {
+	opacity: 0;
+	transform: scale(0.95);
+}
+
+.animate-initial-left {
+	opacity: 0;
+	transform: translateX(-200px);
+}
+
+.animate-initial-right {
+	opacity: 0;
+	transform: translateX(200px);
 }
