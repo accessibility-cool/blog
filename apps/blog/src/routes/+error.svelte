@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { animate } from '@a11y.cool/utils';
-	import { page } from '$app/state';
 	import { Warning } from 'phosphor-svelte';
 
-	let { error } = $props<{ error?: Error }>();
+	let { errors } = $props<{ errors?: Error }>();
 
 	// Safely extract status and message with fallbacks
-	let status = $derived(error?.status || 404);
-	let message = $derived(error?.message || '');
+	let status = $derived(errors?.status || 404);
+	let message = $derived(errors?.message || '');
 
 	// Determine if this is a 404 error
 	let is404 = $derived(status === 404);
