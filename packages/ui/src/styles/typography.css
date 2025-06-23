@@ -1,111 +1,109 @@
-@layer base {
-	/* Headings */
-	h1 {
-		@apply font-highlight;
-		@apply tracking-wide
-		@apply text-2xl md:text-3xl lg:text-4xl tracking-wide text-foreground;
-	}
-	h2,
-	h3,
-	h4,
-	h5 {
-		@apply font-sans font-medium;
-	}
+/* Headings */
 
-	h2 {
-		@apply text-xl md:text-2xl lg:text-3xl tracking-tight text-foreground;
-	}
+/* Override the default h1 font size to fix https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/Heading_Elements#specifying_a_uniform_font_size_for_h1 */
+:where(h1) {
+	@apply font-highlight text-2xl md:text-3xl lg:text-4xl tracking-wide text-foreground;
+}
+h2,
+h3,
+h4,
+h5 {
+	@apply font-sans font-medium;
+}
 
-	h3 {
-		@apply text-lg md:text-xl lg:text-2xl tracking-tight text-foreground;
-	}
+h2 {
+	@apply text-xl md:text-2xl lg:text-3xl tracking-tight text-foreground;
+}
 
-	h4 {
-		@apply text-base md:text-lg lg:text-xl tracking-tight text-foreground;
-	}
+h3 {
+	@apply text-lg md:text-xl lg:text-2xl tracking-tight text-foreground;
+}
 
-	h5 {
-		@apply text-base md:text-lg lg:text-xl tracking-tight text-foreground;
-	}
+h4 {
+	@apply text-base md:text-lg lg:text-xl tracking-tight text-foreground;
+}
 
-	/* Body text */
-	p {
-		@apply text-base md:text-base leading-relaxed text-foreground mb-4 last:mb-0;
-	}
+h5 {
+	@apply text-base md:text-lg lg:text-xl tracking-tight text-foreground;
+}
 
-	/* Small text */
-	.text-small {
-		@apply text-sm md:text-base leading-relaxed text-foreground;
-	}
+/* Body text */
+p {
+	@apply text-base md:text-base leading-relaxed text-foreground mb-4 last:mb-0;
+}
 
-	/* Muted text */
-	.text-muted {
-		@apply text-foreground-alt;
-	}
+/* Small text */
+.text-small {
+	@apply text-sm md:text-base leading-relaxed text-foreground;
+}
 
-	/* Accent text */
-	.text-accent {
-		@apply text-accent-foreground;
-	}
+/* Muted text */
+.text-muted {
+	@apply text-foreground-alt;
+}
 
-	/* Lists */
-	ul,
-	ol {
-		@apply text-base mb-4 ml-6 last:mb-0;
-	}
+/* Accent text */
+.text-accent {
+	@apply text-accent-foreground;
+}
 
-	ul {
-		@apply list-disc;
-	}
+/* Lists */
+ul,
+ol {
+	@apply text-base mb-4 ml-6 last:mb-0;
+}
 
-	ol {
-		@apply list-decimal;
-	}
+ul {
+	@apply list-disc;
+}
 
-	li {
-		@apply mb-2 last:mb-0;
-	}
+ol {
+	@apply list-decimal;
+}
 
-	/* Nested lists */
-	ul ul,
-	ol ol,
-	ul ol,
-	ol ul {
-		@apply mt-2 mb-0;
-	}
+li {
+	@apply mb-2 last:mb-0;
+}
 
-	/* List items with paragraphs */
-	li > p {
-		@apply mb-2 last:mb-0;
-	}
+/* Nested lists */
+ul ul,
+ol ol,
+ul ol,
+ol ul {
+	@apply mt-2 mb-0;
+}
 
-	/* Text alignment utilities */
-	.text-left {
-		@apply text-left;
-	}
+/* List items with paragraphs */
+li > p {
+	@apply mb-2 last:mb-0;
+}
 
-	.text-center {
-		@apply text-center;
-	}
+/* Text alignment utilities */
+.text-left {
+	@apply text-left;
+}
 
-	.text-right {
-		@apply text-right;
-	}
+.text-center {
+	@apply text-center;
+}
 
-	/* Font weight utilities */
-	.font-normal {
-		@apply font-normal;
-	}
+.text-right {
+	@apply text-right;
+}
 
-	.font-medium {
-		@apply font-medium;
-	}
+/* Font weight utilities */
+.font-normal {
+	@apply font-normal;
+}
 
-	.font-semibold {
-		@apply font-semibold;
-	}
+.font-medium {
+	@apply font-medium;
+}
 
-	.font-bold {
-		@apply font-bold;
-	}
+.font-semibold {
+	@apply font-semibold;
+}
+
+.font-bold {
+	@apply font-bold;
 }
