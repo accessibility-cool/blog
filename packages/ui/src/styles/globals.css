@@ -3,7 +3,6 @@
 @import './typography.css';
 @import './code-themes/a11y-dark.css';
 @import './code-themes/a11y-light.css';
-@import 'tw-animate-css';
 
 :root {
 	/* Colors */

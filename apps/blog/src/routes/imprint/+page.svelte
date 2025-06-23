@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { HtmlRender } from '@a11y.cool/ui';
 	import type { PageData } from './$types';
-	import { Render } from '@jill64/svelte-sanitize';
 	import { animate } from '@a11y.cool/utils';
 
 	let { data } = $props<{ data: PageData }>();
@@ -24,7 +24,7 @@
 			<h1>{page.title}</h1>
 			{#if contentForRender}
 				<div>
-					<Render html={contentForRender} />
+					<HtmlRender html={contentForRender} />
 				</div>
 			{:else if !page?.content}
 				<p>No page content</p>

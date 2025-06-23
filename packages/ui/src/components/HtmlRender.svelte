@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Element, Root, Text } from 'hast';
+	import type { Element, Root, RootContent, Text } from 'hast';
 	import { slugify } from '@a11y.cool/utils';
 	import CodeRender from './CodeRender.svelte';
 	import HtmlRender from './HtmlRender.svelte';
@@ -40,15 +40,15 @@
 		return match ? match[1] : '';
 	};
 
-	const normalizeClass = (value: string | string[] | undefined): string => {
+	const normalizeClass = (value: string | string[] | boolean | number | undefined): string => {
 		if (!value) return '';
 		if (Array.isArray(value)) return value.join(' ');
-		return value;
+		return value.toString();
 	};
 
 	const mergeClasses = (...classes: string[]): string => classes.filter(Boolean).join(' ');
 
-	function renderChildren(children: (Element | Text)[]) {
+	function renderChildren(children: (Element | Text | RootContent)[]) {
 		return children
 			.map((child) => {
 				if (isElement(child)) {
