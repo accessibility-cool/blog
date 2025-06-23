@@ -36,7 +36,7 @@
 				</div>
 			{/if}
 			{#if home.intro_headline}
-				<h1 class="text-4xl sm:text-6xl md:text-8xl text-center mb-8">
+				<h1 class="text-center text-teasered mb-8">
 					{home.intro_headline}
 				</h1>
 			{/if}

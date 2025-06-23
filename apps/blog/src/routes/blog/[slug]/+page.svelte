@@ -1,10 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { PostInfo, HtmlRender } from '@a11y.cool/ui';
-	import { animate } from '@a11y.cool/utils';
-	import { unified } from 'unified';
-	import rehypeParse from 'rehype-parse';
-	import { slugify } from '@a11y.cool/utils';
+	import { animate, processHtml, slugify } from '@a11y.cool/utils';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -12,9 +9,7 @@
 	let post = $derived(() => data?.post);
 
 	// Make ast reactive to post?.content
-	let ast = $derived(() =>
-		post()?.content ? unified().use(rehypeParse, { fragment: true }).parse(post().content) : null
-	);
+	let ast = $derived(() => processHtml(post()?.content));
 
 	// Derive the title ID
 	let titleId = $derived(() => (post()?.title ? slugify(post().title) : ''));

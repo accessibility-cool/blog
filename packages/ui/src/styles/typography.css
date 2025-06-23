@@ -47,6 +47,11 @@ p {
 	@apply text-accent-foreground;
 }
 
+/* Large highlighted/teasered text */
+.text-teasered {
+	@apply text-highlight-foreground text-2xl md:text-3xl lg:text-4xl tracking-wide;
+}
+
 /* Lists */
 ul,
 ol {

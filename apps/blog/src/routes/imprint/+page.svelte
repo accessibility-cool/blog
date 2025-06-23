@@ -1,18 +1,12 @@
 <script lang="ts">
 	import { HtmlRender } from '@a11y.cool/ui';
 	import type { PageData } from './$types';
-	import { animate } from '@a11y.cool/utils';
+	import { animate, processHtml } from '@a11y.cool/utils';
 
 	let { data } = $props<{ data: PageData }>();
 	const { page } = data;
-	let contentForRender = $state(page?.content);
 
-	if (typeof window !== 'undefined') {
-		contentForRender = undefined;
-		$effect(() => {
-			contentForRender = page?.content;
-		});
-	}
+	const content = processHtml(page?.content);
 </script>
 
 {#if page}
@@ -22,9 +16,9 @@
 	>
 		<article class="max-w-[580px] w-full space-y-4 py-12 md:py-24">
 			<h1>{page.title}</h1>
-			{#if contentForRender}
+			{#if content}
 				<div>
-					<HtmlRender html={contentForRender} />
+					<HtmlRender node={content} />
 				</div>
 			{:else if !page?.content}
 				<p>No page content</p>
