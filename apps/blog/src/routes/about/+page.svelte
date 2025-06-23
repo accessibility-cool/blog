@@ -15,7 +15,7 @@
 	>
 		<div class="flex flex-col justify-center items-center py-24">
 			{#if about.title}
-				<h1 class="text-6xl md:text-8xl text-center mb-8">{about.title}</h1>
+				<h1 class="text-center mb-8 text-teasered">{about.title}</h1>
 			{/if}
 			{#if about.about_intro}
 				<p class="max-w-2xl text-center text-lg">
@@ -60,7 +60,7 @@
 					aria-label="Person with impairments icon"
 					class="pb-8"
 				/>
-				<h2 class="text-6xl md:text-8xl text-center mb-8 font-highlight">
+				<h2 class="text-teasered text-center mb-8">
 					{about.about_outro_headline}
 				</h2>
 				<p class="max-w-2xl text-center text-lg">
