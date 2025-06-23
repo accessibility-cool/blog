@@ -52,37 +52,6 @@ p {
 	@apply text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-highlight;
 }
 
-/* Lists */
-ul,
-ol {
-	@apply text-base mb-4 ml-6 last:mb-0;
-}
-
-ul {
-	@apply list-disc;
-}
-
-ol {
-	@apply list-decimal;
-}
-
-li {
-	@apply mb-2 last:mb-0;
-}
-
-/* Nested lists */
-ul ul,
-ol ol,
-ul ol,
-ol ul {
-	@apply mt-2 mb-0;
-}
-
-/* List items with paragraphs */
-li > p {
-	@apply mb-2 last:mb-0;
-}
-
 /* Text alignment utilities */
 .text-left {
 	@apply text-left;

@@ -27,7 +27,7 @@
 <div class="flex z-100 md:hidden justify-end w-full">
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger
-			class="p-2 rounded-md hover:bg-muted focus:bg-muted focus:outline-none"
+			class="p-2 rounded-md hover:bg-muted focus-visible:bg-muted focus:outline-none"
 		>
 			<!-- Hamburger Icon -->
 			<List aria-labelledby="open-menu" class="h-6 w-6" size={24} />
@@ -40,7 +40,7 @@
 				<DropdownMenu.Item>
 					<a
 						href={item.href}
-						class="block px-4 py-2 rounded hover:bg-muted focus:bg-muted focus:outline-none"
+						class="block px-4 py-2 rounded hover:bg-muted focus-visible:bg-muted focus:outline-none"
 					>
 						{item.label}
 					</a>

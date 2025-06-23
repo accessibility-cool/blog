@@ -306,12 +306,40 @@
 		color: var(--background);
 	}
 
-	/* Remove list item dots from navigation lists */
+	/* Lists */
+	article ul,
+	article ol {
+		@apply text-base mb-4 ml-6 last:mb-0;
+	}
+
 	nav ul,
-	nav li {
-		margin-left: 0;
-		list-style: none;
-		padding-left: 0;
+	nav ol {
+		@apply ml-0 list-none;
+	}
+
+	ul {
+		@apply list-disc;
+	}
+
+	ol {
+		@apply list-decimal;
+	}
+
+	li {
+		@apply mb-2 last:mb-0;
+	}
+
+	/* Nested lists */
+	ul ul,
+	ol ol,
+	ul ol,
+	ol ul {
+		@apply mt-2 mb-0;
+	}
+
+	/* List items with paragraphs */
+	li > p {
+		@apply mb-2 last:mb-0;
 	}
 
 	a {
