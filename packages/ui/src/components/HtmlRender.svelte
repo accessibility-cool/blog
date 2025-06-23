@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Element, Root, RootContent, Text } from 'hast';
+	import type { Element, Root, Text } from 'hast';
 	import { slugify } from '@a11y.cool/utils';
 	import CodeRender from './CodeRender.svelte';
 	import HtmlRender from './HtmlRender.svelte';
