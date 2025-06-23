@@ -12,7 +12,7 @@
 		<h1 class="text-4xl font-bold mb-10">Blog</h1>
 		<ul class="list-none p-0 m-0">
 			{#each posts as post, index (post._id)}
-				<li class="mb-0 p-0" use:animate={{ delay: 200 + index * 100 }}>
+				<li class="list-none mb-0 p-0" use:animate={{ delay: 200 + index * 100 }}>
 					<PostPreview {post} excerptLength={30} />
 				</li>
 			{/each}
