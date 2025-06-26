@@ -26,10 +26,10 @@
 		"@tailwindcss/postcss": "^4.1.10",
 		"@tailwindcss/vite": "^4.1.10",
 		"@turbo/gen": "^2.5.4",
-		"@types/node": "^24.0.3",
+		"@types/node": "^24.0.4",
 		"autoprefixer": "^10.4.21",
 		"eslint": "^9.29.0",
-		"svelte": "^5.34.7",
+		"svelte": "^5.34.8",
 		"tailwindcss": "^4.1.10",
 		"typescript": "^5.8.3"
 	},

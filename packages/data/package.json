@@ -35,6 +35,6 @@
 		"typescript": "^5.8.3"
 	},
 	"dependencies": {
-		"@tryghost/content-api": "^1.11.26"
+		"@tryghost/content-api": "^1.11.27"
 	}
 }
