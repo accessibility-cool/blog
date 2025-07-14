@@ -1,7 +1,7 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"globalDependencies": ["**/.env.*local"],
-	"pipeline": {
+	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": [".svelte-kit/**", "dist/**"]
@@ -19,13 +19,6 @@
 		"test": {
 			"dependsOn": ["^build"],
 			"outputs": ["coverage/**"]
-		}
-	},
-	"generators": {
-		"update-deps": {
-			"description": "Update dependencies across all packages",
-			"exec": "ncu --upgrade --target latest --dep prod && ncu --upgrade --target latest --dep dev",
-			"inputs": ["package.json"]
 		}
 	}
 }
