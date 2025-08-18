@@ -8,7 +8,8 @@ export const load: PageServerLoad = (async () => {
 
 	// Pass meta tags to the page
 	const pageMetaTags = {
-		title: page?.title
+		title: page?.title,
+		robots: 'noindex,nofollow,noarchive,nosnippet,noimageindex'
 	} satisfies MetaTagsProps | undefined;
 
 	return {
