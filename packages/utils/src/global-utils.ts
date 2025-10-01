@@ -67,3 +67,35 @@ export const getLangLabel = (lang: string) => {
 	};
 	return map[lang] || lang;
 };
+
+/**
+ * Builds an image URL for Directus assets with format detection
+ * @param imageId - The Directus file ID
+ * @param apiUrl - The base API URL (from VITE_API_URL)
+ * @param quality - Image quality (default: 80)
+ * @returns The complete image URL with format parameters
+ */
+export const buildImageUrl = (imageId: string, apiUrl: string, quality: number = 80): string => {
+	// Check if browser supports AVIF format
+	const supportsAvif =
+		typeof window !== 'undefined' &&
+		window.HTMLCanvasElement &&
+		document.createElement('canvas').toDataURL('image/avif').indexOf('data:image/avif') === 0;
+
+	// Check if browser supports WebP format
+	const supportsWebp =
+		typeof window !== 'undefined' &&
+		window.HTMLCanvasElement &&
+		document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0;
+
+	// Determine the best format to use
+	let format = 'jpg'; // fallback
+	if (supportsAvif) {
+		format = 'avif';
+	} else if (supportsWebp) {
+		format = 'webp';
+	}
+
+	// Build the URL with the format
+	return `${apiUrl}/assets/${imageId}?quality=${quality}&format=${format}`;
+};

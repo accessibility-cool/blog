@@ -40,7 +40,7 @@
 				</div>
 			{/if}
 			{#if about.members.length >= 1}
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-stretch">
 					{#each about.members as member, index (member.name)}
 						<div use:animate={{ delay: 300 + index * 100 }}>
 							<MemberCard {member} />
