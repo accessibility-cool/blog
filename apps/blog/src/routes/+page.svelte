@@ -50,7 +50,10 @@
 
 	<!-- Teaser cards section -->
 	{#if home.cards.length}
-		<section class="col-span-12 my-16 md:my-24 lg:my-32" use:animate={{ delay: 200 }}>
+		<section
+			class="col-span-12 col-start-1 lg:col-span-12 lg:col-start-1 xl:col-span-8 xl:col-start-3 my-16 md:my-24 lg:my-32"
+			use:animate={{ delay: 200 }}
+		>
 			{#if home.cards_headline}
 				<div class="grid grid-cols-12">
 					<h2
