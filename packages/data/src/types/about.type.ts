@@ -3,6 +3,8 @@ export interface Member {
 	certification: string | null;
 	description: string;
 	image: Image | null;
+	website: string | null;
+	linkedin: string | null;
 }
 
 export interface Image {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Card } from '@a11y.cool/ui';
+	import { MemberCard } from '@a11y.cool/ui';
 	import { animate } from '@a11y.cool/utils';
 	import type { PageData } from './$types';
 	import { PersonSimpleCircle } from 'phosphor-svelte';
@@ -43,7 +43,7 @@
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
 					{#each about.members as member, index (member.name)}
 						<div use:animate={{ delay: 300 + index * 100 }}>
-							<Card title={member.name} description={member.description}></Card>
+							<MemberCard {member} />
 						</div>
 					{/each}
 				</div>

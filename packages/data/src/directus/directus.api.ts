@@ -62,6 +62,8 @@ export const dataQueryAbout: string = `query {
             name
 			certification
 			description
+			website
+			linkedin
             image {
                 id
                 description

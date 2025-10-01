@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { animate } from '@a11y.cool/utils';
 	import { Warning } from 'phosphor-svelte';
+	import { resolve } from '$app/paths';
 
 	let { errors } = $props<{ errors?: Error }>();
 
@@ -45,7 +46,7 @@
 		<!-- Navigation back to home -->
 		<div class="text-center">
 			<a
-				href="/"
+				href={resolve('/')}
 				class="inline-flex items-center px-6 py-3 bg-foreground text-background rounded-lg hover:bg-foreground/90 transition-colors focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
 			>
 				Go back home
