@@ -28,10 +28,10 @@
 	"devDependencies": {
 		"@a11y.cool/eslint-config": "workspace:*",
 		"@a11y.cool/typescript-config": "workspace:*",
-		"@sveltejs/kit": "^2.46.5",
+		"@sveltejs/kit": "^2.48.0",
 		"dotenv": "^17.2.3",
-		"eslint": "^9.37.0",
-		"svelte-meta-tags": "^4.4.1",
+		"eslint": "^9.38.0",
+		"svelte-meta-tags": "^4.5.0",
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
