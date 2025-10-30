@@ -16,9 +16,9 @@
 		"prettier-plugin-svelte": "^3.4.0",
 		"turbo": "^2.5.8",
 		"typescript": "5.9.3",
-		"@types/node": "^24.9.1"
+		"@types/node": "^24.9.2"
 	},
-	"packageManager": "pnpm@10.18.2",
+	"packageManager": "pnpm@10.19.0",
 	"engines": {
 		"node": ">=22"
 	}
