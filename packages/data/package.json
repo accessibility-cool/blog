@@ -28,9 +28,9 @@
 	"devDependencies": {
 		"@a11y.cool/eslint-config": "workspace:*",
 		"@a11y.cool/typescript-config": "workspace:*",
-		"@sveltejs/kit": "^2.48.3",
+		"@sveltejs/kit": "^2.48.4",
 		"dotenv": "^17.2.3",
-		"eslint": "^9.38.0",
+		"eslint": "^9.39.1",
 		"svelte-meta-tags": "^4.5.0",
 		"typescript": "^5.9.3"
 	},
