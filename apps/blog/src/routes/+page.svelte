@@ -25,7 +25,7 @@
 			{#if home.intro_chip}
 				<div class="mb-8">
 					<span
-						class="inline-block p-[2px] rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
+						class="inline-block p-[2px] rounded-full bg-gradient-to-r from-green-700 to-green-400"
 					>
 						<span
 							class="block px-5 py-2 rounded-full bg-[var(--background)] text-base font-medium shadow-md"
