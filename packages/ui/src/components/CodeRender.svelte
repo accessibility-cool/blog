@@ -58,7 +58,6 @@
 			// Try to auto-detect
 			const auto = hljs.highlightAuto(code);
 			highlighted = auto.value;
-			lang = auto.language || '';
 		} else {
 			highlighted = hljs.highlight(code, { language: lang }).value;
 		}

@@ -96,7 +96,7 @@ export const getPosts = async (): Promise<Post[]> => {
 				primary_tag: post.primary_tag ? mapTag(post.primary_tag) : undefined
 			}));
 	} catch (error) {
-		throw new Error(`Error fetching posts: ${error}`);
+		throw new Error(`Error fetching posts: ${error}`, { cause: error });
 		return [];
 	}
 };
