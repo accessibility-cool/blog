@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { MemberCard } from '@a11y.cool/ui';
-	import { animate } from '@a11y.cool/utils';
+	import { animate, getAnimateInitialClass } from '@a11y.cool/utils';
+
+	const animateInitial = getAnimateInitialClass();
 	import type { PageData } from './$types';
 	import { PersonSimpleCircle } from 'phosphor-svelte';
 
@@ -10,8 +12,8 @@
 
 {#if about}
 	<section
-		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
-		use:animate={{ delay: 0 }}
+		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4 {animateInitial}"
+		use:animate={{ delay: 100, triggerOnMount: true }}
 	>
 		<div class="flex flex-col justify-center items-center py-24">
 			{#if about.title}
@@ -27,8 +29,8 @@
 
 	{#if about.members.length}
 		<section
-			class="col-span-12 col-start-1 lg:col-span-12 lg:col-start-1 xl:col-span-8 xl:col-start-3 my-16 md:my-24 lg:my-32"
-			use:animate={{ delay: 200 }}
+			class="col-span-12 col-start-1 lg:col-span-12 lg:col-start-1 xl:col-span-8 xl:col-start-3 my-16 md:my-24 lg:my-32 {animateInitial}"
+			use:animate={{ delay: 250, triggerOnMount: true }}
 		>
 			{#if about.members_headline}
 				<div class="grid grid-cols-12">
@@ -42,7 +44,10 @@
 			{#if about.members.length >= 1}
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-stretch">
 					{#each about.members as member, index (member.name)}
-						<div use:animate={{ delay: 300 + index * 100 }}>
+						<div
+							class={animateInitial}
+							use:animate={{ delay: 350 + index * 100, triggerOnMount: true }}
+						>
 							<MemberCard {member} />
 						</div>
 					{/each}
@@ -53,8 +58,8 @@
 
 	{#if about.about_outro_headline && about.about_outro_description}
 		<section
-			class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
-			use:animate={{ delay: 400 }}
+			class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4 {animateInitial}"
+			use:animate={{ delay: 550, triggerOnMount: true }}
 		>
 			<div class="flex flex-col justify-center items-center py-24">
 				<PersonSimpleCircle

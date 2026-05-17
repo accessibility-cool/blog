@@ -18,7 +18,7 @@
 		browser?: boolean;
 	}>();
 
-	const isBrowser = browser ?? typeof window !== 'undefined';
+	const isBrowser = $derived(browser ?? typeof window !== 'undefined');
 
 	let showName = $state(false);
 	let buttonEl = $state<HTMLButtonElement | undefined>(undefined);

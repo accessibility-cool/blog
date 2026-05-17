@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { PostInfo, HtmlRender } from '@a11y.cool/ui';
-	import { animate, processHtml, slugify } from '@a11y.cool/utils';
+	import { animate, getAnimateInitialClass, processHtml, slugify } from '@a11y.cool/utils';
+
+	const animateInitial = getAnimateInitialClass();
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -17,11 +19,11 @@
 
 {#if post()}
 	<section
-		class="col-span-12 col-start-1 flex justify-center"
-		use:animate={{ delay: 0, triggerOnMount: true }}
+		class="col-span-12 col-start-1 flex justify-center {animateInitial}"
+		use:animate={{ delay: 100, triggerOnMount: true }}
 	>
 		<article class="pt-10 max-w-[580px] w-full">
-			<header class="mb-8" use:animate={{ delay: 50, triggerOnMount: true }}>
+			<header class="mb-8 {animateInitial}" use:animate={{ delay: 150, triggerOnMount: true }}>
 				<a
 					href="#{titleId()}"
 					class="no-underline hover:underline focus:underline focus-visible:outline-none"
@@ -36,12 +38,15 @@
 			</header>
 
 			{#if post().coverImage}
-				<div use:animate={{ delay: 100, triggerOnMount: true }}>
+				<div class={animateInitial} use:animate={{ delay: 200, triggerOnMount: true }}>
 					<img src={post().coverImage} alt={post().title} class="w-full h-auto rounded-lg mb-8" />
 				</div>
 			{/if}
 
-			<div class="prose prose-lg max-w-none" use:animate={{ delay: 150, triggerOnMount: true }}>
+			<div
+				class="prose prose-lg max-w-none {animateInitial}"
+				use:animate={{ delay: 250, triggerOnMount: true }}
+			>
 				{#if ast()}
 					<HtmlRender node={ast()!} />
 				{/if}

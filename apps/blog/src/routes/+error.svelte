@@ -1,5 +1,7 @@
 <script lang="ts">
-	import { animate } from '@a11y.cool/utils';
+	import { animate, getAnimateInitialClass } from '@a11y.cool/utils';
+
+	const animateInitial = getAnimateInitialClass();
 	import { Warning } from 'phosphor-svelte';
 	import { resolve } from '$app/paths';
 
@@ -23,8 +25,8 @@
 
 <!-- Error page with accessibility considerations -->
 <section
-	class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
-	use:animate={{ delay: 0 }}
+	class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4 {animateInitial}"
+	use:animate={{ delay: 100, triggerOnMount: true }}
 	role="main"
 	aria-labelledby="error-title"
 	aria-describedby="error-message"

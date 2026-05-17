@@ -4,7 +4,7 @@
 		size?: number;
 	}>();
 
-	const isBrowser = browser ?? typeof window !== 'undefined';
+	const isBrowser = $derived(browser ?? typeof window !== 'undefined');
 
 	let defaultSize = $state(160);
 	let isTouchDevice = $state(false);

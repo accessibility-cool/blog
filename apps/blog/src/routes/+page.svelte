@@ -1,25 +1,27 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { Card, Eyes } from '@a11y.cool/ui';
-	import { animate } from '@a11y.cool/utils';
-	import { ArticleNyTimes, ListChecks, CursorClick } from 'phosphor-svelte';
+	import { animate, getAnimateInitialClass } from '@a11y.cool/utils';
+	import { ArticleNyTimesIcon, ListChecksIcon, CursorClickIcon } from 'phosphor-svelte';
+
+	const animateInitial = getAnimateInitialClass();
 	import { browser } from '$app/environment';
 
 	let { data } = $props<{ data: PageData }>();
 	let { home } = $derived(data);
 
 	const iconComponents = {
-		ArticleNyTimes,
-		ListChecks,
-		CursorClick
+		ArticleNyTimes: ArticleNyTimesIcon,
+		ListChecks: ListChecksIcon,
+		CursorClick: CursorClickIcon
 	};
 </script>
 
 {#if home}
 	<!-- Hero (intro) section -->
 	<section
-		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-8 lg:col-start-3"
-		use:animate={{ delay: 0 }}
+		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-8 lg:col-start-3 {animateInitial}"
+		use:animate={{ delay: 100, triggerOnMount: true }}
 	>
 		<article class="flex flex-col justify-center items-center py-24">
 			{#if home.intro_chip}
@@ -51,8 +53,8 @@
 	<!-- Teaser cards section -->
 	{#if home.cards.length}
 		<section
-			class="col-span-12 col-start-1 lg:col-span-12 lg:col-start-1 xl:col-span-8 xl:col-start-3 my-16 md:my-24 lg:my-32"
-			use:animate={{ delay: 200 }}
+			class="col-span-12 col-start-1 lg:col-span-12 lg:col-start-1 xl:col-span-8 xl:col-start-3 my-16 md:my-24 lg:my-32 {animateInitial}"
+			use:animate={{ delay: 250, triggerOnMount: true }}
 		>
 			{#if home.cards_headline}
 				<div class="grid grid-cols-12">
@@ -66,7 +68,10 @@
 			{#if home.cards.length >= 1}
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
 					{#each home.cards as card, index (card.title)}
-						<div use:animate={{ delay: 300 + index * 100 }}>
+						<div
+							class={animateInitial}
+							use:animate={{ delay: 350 + index * 100, triggerOnMount: true }}
+						>
 							<Card
 								title={card.title}
 								iconComponent={iconComponents[card.icon as keyof typeof iconComponents]}
@@ -83,8 +88,8 @@
 
 <!-- Eyes section at the bottom of the page -->
 <section
-	class="col-span-12 flex justify-center items-center mt-16 md:mt-24 lg:mt-32"
-	use:animate={{ delay: 400 }}
+	class="col-span-12 flex justify-center items-center mt-16 md:mt-24 lg:mt-32 {animateInitial}"
+	use:animate={{ delay: 600, triggerOnMount: true }}
 >
 	<Eyes {browser} />
 </section>

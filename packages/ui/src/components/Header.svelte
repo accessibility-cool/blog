@@ -1,9 +1,19 @@
 <script lang="ts">
 	import Navigation from './Navigation.svelte';
+	import { animate, getAnimateInitialClass } from '@a11y.cool/utils';
+
+	type Props = {
+		entryDelay?: number;
+	};
+
+	let { entryDelay = 0 }: Props = $props();
+
+	const animateInitial = getAnimateInitialClass();
 </script>
 
 <header
-	class="col-span-12 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 xl:grid-cols-12 gap-4 md:gap-3 sm:gap-2 xs:gap-1 py-6"
+	class="col-span-12 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 xl:grid-cols-12 gap-4 md:gap-3 sm:gap-2 xs:gap-1 py-6 {animateInitial}"
+	use:animate={{ delay: entryDelay, triggerOnMount: true }}
 >
 	<div
 		class="col-span-3 sm:col-span-3 md:col-span-4 xl:col-span-6 pt-1 flex justify-start items-center"
