@@ -1,3 +1,3 @@
-export * from './src/global-utils';
-export * from './src/animation';
-export * from './src/html';
+export * from './src/global-utils.ts';
+export * from './src/animation.ts';
+export * from './src/html.ts';
