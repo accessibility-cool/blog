@@ -3,6 +3,17 @@ packages:
   - packages/*
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - '@turbo/darwin-64@2.9.15'
+  - '@turbo/darwin-arm64@2.9.15'
+  - '@turbo/gen@2.9.15'
+  - '@turbo/linux-64@2.9.15'
+  - '@turbo/linux-arm64@2.9.15'
+  - '@turbo/windows-64@2.9.15'
+  - '@turbo/windows-arm64@2.9.15'
+  - eslint-config-turbo@2.9.15
+  - eslint-plugin-turbo@2.9.15
+  - turbo@2.9.15
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - core-js-pure
