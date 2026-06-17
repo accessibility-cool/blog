@@ -26,13 +26,22 @@
 	]);
 
 	const isElement = (node: unknown): node is Element =>
-		node && typeof node === 'object' && 'type' in node && node.type === 'element';
+		typeof node === 'object' &&
+		node !== null &&
+		'type' in node &&
+		(node as Element).type === 'element';
 
 	const isRoot = (node: unknown): node is Root =>
-		node && typeof node === 'object' && 'type' in node && node.type === 'root';
+		typeof node === 'object' &&
+		node !== null &&
+		'type' in node &&
+		(node as Root).type === 'root';
 
 	const isText = (node: unknown): node is Text =>
-		node && typeof node === 'object' && 'type' in node && node.type === 'text';
+		typeof node === 'object' &&
+		node !== null &&
+		'type' in node &&
+		(node as Text).type === 'text';
 
 	const getLang = (className: string | undefined) => {
 		if (!className) return '';
@@ -41,7 +50,7 @@
 	};
 
 	const normalizeClass = (
-		value: string | number | boolean | (string | number)[] | undefined
+		value: string | number | boolean | (string | number)[] | null | undefined
 	): string => {
 		if (!value) return '';
 		if (Array.isArray(value)) return value.join(' ');

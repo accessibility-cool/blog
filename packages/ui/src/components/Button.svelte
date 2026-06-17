@@ -1,19 +1,24 @@
 <script lang="ts">
-	import type { Component, Snippet } from 'svelte';
+	import type { Snippet } from 'svelte';
+
+	type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
+	type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
+	type ButtonType = 'button' | 'submit' | 'reset';
+	type IconSnippet = Snippet<[{ class?: string; 'aria-hidden'?: string }]>;
 
 	let {
-		variant = 'default',
-		size = 'default',
+		variant = 'default' as ButtonVariant,
+		size = 'default' as ButtonSize,
 		class: className = '',
 		disabled = false,
-		type = 'button',
-		leftIcon = null as Component | null,
-		rightIcon = null as Component | null,
+		type = 'button' as ButtonType,
+		leftIcon = undefined as IconSnippet | undefined,
+		rightIcon = undefined as IconSnippet | undefined,
 		children = undefined as Snippet | undefined,
 		...props
 	} = $props();
 
-	const variants = {
+	const variants: Record<ButtonVariant, string> = {
 		default:
 			'bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
 		destructive:
@@ -26,7 +31,7 @@
 		link: 'text-primary underline-offset-4 hover:underline focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
 	};
 
-	const sizes = {
+	const sizes: Record<ButtonSize, string> = {
 		default: 'h-10 px-4 py-2',
 		sm: 'h-9 rounded-md px-3',
 		lg: 'h-11 rounded-md px-8',

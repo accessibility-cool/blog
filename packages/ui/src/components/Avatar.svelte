@@ -83,10 +83,9 @@
 		};
 	});
 
-	$effect(async () => {
+	$effect(() => {
 		if (showName && isBrowser && mounted) {
-			await tick();
-			updateTooltipPosition();
+			void tick().then(() => updateTooltipPosition());
 		}
 	});
 </script>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PostInfo from './PostInfo.svelte';
 	import { shortenExcerpt } from '@a11y.cool/utils';
-	import type { Post } from '@a11y.cool/data/src/types/post.type';
+	import type { Post } from '@a11y.cool/data';
 	export let post: Post;
 	export let excerptLength: number = 30;
 </script>
