@@ -4,19 +4,30 @@ import type { Post, Author, Tag } from '@a11y.cool/data/types/post.type';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-if (!process.env.VITE_GHOST_API_URL) {
-	throw new Error('VITE_GHOST_API_URL environment variable is not set');
+const ghostApiUrl = process.env.VITE_GHOST_API_URL;
+const ghostContentApiKey = process.env.VITE_GHOST_CONTENT_API_KEY;
+
+export function isGhostConfigured(): boolean {
+	return Boolean(ghostApiUrl && ghostContentApiKey);
 }
 
-if (!process.env.VITE_GHOST_CONTENT_API_KEY) {
-	throw new Error('VITE_GHOST_CONTENT_API_KEY environment variable is not set');
-}
+let contentApi: InstanceType<typeof GhostContentAPI> | null = null;
 
-export const contentApi = new GhostContentAPI({
-	url: process.env.VITE_GHOST_API_URL,
-	key: process.env.VITE_GHOST_CONTENT_API_KEY,
-	version: 'v5.0'
-});
+function getContentApi(): InstanceType<typeof GhostContentAPI> | null {
+	if (!isGhostConfigured()) {
+		return null;
+	}
+
+	if (!contentApi) {
+		contentApi = new GhostContentAPI({
+			url: ghostApiUrl!,
+			key: ghostContentApiKey!,
+			version: 'v5.0'
+		});
+	}
+
+	return contentApi;
+}
 
 function mapAuthor(author: unknown): Author {
 	const a = author as Record<string, unknown>;
@@ -53,8 +64,14 @@ function mapTag(tag: unknown): Tag {
 }
 
 export const getPosts = async (): Promise<Post[]> => {
+	const api = getContentApi();
+	if (!api) {
+		console.warn('Ghost API is not configured; returning no posts.');
+		return [];
+	}
+
 	try {
-		const posts = await contentApi.posts.browse({
+		const posts = await api.posts.browse({
 			limit: 'all',
 			include: ['tags', 'authors'],
 			fields: [
@@ -72,7 +89,7 @@ export const getPosts = async (): Promise<Post[]> => {
 		});
 
 		if (!Array.isArray(posts)) {
-			throw new Error(`Ghost API returned non-array posts: ${posts}`);
+			console.warn('Ghost API returned non-array posts:', posts);
 			return [];
 		}
 
@@ -95,15 +112,21 @@ export const getPosts = async (): Promise<Post[]> => {
 				primary_author: post.primary_author ? mapAuthor(post.primary_author) : undefined,
 				primary_tag: post.primary_tag ? mapTag(post.primary_tag) : undefined
 			}));
-	} catch (error) {
-		throw new Error(`Error fetching posts: ${error}`, { cause: error });
+	} catch (err) {
+		console.warn('Failed to fetch posts from Ghost API:', err);
 		return [];
 	}
 };
 
 export const getPost = async (slug: string): Promise<Post | null> => {
+	const api = getContentApi();
+	if (!api) {
+		console.warn('Ghost API is not configured; post not available.');
+		return null;
+	}
+
 	try {
-		const post = await contentApi.posts.read({ slug }, { include: ['tags', 'authors'] });
+		const post = await api.posts.read({ slug }, { include: ['tags', 'authors'] });
 
 		if (!post?.id || !post?.title || !post?.slug || !post?.html) {
 			return null;
@@ -124,8 +147,8 @@ export const getPost = async (slug: string): Promise<Post | null> => {
 			primary_author: post.primary_author ? mapAuthor(post.primary_author) : undefined,
 			primary_tag: post.primary_tag ? mapTag(post.primary_tag) : undefined
 		};
-	} catch {
-		// Return null instead of throwing for not found errors
+	} catch (err) {
+		console.warn(`Failed to fetch post "${slug}" from Ghost API:`, err);
 		return null;
 	}
 };

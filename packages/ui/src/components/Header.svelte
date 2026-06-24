@@ -2,11 +2,20 @@
 	import Navigation from './Navigation.svelte';
 	import { animate, getAnimateInitialClass } from '@a11y.cool/utils';
 
-	type Props = {
-		entryDelay?: number;
+	type NavItem = {
+		label: string;
+		href: string;
 	};
 
-	let { entryDelay = 0 }: Props = $props();
+	type Props = {
+		entryDelay?: number;
+		navItems?: NavItem[];
+	};
+
+	let {
+		entryDelay = 0,
+		navItems = [{ label: 'About Us', href: '/about' }]
+	}: Props = $props();
 
 	const animateInitial = getAnimateInitialClass();
 </script>
@@ -93,11 +102,6 @@
 		</a>
 	</div>
 	<div class="col-span-1 sm:col-span-3 md:col-span-4 xl:col-span-6 flex justify-end items-center">
-		<Navigation
-			items={[
-				{ label: 'Blog', href: '/blog' },
-				{ label: 'About Us', href: '/about' }
-			]}
-		/>
+		<Navigation items={navItems} />
 	</div>
 </header>

@@ -1,7 +1,6 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { error } from '@sveltejs/kit';
 import type { Page } from '../types/page.type';
 import type { About } from '../types/about.type';
 import type { Home } from '../types/home.type';
@@ -97,7 +96,12 @@ export const dataQueryHome: string = `query {
     }
 }`;
 
-const directusFetch = async (query: string): Promise<Record<string, unknown>> => {
+const directusFetch = async (query: string): Promise<Record<string, unknown> | null> => {
+	if (!apiUrl || !apiToken) {
+		console.warn('Directus API is not configured; skipping data fetch.');
+		return null;
+	}
+
 	const endpoint = `${apiUrl}/graphql`;
 
 	try {
@@ -113,18 +117,19 @@ const directusFetch = async (query: string): Promise<Record<string, unknown>> =>
 		const result = await response.json();
 
 		if (result.errors) {
-			console.error('GraphQL errors:', JSON.stringify(result.errors, null, 2));
-			error(500, `GraphQL query failed: ${result.errors[0].message}`);
+			console.warn('GraphQL errors:', JSON.stringify(result.errors, null, 2));
+			return null;
 		}
 
 		if (!response.ok) {
-			error(response.status, 'API request failed');
+			console.warn(`Directus API request failed with status ${response.status}`);
+			return null;
 		}
 
-		return result.data;
+		return result.data ?? null;
 	} catch (err) {
-		console.error('Fetch error:', err);
-		error(500, 'An unexpected error occurred while fetching data.');
+		console.warn('Failed to fetch data from Directus API:', err);
+		return null;
 	}
 };
 
@@ -137,26 +142,21 @@ export const dataQueryPage = (pageTitle: string): string => `query {
     }
 }`;
 
-export const getPage = async (title: string): Promise<Page> => {
-	const data = (await directusFetch(dataQueryPage(title))) as { pages: Page[] };
-	if (data?.pages?.length > 0) {
-		return data.pages[0];
+export const getPage = async (title: string): Promise<Page | null> => {
+	const data = (await directusFetch(dataQueryPage(title))) as { pages?: Page[] } | null;
+	const pages = data?.pages;
+	if (pages && pages.length > 0) {
+		return pages[0];
 	}
-	error(404, `Page with title "${title}" not found.`);
+	return null;
 };
 
-export const getAbout = async (): Promise<About> => {
-	const data = (await directusFetch(dataQueryAbout)) as { about: About };
-	if (data?.about) {
-		return data.about;
-	}
-	error(404, `About page data not found.`);
+export const getAbout = async (): Promise<About | null> => {
+	const data = (await directusFetch(dataQueryAbout)) as { about: About } | null;
+	return data?.about ?? null;
 };
 
-export const getHome = async (): Promise<Home> => {
-	const data = (await directusFetch(dataQueryHome)) as { home: Home };
-	if (data?.home) {
-		return data.home;
-	}
-	error(404, `Home page data not found.`);
+export const getHome = async (): Promise<Home | null> => {
+	const data = (await directusFetch(dataQueryHome)) as { home: Home } | null;
+	return data?.home ?? null;
 };

@@ -23,6 +23,8 @@
 				>
 					<PostPreview {post} excerptLength={30} />
 				</li>
+			{:else}
+				<li class="list-none text-muted-foreground">No posts available at the moment.</li>
 			{/each}
 		</ul>
 	</div>

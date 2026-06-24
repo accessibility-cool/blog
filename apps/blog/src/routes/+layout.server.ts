@@ -1,6 +1,7 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { LayoutServerLoad } from './$types';
 import { defaultMetaTags, getAbout, getHome } from '@a11y.cool/data';
+import { getNavItems, isBlogEnabled } from '$lib/features';
 
 export const load: LayoutServerLoad = (async (event) => {
 	event.setHeaders({
@@ -21,6 +22,8 @@ export const load: LayoutServerLoad = (async (event) => {
 	return {
 		home,
 		about,
-		baseMetaTags
+		baseMetaTags,
+		blogEnabled: isBlogEnabled(),
+		navItems: getNavItems()
 	};
 }) satisfies LayoutServerLoad;

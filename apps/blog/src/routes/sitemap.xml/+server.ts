@@ -1,4 +1,5 @@
 import { getPosts } from '@a11y.cool/data';
+import { isBlogEnabled } from '$lib/features';
 
 type SitemapPage = {
 	url: string;
@@ -11,22 +12,24 @@ export const GET = async ({ url }: { url: URL }) => {
 	const posts = await getPosts();
 	const baseUrl = url.origin;
 
+	const blogEnabled = isBlogEnabled();
+
 	// Static pages (excluding sensitive pages with personal information)
 	const staticPages: SitemapPage[] = [
 		{ url: '/', priority: '1.0', changefreq: 'weekly' },
 		{ url: '/about', priority: '0.8', changefreq: 'monthly' },
-		{ url: '/blog', priority: '0.9', changefreq: 'weekly' }
+		...(blogEnabled ? [{ url: '/blog', priority: '0.9', changefreq: 'weekly' as const }] : [])
 	];
 
-	// Blog posts
-	const blogPages: SitemapPage[] = posts.map((post) => ({
-		url: `/blog/${post.slug}`,
-		priority: '0.7',
-		changefreq: 'monthly',
-		lastmod: post.publishedAt ? new Date(post.publishedAt).toISOString() : undefined
-	}));
+	const blogPages: SitemapPage[] = blogEnabled
+		? posts.map((post) => ({
+				url: `/blog/${post.slug}`,
+				priority: '0.7',
+				changefreq: 'monthly',
+				lastmod: post.publishedAt ? new Date(post.publishedAt).toISOString() : undefined
+			}))
+		: [];
 
-	// Combine all pages
 	const allPages = [...staticPages, ...blogPages];
 
 	// Generate XML sitemap
