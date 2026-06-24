@@ -15,6 +15,13 @@ minimumReleaseAgeExclude:
   - eslint-plugin-turbo@2.9.15
   - turbo@2.9.15
   - '@sveltejs/kit@2.65.2'
+  - '@playwright/test@1.61.1'
+  - '@sveltejs/load-config@0.2.0'
+  - autoprefixer@10.5.1
+  - playwright-core@1.61.1
+  - playwright@1.61.1
+  - svelte-check@4.7.1
+  - svelte@5.56.4
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - core-js-pure
