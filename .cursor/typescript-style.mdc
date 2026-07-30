@@ -1,0 +1,204 @@
+---
+description: TypeScript code style conventions for the a11y.cool monorepo
+globs:
+    - '**/*.ts'
+    - '**/*.svelte'
+alwaysApply: false
+docs:
+    - name: TypeScript Handbook
+      url: https://www.typescriptlang.org/docs/handbook/
+    - name: TypeScript tsconfig Reference
+      url: https://www.typescriptlang.org/tsconfig/
+---
+
+# TypeScript Code Style Guide
+
+This rule defines the TypeScript code style conventions for the a11y.cool monorepo. Follow these
+rules for all TypeScript and Svelte files.
+
+## Parameter Passing
+
+Pass parameters as a single object (named parameters pattern) once a function takes more than one
+argument, or when the arguments are the same primitive type:
+
+```ts
+// ✅ Good
+function processUser({ id, name }: { id: string; name: string }) {
+	return { id, displayName: name };
+}
+
+// ✅ Fine — single, unambiguous argument
+export const getPost = async (slug: string): Promise<Post | null> => { … };
+
+// ❌ Bad — positional same-typed args are easy to swap
+function processUser(id: string, name: string) { … }
+```
+
+## Type Safety
+
+- **Never use `any`.** This includes `as any` assertions and generic `T = any` defaults.
+- Use explicit types, interfaces, or `unknown` with type guards.
+- When mapping an untyped third-party payload, take `unknown` and narrow it — the Ghost mappers in
+  `packages/data/src/ghost/ghost.api.ts` are the reference:
+
+    ```ts
+    function mapTag(tag: unknown): Tag {
+    	const t = tag as Record<string, unknown>;
+    	return {
+    		id: (t.id as string) || '',
+    		name: (t.name as string) || ''
+    	};
+    }
+    ```
+
+- **Use union types, not enums.** Enums generate runtime code; prefer `type Status = 'active' | 'inactive'`.
+- Prefer `interface` for object shapes that may be extended; `type` for aliases and unions.
+- Use `satisfies` to validate a literal against a type without widening it — the repo uses this for
+  `MetaTagsProps` and `PageServerLoad`.
+
+## Imports & Path Aliases
+
+Use the project's defined aliases — **never** deep relative paths across package boundaries.
+
+| Alias | Resolves to |
+|---|---|
+| `$lib/*` | `apps/blog/src/lib/*` |
+| `$env/dynamic/public` | SvelteKit public runtime env (app only) |
+| `@a11y.cool/data` | `packages/data` — shared types, Ghost + Directus clients |
+| `@a11y.cool/ui` | `packages/ui` — Svelte component library |
+| `@a11y.cool/utils` | `packages/utils` — pure functions (no shared types) |
+
+```ts
+// ✅ Good
+import type { Post } from '@a11y.cool/data';
+import { getPost } from '@a11y.cool/data';
+import { PostInfo, HtmlRender } from '@a11y.cool/ui';
+import { formatDate, processHtml } from '@a11y.cool/utils';
+import { isBlogEnabled } from '$lib/features';
+
+// ❌ Bad — relative path crossing a package boundary
+import type { Post } from '../../../packages/data/src/types/post.type';
+```
+
+### Shared types (`@a11y.cool/data`)
+
+- **All** types used across apps or packages live in `packages/data/src/types/` (one concern per
+  `*.type.ts` file: `post.type.ts`, `page.type.ts`, `home.type.ts`, `about.type.ts`).
+- Export from `packages/data/src/index.ts` so consumers import `@a11y.cool/data` (deep imports via
+  `@a11y.cool/data/types/…` also work and are used inside the package itself).
+- `@a11y.cool/ui` may **re-export** types for convenience; it must not **define** shared interfaces.
+- `@a11y.cool/utils` is for pure functions only — the types it exports (`AnimationOptions`,
+  `AnimationType`) describe its own API surface, not shared domain shapes.
+
+## Named Exports
+
+Use named exports everywhere. The only default exports are `.svelte` component files, which the
+`packages/ui` barrel converts to named exports:
+
+```ts
+// ✅ Good
+export const getPosts = async (): Promise<Post[]> => { … };
+export type { Post };
+export { default as Button } from './src/components/Button.svelte';
+
+// ❌ Bad
+export default function getPosts() { … }
+```
+
+## Classes
+
+Classes are **only** appropriate for Svelte 5 shareable rune patterns. For pure logic, prefer plain
+functions or a factory that returns an object — as `createAnimation()` does in
+`packages/utils/src/animation.ts`.
+
+```ts
+// ❌ Bad — class for logic that should be a function
+class DateFormatter {
+	format(date: Date) {
+		return date.toISOString();
+	}
+}
+```
+
+## Control Flow
+
+- **Always wrap `if` bodies in curly braces**, even for single-line blocks.
+- Use early returns and guard clauses; avoid deeply nested conditionals.
+
+```ts
+// ✅ Good
+if (!isGhostConfigured()) {
+	return [];
+}
+return fetchPosts();
+
+// ❌ Bad
+if (isActive) doSomething();
+else doOtherThing();
+```
+
+## Error Handling
+
+Data-fetching functions in `packages/data` **degrade, they do not throw**. When a CMS is
+unconfigured or unreachable they log a warning and return an empty/null result so the site still
+renders. Preserve that contract when adding a fetcher:
+
+```ts
+export const getThing = async (): Promise<Thing | null> => {
+	if (!apiUrl || !apiToken) {
+		console.warn('Directus API is not configured; skipping data fetch.');
+		return null;
+	}
+
+	try {
+		// …
+	} catch (err) {
+		console.warn('Failed to fetch thing:', err);
+		return null;
+	}
+};
+```
+
+Route-level `load` functions decide what a missing result means — `error(404, …)` for a missing post,
+a rendered empty state for missing page content.
+
+## Comments and Documentation
+
+- **Do not comment obvious things.** Never narrate what the code does.
+- **Only document non-obvious intent**, trade-offs, or constraints.
+- Use JSDoc for exported functions intended for consumers of a package.
+
+```ts
+// ✅ Good — explains a non-obvious constraint
+/** CSS class that hides the element before its enter animation (use on the same node as `use:animate`). */
+export const getAnimateInitialClass = (animationClass = 'fly-in-up'): string => …;
+
+// ❌ Bad — narrates what the code does
+// Increment the counter
+count++;
+```
+
+## Utility Functions
+
+- Place shared helpers in `packages/utils/src/` and export them from `packages/utils/index.ts`.
+- Place app-specific helpers in `apps/blog/src/lib/`.
+
+## Environment Variables
+
+| Where | How to read | Example |
+|---|---|---|
+| `packages/data` (server-only) | `process.env` + `dotenv` | `VITE_GHOST_API_URL`, `VITE_API_TOKEN` |
+| `apps/blog` (public, runtime) | `$env/dynamic/public` | `PUBLIC_BLOG_ENABLED` |
+
+Never read a token in code that can reach the browser. Always guard on the variable being present
+and degrade gracefully rather than throwing at import time.
+
+## Strict TypeScript Config
+
+All packages extend `@a11y.cool/typescript-config/svelte.json`. Key settings active:
+
+- `strict: true`
+- `moduleResolution: "bundler"`
+- `isolatedModules: true` — use `import type` for type-only imports
+- `checkJs: true` — `.js` config files are type-checked too
+- `noEmit: true`

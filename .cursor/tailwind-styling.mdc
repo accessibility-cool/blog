@@ -1,0 +1,248 @@
+---
+description: Tailwind CSS v4 best practices for the a11y.cool monorepo
+globs:
+    - 'packages/ui/**/*.{svelte,ts,css}'
+    - 'apps/blog/**/*.{svelte,css}'
+alwaysApply: true
+docs:
+    - name: Tailwind CSS v4 Documentation
+      url: https://tailwindcss.com/docs
+    - name: Tailwind v4 Theme Variables
+      url: https://tailwindcss.com/docs/theme
+    - name: Tailwind v4 Functions & Directives
+      url: https://tailwindcss.com/docs/functions-and-directives
+---
+
+# Tailwind CSS v4 Styling Practices
+
+This project uses **Tailwind CSS v4** — CSS-first configuration, no `tailwind.config.js`.
+
+> **Never use UnoCSS.** Never add a `tailwind.config.js`/`.ts` — v4 configures through CSS.
+
+## Integration: Vite Plugin
+
+`apps/blog/vite.config.ts` registers `@tailwindcss/vite`:
+
+```ts
+import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+	plugins: [sveltekit(), tailwindcss(), devtoolsJson()]
+});
+```
+
+### App entry CSS
+
+```css
+/* apps/blog/src/global.css */
+@import 'tailwindcss';
+@import '@a11y.cool/ui/globals.css';
+
+@source '../node_modules/@a11y.cool/ui';
+```
+
+The `@source` directive is **required** — without it Tailwind will not scan `@a11y.cool/ui`
+components and their classes will be missing from the build. Add a new `@source` line whenever
+another workspace package starts emitting classes.
+
+## CSS Files: Always go in `packages/ui/src/styles/`
+
+All shared/global CSS rules, custom properties, resets, and base styles **must** live in
+`packages/ui/src/styles/`. Never add global CSS to app-level files unless it is truly app-specific.
+
+```
+packages/ui/src/styles/
+├── globals.css       ← CSS custom properties, @theme inline, resets, base rules
+├── fonts.css         ← @font-face declarations (Geist, Geist Mono, Clash Grotesk)
+├── typography.css    ← prose / typography base styles
+└── code-themes/      ← a11y-dark.css, a11y-light.css for highlight.js output
+```
+
+## Design Tokens
+
+Tokens are defined twice, on purpose:
+
+1. **Raw values** as CSS custom properties on `:root` (and the dark-mode override) in `globals.css`
+2. **Tailwind utilities** generated from them via `@theme inline`
+
+```css
+:root {
+	--background: hsl(0 0% 99%);
+	--foreground: hsl(0 0% 9%);
+	--border-card: hsla(0 0% 10% / 0.1);
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-border: var(--border-card);
+
+	--radius-card: 16px;
+	--radius-button: 5px;
+	--shadow-card: var(--shadow-card);
+}
+```
+
+`@theme inline` (not plain `@theme`) is what lets the generated utilities follow the runtime value of
+the custom property — required for dark mode to work without regenerating classes.
+
+### Adding a token
+
+1. Add the raw value to `:root` in `globals.css` (and to the dark override if it differs)
+2. Map it under `@theme inline` with the correct namespace prefix:
+   `--color-*`, `--radius-*`, `--shadow-*`, `--text-*`, `--font-*`, `--spacing-*`
+3. Use the generated utility (`bg-<name>`, `rounded-<name>`, `shadow-<name>`)
+
+Never use raw hex values or Tailwind's default palette in components — always use the project tokens.
+
+```svelte
+<!-- ✅ Good -->
+<div class="bg-background text-foreground border border-border-input rounded-card shadow-card" />
+
+<!-- ❌ Bad -->
+<div class="bg-[#fcfcfc] text-zinc-900 border-gray-200" />
+```
+
+> **Before using a token, confirm it exists in `@theme inline`.** An unmapped name is not an error —
+> Tailwind simply emits nothing, so the class silently does nothing. There is no `primary`,
+> `secondary`, `ring`, `input`, `card`, or `popover` in this system; the shadcn-style names do not
+> apply here. Use `dark`/`line`, `muted`, `accent`, `border-input`, `destructive` instead, or add and
+> map a new token.
+
+## Class Organization
+
+Organize utility classes in logical groups:
+
+1. Layout/positioning (`flex`, `grid`, `relative`, `z-10`)
+2. Sizing (`w-full`, `h-10`, `max-w-sm`)
+3. Spacing (`p-6`, `gap-4`, `mt-2`)
+4. Visual styles (`bg-background`, `border`, `rounded-card`)
+5. Typography (`text-sm`, `font-medium`, `text-foreground`)
+6. Interactive states (`hover:bg-muted`, `focus-visible:ring-2`)
+7. Responsive variants last (`md:flex-row`, `lg:hidden`)
+
+## Responsive Design
+
+- Mobile-first: base classes for mobile, prefixed for larger screens
+- Use responsive prefixes: `sm:`, `md:`, `lg:`, `xl:`, `2xl:`
+
+## Dynamic Classes
+
+Tailwind scans source files for **complete, literal** class strings. Never build a class name by
+concatenation:
+
+```svelte
+<!-- ❌ Bad — never generated -->
+<div class="bg-{color}-500" />
+<div class={`text-${size}`} />
+
+<!-- ✅ Good — full strings in a lookup map -->
+<script lang="ts">
+	const variants: Record<Variant, string> = {
+		default: 'bg-dark text-line',
+		outline: 'border border-border-input hover:bg-muted'
+	};
+</script>
+<div class={variants[variant]} />
+```
+
+This project has no `cn()` helper. Merge classes with a `$derived` template string and always put the
+incoming `className` **last** so callers can override:
+
+```svelte
+<script lang="ts">
+	let { variant = 'default', class: className = '' } = $props();
+
+	const buttonClass = $derived(
+		`inline-flex items-center rounded-button ${variants[variant]} ${className}`
+	);
+</script>
+
+<button class={buttonClass}>…</button>
+```
+
+## Color Usage & Dark Mode
+
+Dark mode is **token-driven**, not variant-driven. `globals.css` re-declares every custom property
+inside `@media (prefers-color-scheme: dark)`, so a component written with tokens themes itself:
+
+```svelte
+<!-- ✅ Good — adapts automatically, no dark: variant needed -->
+<div class="bg-background text-foreground border-border-input" />
+
+<!-- ❌ Bad — hardcodes both themes, and duplicates what the token already does -->
+<div class="bg-white dark:bg-black text-black dark:text-white" />
+```
+
+Reach for a `dark:` variant only when the two themes need genuinely different *layout* or *opacity*,
+not different colors. There is no `.dark` class toggle — `dark:` resolves via `prefers-color-scheme`.
+
+- Apply opacity with slash notation: `bg-dark/40`
+- `--line` and `--contrast` invert between themes; use them for elements that must stay opposite the background
+
+## Layout Patterns
+
+- Use `flex` and `grid` for layouts
+- Use `gap` utilities instead of margins between flex/grid children
+- Use the defined radius tokens: `rounded-card`, `rounded-card-sm`, `rounded-input`, `rounded-button`
+
+## Animations
+
+`tailwindcss-animate` is **not** installed — there is no `animate-in` / `animate-out` /
+`fade-in-0` / `zoom-in-95`. Do not write those classes; they produce nothing.
+
+Instead, `globals.css` defines named animations under `@theme inline` with their `@keyframes`
+co-located. Tailwind generates an `animate-<name>` utility for each:
+
+| Utility | Use for |
+|---|---|
+| `animate-fade-in` / `animate-fade-out` | overlays, tooltips |
+| `animate-scale-in` / `animate-scale-out` | dialogs, popovers |
+| `animate-accordion-down` / `animate-accordion-up` | Bits UI Accordion + Collapsible (uses `--bits-accordion-content-height`) |
+| `animate-enter-from-left` / `-right`, `animate-exit-to-left` / `-right` | tabs, navigation menus |
+| `animate-fly-in-up`, `animate-fly-in-up-fast` | on-scroll content reveals |
+| `animate-caret-blink` | text-input carets |
+
+Add a new animation by declaring `--animate-<name>` **and** its `@keyframes` inside the same
+`@theme inline` block — a keyframe outside that block will not be picked up.
+
+## Bits UI + Tailwind
+
+Bits UI sets `data-state="open"` / `data-state="closed"` on animated elements. Combine those data
+attribute variants with the project's `animate-*` utilities:
+
+```svelte
+<Dialog.Content
+	class="data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out"
+/>
+
+<Accordion.Content
+	class="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up"
+/>
+```
+
+Always define **both** the open and closed variant — the exit animation will not run otherwise.
+See [bitsui-components.mdc](mdc:.cursor/bitsui-components.mdc).
+
+## Accessibility
+
+Respect `prefers-reduced-motion` for anything decorative — this is an accessibility project; motion
+rules are not optional. `globals.css` already has a global `@media (prefers-reduced-motion: reduce)`
+block, and the `animate` action from `@a11y.cool/utils` bails out entirely when reduce is set.
+
+For scroll-reveal animations, use the action rather than a bare `animate-*` class — it handles the
+IntersectionObserver, the pre-animation hidden state, and reduced motion for you:
+
+```svelte
+<script lang="ts">
+	import { animate, getAnimateInitialClass } from '@a11y.cool/utils';
+</script>
+
+<section use:animate={{ animationClass: 'fly-in-up', delay: 100 }} class={getAnimateInitialClass('fly-in-up')}>
+	…
+</section>
+```
+
+`getAnimateInitialClass()` must be on the same node so the hidden state is present in the SSR HTML
+before hydration. See [accessibility.mdc](mdc:.cursor/accessibility.mdc).

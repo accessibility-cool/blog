@@ -1,0 +1,27 @@
+{
+	"permissions": {
+		"allow": [
+			"Bash(pnpm*)",
+			"Bash(turbo*)",
+			"Bash(node*)",
+			"Bash(ncu*)",
+			"Bash(npx svelte-check*)",
+			"Bash(npm view*)",
+			"Bash(git*)",
+			"Bash(gh*)"
+		],
+		"deny": ["Bash(rm -rf /*)", "Bash(curl* | bash*)", "Bash(wget* | bash*)"]
+	},
+	"hooks": {
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash -c 'echo \"[a11y.cool] Session complete. Verify with: pnpm --filter a11y.cool-website check && pnpm lint\" >&2'"
+					}
+				]
+			}
+		]
+	}
+}

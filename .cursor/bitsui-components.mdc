@@ -1,0 +1,348 @@
+---
+description: Bits UI component library usage patterns for packages/ui
+globs:
+    - 'packages/ui/**/*.{svelte,ts}'
+    - 'apps/blog/**/*.svelte'
+alwaysApply: true
+docs:
+    - name: Bits UI Documentation (LLM-optimised)
+      url: https://bits-ui.com/llms.txt
+    - name: Bits UI Introduction
+      url: https://bits-ui.com/docs/introduction/llms.txt
+    - name: Bits UI State Management
+      url: https://bits-ui.com/docs/state-management/llms.txt
+    - name: Bits UI Styling Guide
+      url: https://bits-ui.com/docs/styling/llms.txt
+    - name: Bits UI Child Snippet (Render Delegation)
+      url: https://bits-ui.com/docs/child-snippet/llms.txt
+    - name: Bits UI mergeProps Utility
+      url: https://bits-ui.com/docs/utilities/merge-props/llms.txt
+---
+
+# Bits UI Component Patterns
+
+Bits UI is the headless component primitive layer for `packages/ui`. Components are **completely
+unstyled** — all styling is applied via Tailwind v4 utility classes. They provide accessible,
+keyboard-navigable behaviour out of the box.
+
+> **Never use UnoCSS.** This monorepo uses **Tailwind CSS v4** exclusively — see
+> [tailwind-styling.mdc](mdc:.cursor/tailwind-styling.mdc).
+
+`bits-ui` is a dependency of `packages/ui` only. Reach for it whenever you need an interactive
+widget — dialog, popover, select, tabs, accordion — instead of hand-rolling ARIA.
+
+## Core Philosophy
+
+- Components ship with **no CSS** — you own the styles entirely
+- **WAI-ARIA compliant** — keyboard navigation and screen reader support built-in
+- **Svelte 5 native** — uses runes, snippets, and the `child` snippet for render delegation
+- **Composable** — components are primitives, not black boxes
+
+## Installing & Importing
+
+```ts
+// In packages/ui components
+import { Dialog, Accordion } from 'bits-ui';
+
+// In apps/blog — always import the wrapper from the shared UI package
+import { Header, Card } from '@a11y.cool/ui';
+```
+
+Never import directly from `bits-ui` in `apps/blog`. Wrap Bits UI primitives in a
+`packages/ui/src/components/*.svelte` component and export it from `packages/ui/index.ts`.
+
+## Component Anatomy
+
+Every Bits UI component is composed of named sub-components (e.g. `Dialog.Root`, `Dialog.Trigger`,
+`Dialog.Content`). Access them via the named import.
+
+```svelte
+<script lang="ts">
+	import { Dialog } from 'bits-ui';
+</script>
+
+<Dialog.Root>
+	<Dialog.Trigger>Open</Dialog.Trigger>
+	<Dialog.Portal>
+		<Dialog.Overlay />
+		<Dialog.Content>
+			<Dialog.Title>Title</Dialog.Title>
+			<Dialog.Description>Description</Dialog.Description>
+			<Dialog.Close>Close</Dialog.Close>
+		</Dialog.Content>
+	</Dialog.Portal>
+</Dialog.Root>
+```
+
+## Wrapping Bits UI in `packages/ui`
+
+Always wrap Bits UI primitives in a `packages/ui` component. Apply Tailwind classes with project
+tokens and expose a clean API. This repo has **no `cn()` helper** — merge with a `$derived` template
+string, `className` last:
+
+```svelte
+<!-- packages/ui/src/components/Dialog.svelte -->
+<script lang="ts">
+	import { Dialog } from 'bits-ui';
+	import type { Snippet } from 'svelte';
+
+	let {
+		open = $bindable(false),
+		title,
+		description,
+		children,
+		trigger,
+		class: className = ''
+	}: {
+		open?: boolean;
+		title: string;
+		description?: string;
+		children: Snippet;
+		trigger: Snippet;
+		class?: string;
+	} = $props();
+
+	const contentClass = $derived(
+		`fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2
+		 bg-background rounded-card border border-border-input p-6 shadow-card
+		 data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out ${className}`
+	);
+</script>
+
+<Dialog.Root bind:open>
+	<Dialog.Trigger>
+		{@render trigger()}
+	</Dialog.Trigger>
+	<Dialog.Portal>
+		<Dialog.Overlay
+			class="fixed inset-0 z-50 bg-dark/40 backdrop-blur-sm
+			       data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out"
+		/>
+		<Dialog.Content class={contentClass}>
+			<Dialog.Title class="text-lg font-semibold text-foreground">{title}</Dialog.Title>
+			{#if description}
+				<Dialog.Description class="mt-1 text-sm text-muted-foreground">
+					{description}
+				</Dialog.Description>
+			{/if}
+			<div class="mt-4">
+				{@render children()}
+			</div>
+			<Dialog.Close class="absolute right-4 top-4 text-muted-foreground hover:text-foreground" />
+		</Dialog.Content>
+	</Dialog.Portal>
+</Dialog.Root>
+```
+
+Then add it to the root barrel:
+
+```ts
+// packages/ui/index.ts
+export { default as Dialog } from './src/components/Dialog.svelte';
+```
+
+## Styling Approach
+
+Bits UI adds `data-*` attributes to elements for state-based styling. Use these with Tailwind
+variants:
+
+```svelte
+<Accordion.Trigger
+	class="flex w-full items-center justify-between py-3 text-sm font-medium
+	       data-[state=open]:text-accent-foreground data-[disabled]:opacity-50"
+/>
+
+<Checkbox.Root
+	class="size-4 rounded-button border border-border-input
+	       data-[state=checked]:bg-dark data-[state=checked]:border-dark"
+/>
+```
+
+Common Bits UI data attributes:
+
+| Attribute | Values | When applied |
+|---|---|---|
+| `data-state` | `open` / `closed` | Toggleable components (dialog, accordion, etc.) |
+| `data-state` | `checked` / `unchecked` / `indeterminate` | Checkbox, Switch |
+| `data-disabled` | `""` | When `disabled` prop is set |
+| `data-highlighted` | `""` | Focused/hovered menu/select item |
+| `data-placeholder` | `""` | Select with no value |
+| `data-orientation` | `horizontal` / `vertical` | Oriented components |
+
+## Animations
+
+`tailwindcss-animate` is **not** installed. Do not write `animate-in`, `animate-out`, `fade-in-0`, or
+`zoom-in-95` — those classes do not exist here and produce nothing.
+
+Use the project's named animations from `@theme inline` in `packages/ui/src/styles/globals.css`:
+
+```svelte
+<!-- Fade (overlays, tooltips) -->
+class="data-[state=open]:animate-fade-in data-[state=closed]:animate-fade-out"
+
+<!-- Scale (dialogs, popovers) -->
+class="data-[state=open]:animate-scale-in data-[state=closed]:animate-scale-out"
+
+<!-- Slide (tabs, navigation menus) -->
+class="data-[state=open]:animate-enter-from-right data-[state=closed]:animate-exit-to-right"
+```
+
+### Height animations (Accordion, Collapsible)
+
+`animate-accordion-down` / `animate-accordion-up` already exist and read
+`--bits-accordion-content-height`, the CSS variable Bits UI measures for you:
+
+```svelte
+<Accordion.Content
+	class="overflow-hidden
+	       data-[state=open]:animate-accordion-down
+	       data-[state=closed]:animate-accordion-up"
+/>
+```
+
+Always define **both** the open and closed variant — the exit animation will not run otherwise.
+
+If you need a new animation, add `--animate-<name>` **and** its `@keyframes` inside the same
+`@theme inline` block in `globals.css`.
+
+### Transitions with the `child` snippet
+
+When you need Svelte's `transition:` directive instead of CSS animations:
+
+```svelte
+<!-- Floating content (Tooltip, Popover, Select, Dropdown) -->
+<Tooltip.Content>
+	{#snippet child({ wrapperProps, props, open })}
+		{#if open}
+			<div {...wrapperProps}>
+				<!-- wrapperProps handles positioning — NEVER style this div -->
+				<div {...props} transition:fade={{ duration: 150 }} class="…tooltip styles…">
+					Tooltip text
+				</div>
+			</div>
+		{/if}
+	{/snippet}
+</Tooltip.Content>
+
+<!-- Non-floating content (Dialog) -->
+<Dialog.Content>
+	{#snippet child({ props, open })}
+		{#if open}
+			<div {...props} transition:scale={{ start: 0.95, duration: 200 }}>Dialog content</div>
+		{/if}
+	{/snippet}
+</Dialog.Content>
+```
+
+> **Critical rule for floating components** (`Tooltip.Content`, `Popover.Content`, `Select.Content`,
+> `DropdownMenu.Content`, `Combobox.Content`):
+> - Always use the two-level structure: outer `{...wrapperProps}` + inner `{...props}`
+> - Never add styles or classes to the `wrapperProps` element — it handles positioning
+> - All styling goes on the inner `props` element
+
+## Render Delegation (child snippet)
+
+Use the `child` snippet to render a Bits UI component's behaviour onto a custom element:
+
+```svelte
+<Dialog.Trigger>
+	{#snippet child({ props })}
+		<Button {...props}>Open Dialog</Button>
+	{/snippet}
+</Dialog.Trigger>
+```
+
+This passes all accessibility attributes (`aria-*`, `data-*`, event handlers) to your own component.
+
+## Controlled vs Uncontrolled State
+
+```svelte
+<!-- Uncontrolled — component manages its own open state -->
+<Dialog.Root>…</Dialog.Root>
+
+<!-- Controlled — parent manages state -->
+<script lang="ts">
+	let isOpen = $state(false);
+</script>
+<Dialog.Root bind:open={isOpen}>…</Dialog.Root>
+```
+
+## Event Callbacks
+
+Use `on*` callback props instead of DOM events for Bits UI state changes:
+
+```svelte
+<Select.Root
+	onValueChange={(value) => (selectedValue = value)}
+	onOpenChange={(open) => {
+		if (!open) {
+			validate();
+		}
+	}}
+/>
+```
+
+## Choosing the Right Primitive
+
+| Component need | Bits UI import |
+|---|---|
+| Modal / confirmation | `Dialog` |
+| Dropdown actions menu | `DropdownMenu` |
+| Contextual floating panel | `Popover` |
+| Hover tooltip | `Tooltip` |
+| List selection (single/multi) | `Select` |
+| Filterable list | `Combobox` |
+| Expand/collapse | `Accordion` or `Collapsible` |
+| Horizontal sections | `Tabs` |
+| Binary toggle | `Switch` |
+| Checkbox (tri-state) | `Checkbox` |
+| Group of exclusive options | `RadioGroup` |
+| Searchable command menu | `Command` |
+| Right-click menu | `ContextMenu` |
+| Navigation links | `NavigationMenu` |
+| Progress indicator | `Progress` |
+| Range selector | `Slider` |
+
+## mergeProps Utility
+
+When composing event handlers from multiple sources, use `mergeProps` to safely combine them:
+
+```svelte
+<script lang="ts">
+	import { mergeProps } from 'bits-ui';
+
+	let { ...restProps } = $props();
+
+	function handleClick() {
+		/* local logic */
+	}
+</script>
+
+<Button.Root {...mergeProps(restProps, { onclick: handleClick })}>Click</Button.Root>
+```
+
+## Accessibility Rules
+
+- Never remove `aria-*` props from Bits UI components — they are required for accessibility
+- `Dialog.Title` and `Dialog.Description` are required for screen readers; use `aria-label` on
+  `Dialog.Root` only as a fallback
+- Always test keyboard navigation: Tab, Escape, Enter, Space, Arrow keys
+- Use `Dialog.Portal` to render overlays at the document root (avoids z-index and overflow issues)
+- Never suppress the focus ring — this is an accessibility project. See
+  [accessibility.mdc](mdc:.cursor/accessibility.mdc).
+
+## Anti-Patterns
+
+```svelte
+<!-- ❌ Never override data-* attributes Bits UI manages -->
+<Dialog.Content data-state="open">…</Dialog.Content>
+
+<!-- ❌ Never strip focus styling without providing a visible replacement -->
+<Select.Item class="outline-none ring-0">…</Select.Item>
+
+<!-- ❌ Never import bits-ui directly in apps/blog -->
+import { Dialog } from 'bits-ui'; // in apps/blog — WRONG
+
+<!-- ❌ Never use tailwindcss-animate class names — not installed -->
+<Dialog.Content class="data-[state=open]:animate-in data-[state=open]:zoom-in-95" />
+```

@@ -1,0 +1,112 @@
+---
+description: Monorepo (Turborepo) structure guide for the a11y.cool project
+alwaysApply: true
+docs:
+    - name: Turborepo Documentation
+      url: https://turborepo.dev/llms.txt
+    - name: Turborepo SvelteKit Guide
+      url: https://turborepo.dev/guides/frameworks/sveltekit.md
+    - name: Turborepo Managing Dependencies
+      url: https://turborepo.dev/crafting-your-repository/managing-dependencies.md
+---
+
+# Monorepo Guideline
+
+## Monorepo Structure
+
+This is a Turborepo monorepo with pnpm workspaces. **Always respect these package boundaries:**
+
+```
+apps/
+  blog/                        SvelteKit 2 + Svelte 5 app (Netlify) — package name: a11y.cool-website
+    src/
+      routes/                  SvelteKit file-based routing
+      lib/                     $lib alias — app-local helpers (features.ts: nav + feature flags)
+      global.css               Tailwind v4 entry + @a11y.cool/ui globals
+      app.d.ts                 App.Locals, App.PageData type augmentation
+      hooks.server.ts          Route gating (blog feature flag)
+    svelte.config.js           adapter-netlify
+    vite.config.ts             sveltekit() + tailwindcss() + devtoolsJson()
+
+packages/
+  data/                        Shared types + CMS clients — the single source of truth
+    src/
+      types/                   All shared TypeScript types (*.type.ts)
+      ghost/ghost.api.ts       Ghost Content API client (blog posts)
+      directus/directus.api.ts Directus GraphQL client + queries (home, about, pages)
+      default/                 metaDefault.data.ts — default meta tags
+      index.ts                 Public barrel export
+
+  ui/                          Shared Svelte 5 component library
+    index.ts                   Root barrel — named re-exports of every component
+    src/
+      components/              Flat: [Component].svelte (Svelte 5 runes, Tailwind classes)
+      styles/                  globals.css (tokens + @theme inline), fonts.css, typography.css,
+                               code-themes/{a11y-dark,a11y-light}.css
+      fonts/                   @font-face .woff2 assets
+    postcss.config.mjs
+
+  utils/                       Shared pure utility functions (no Svelte/SvelteKit)
+    index.ts                   Barrel
+    src/                       animation.ts, global-utils.ts, html.ts
+
+  eslint-config/               Shared ESLint flat config (exports `config`)
+  typescript-config/           Shared tsconfig (svelte.json) consumed by all apps and packages
+```
+
+There is **one app** (`apps/blog`). Do not assume a second app, a CMS app, or a design app exists.
+
+## Critical Import Rules
+
+| What you need | Import from |
+|---|---|
+| Shared types, interfaces, Ghost/Directus clients and queries | `@a11y.cool/data` |
+| UI components | `@a11y.cool/ui` |
+| Shared pure utilities (functions only — no shared types) | `@a11y.cool/utils` |
+| App-local helpers (feature flags, nav) | `$lib/` (local to `apps/blog`) |
+
+- **Never** import `.svelte` files directly across package boundaries — always use the `index.ts` barrel
+  (the one exception is the declared `./components/*` subpath export, used only when a barrel import
+  would create a cycle)
+- **Never** define shared types or interfaces inside `apps/*`, `packages/ui`, or `packages/utils` — add
+  them to `packages/data/src/types/*.type.ts` and export them from `packages/data/src/index.ts`
+- **Exception:** SvelteKit-generated `./$types`, plus `App.Locals` / `App.PageData` augmentation in
+  `apps/blog/src/app.d.ts`, and app-local shapes used by one module only (e.g. `NavItem` in `$lib/features.ts`)
+- **Never** read API tokens (`VITE_API_TOKEN`, `VITE_GHOST_CONTENT_API_KEY`) in browser-side code —
+  the CMS clients in `packages/data` are consumed from `+page.server.ts` / `+layout.server.ts` only
+
+## Key Commands
+
+```bash
+pnpm dev              # run the app via turbo
+pnpm build            # build packages then apps (dependency order inferred)
+pnpm check-types      # TypeScript check (see gap below)
+pnpm lint             # ESLint across all workspaces that define a lint task
+pnpm format           # Prettier format
+pnpm update-deps      # ./update-deps.sh — see .claude/skills/update-deps
+
+# Target a specific package
+pnpm --filter a11y.cool-website dev
+pnpm --filter @a11y.cool/ui lint
+pnpm --filter a11y.cool-website check
+```
+
+> **Known gap:** only `apps/blog` defines a `check-types` script, so `pnpm check-types` does not
+> type-check `packages/*`. `pnpm --filter a11y.cool-website check` (svelte-check) is the broader
+> signal. When you add a `check-types` script to a package, it is picked up by `turbo.json` automatically.
+
+## turbo.json Task Graph
+
+Tasks flow in dependency order: `packages/*` tasks run before `apps/*` tasks. `build`, `lint`, and
+`check-types` all declare `dependsOn: ["^<task>"]`.
+
+## Netlify Deployment
+
+`apps/blog` targets Netlify via `@sveltejs/adapter-netlify`. Security headers and CSP are set in
+`apps/blog/src/routes/+layout.server.ts` — update them there, not in `netlify.toml`.
+
+## Feature Flags
+
+The blog section is gated by `PUBLIC_BLOG_ENABLED` (read via `$env/dynamic/public` in
+`$lib/features.ts`). `hooks.server.ts` returns 404 for `/blog/*` when it is off, and `getNavItems()`
+hides the nav entry. Keep both in sync when adding a gated section.
