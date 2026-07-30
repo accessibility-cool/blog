@@ -1,0 +1,216 @@
+---
+description: Ghost + Directus data layer — structure, types, queries, and consumption in SvelteKit
+alwaysApply: true
+globs:
+    - 'packages/data/**/*.ts'
+    - 'apps/blog/src/routes/**/+*.server.ts'
+docs:
+    - name: Ghost Content API
+      url: https://ghost.org/docs/content-api/
+    - name: Directus GraphQL API
+      url: https://directus.io/docs/guides/connect/query-parameters
+---
+
+# Ghost + Directus Data Layer
+
+This project has **no CMS app in the repo**. Content comes from two hosted services, both accessed
+exclusively through `packages/data`:
+
+| Source | What it holds | Client |
+|---|---|---|
+| **Ghost** | Blog posts, authors, tags | `packages/data/src/ghost/ghost.api.ts` (`@tryghost/content-api`) |
+| **Directus** | Home, About, and static pages (imprint, privacy policy) | `packages/data/src/directus/directus.api.ts` (GraphQL over `fetch`) |
+
+## Architecture
+
+```
+packages/data/src/
+├── ghost/
+│   └── ghost.api.ts        ← Ghost Content API client, mappers, getPosts/getPost
+├── directus/
+│   └── directus.api.ts     ← GraphQL query strings, directusFetch, getHome/getAbout/getPage
+├── types/
+│   ├── post.type.ts        ← Post, Author, Tag (Ghost, mapped)
+│   ├── home.type.ts        ← Home (Directus)
+│   ├── about.type.ts       ← About (Directus)
+│   └── page.type.ts        ← Page (Directus)
+├── default/
+│   └── metaDefault.data.ts ← defaultMetaTags(url)
+└── index.ts                ← public barrel export
+```
+
+## Golden Rule: Types Always Live in `packages/data/src/types`
+
+> **NEVER** declare shared types inside `apps/blog/src/`, `packages/ui`, or `packages/utils`.
+> **ALWAYS** add them to `packages/data/src/types/*.type.ts` and export them from the barrel.
+
+```ts
+// ✅ Correct
+import type { Post, Author } from '@a11y.cool/data';
+
+// ❌ Wrong — never define a shared shape locally in the app
+interface Post { … }
+```
+
+## The Degradation Contract
+
+Both clients are **optional at runtime**. If the env vars are missing or the service is unreachable,
+the fetcher logs a warning and returns an empty array / `null` — it never throws. This is what keeps
+the site buildable and previewable without CMS credentials.
+
+Every new fetcher must follow the same shape:
+
+```ts
+export const getThing = async (): Promise<Thing | null> => {
+	if (!apiUrl || !apiToken) {
+		console.warn('Directus API is not configured; skipping data fetch.');
+		return null;
+	}
+
+	try {
+		const data = (await directusFetch(dataQueryThing)) as { thing: Thing } | null;
+		return data?.thing ?? null;
+	} catch (err) {
+		console.warn('Failed to fetch thing from Directus API:', err);
+		return null;
+	}
+};
+```
+
+The **route** decides what missing data means — `error(404, …)` for a missing post, a rendered empty
+state for missing page copy. The data layer never makes that call.
+
+## Ghost Conventions
+
+Ghost's API types are loose, so `ghost.api.ts` maps every response into the project's own `Post` /
+`Author` / `Tag` shapes. Consumers must only ever see the mapped type.
+
+```ts
+// Ghost field  →  project field
+post.id            → _id
+post.html          → content
+post.feature_image → coverImage
+post.published_at  → publishedAt
+post.reading_time  → readingTime
+```
+
+Rules:
+
+- Always request `include: ['tags', 'authors']` when the UI shows either
+- Always list explicit `fields` on `browse()` — do not fetch the whole document
+- Filter incomplete records before mapping (`post?.id && post?.title && post?.slug && post?.html`)
+- Add new fields to the mapper **and** to `post.type.ts` in the same change
+- `isGhostConfigured()` is the guard — use it, do not re-read env vars at the call site
+
+## Directus Conventions
+
+Directus is queried with hand-written GraphQL strings, one exported `const` per query.
+
+```ts
+export const dataQueryAbout: string = `query {
+    about {
+        id
+        title
+        about_intro
+        members {
+            name
+            image { id description }
+        }
+    }
+}`;
+```
+
+Rules:
+
+- Query naming: `dataQuery<Collection>` for a static query, `dataQuery<Collection>(arg)` for a
+  parameterised one
+- Getter naming: `get<Collection>()` returning the mapped type or `null`
+- Request only the fields the UI renders
+- `directusFetch` already surfaces GraphQL `errors` and non-OK statuses as a warning + `null` —
+  do not duplicate that handling in a getter
+- Images are UUID references; build URLs with `mediaUrl(uuid)`, which defaults to `?format=webp`
+
+> **Note:** `directus.api.ts` also exports older `request()` / `getData()` helpers that read
+> `process.env.API_URL` / `API_TOKEN` (no `VITE_` prefix) and throw on failure. They predate
+> `directusFetch` and are not used by the current getters. Prefer `directusFetch`; do not extend the
+> old pair.
+
+## Untrusted HTML
+
+Ghost post bodies and Directus rich text are **untrusted HTML**. Never pass them to `{@html}`.
+
+```svelte
+<script lang="ts">
+	import { processHtml } from '@a11y.cool/utils'; // rehype-parse + rehype-sanitize
+	import { HtmlRender } from '@a11y.cool/ui';
+
+	let { data } = $props();
+	let ast = $derived(processHtml(data.post?.content));
+</script>
+
+{#if ast}
+	<div class="prose prose-lg max-w-none">
+		<HtmlRender node={ast} />
+	</div>
+{/if}
+```
+
+`HtmlRender` walks the sanitized hast tree and renders real Svelte elements (delegating `<pre><code>`
+to `CodeRender` for highlight.js). This is also what keeps the strict CSP in `+layout.server.ts`
+satisfiable.
+
+## Consuming Data in SvelteKit
+
+All CMS access happens in `+page.server.ts` / `+layout.server.ts` — the clients read `process.env`
+and must never reach the browser.
+
+```ts
+// apps/blog/src/routes/blog/[slug]/+page.server.ts
+import type { PageServerLoad } from './$types';
+import type { MetaTagsProps } from 'svelte-meta-tags';
+import { getPost } from '@a11y.cool/data';
+import { error } from '@sveltejs/kit';
+
+export const load = (async ({ params }) => {
+	const post = await getPost(params.slug);
+
+	if (!post) {
+		error(404, 'Post not found');
+	}
+
+	const pageMetaTags = {
+		title: `${post.title} — Blog`,
+		description: post.excerpt || 'Read this article on Accessibility.cool'
+	} satisfies MetaTagsProps;
+
+	return { post, pageMetaTags };
+}) satisfies PageServerLoad;
+```
+
+Site-wide data (`home`, `about`, `baseMetaTags`, nav) is loaded once in `+layout.server.ts` — read it
+from `page.data` rather than re-fetching per route.
+
+## Environment Variables
+
+| Variable | Service | Read in |
+|---|---|---|
+| `VITE_GHOST_API_URL` | Ghost | `ghost.api.ts` |
+| `VITE_GHOST_CONTENT_API_KEY` | Ghost | `ghost.api.ts` |
+| `VITE_API_URL` | Directus | `directus.api.ts` |
+| `VITE_API_TOKEN` | Directus | `directus.api.ts` |
+| `PUBLIC_BLOG_ENABLED` | app feature flag | `$lib/features.ts` via `$env/dynamic/public` |
+
+Never commit real tokens. Despite the `VITE_` prefix these are read server-side via `dotenv` in
+`packages/data` — they are **not** exposed to the client, and must not be moved to
+`$env/dynamic/public`.
+
+## Checklist: Adding a New Content Type
+
+1. **`packages/data/src/types/`** — create `<name>.type.ts` with the interface
+2. **`packages/data/src/{ghost,directus}/`** — add the query string and a `get<Name>()` getter
+   following the degradation contract
+3. **`packages/data/src/index.ts`** — export the new type file from the barrel
+4. **`apps/blog/src/routes/…/+page.server.ts`** — load it, return `pageMetaTags` alongside
+5. **`apps/blog/src/routes/…/+page.svelte`** — render with components from `@a11y.cool/ui`; sanitize
+   any HTML through `processHtml`
+6. Verify: `pnpm --filter a11y.cool-website check && pnpm lint`

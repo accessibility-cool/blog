@@ -11,10 +11,7 @@
 	const animateInitial = getAnimateInitialClass();
 </script>
 
-<div
-	class="col-span-12 {animateInitial}"
-	use:animate={{ delay: entryDelay, triggerOnMount: true }}
->
+<div class="col-span-12 {animateInitial}" use:animate={{ delay: entryDelay, triggerOnMount: true }}>
 	<hr class="mt-20 md:mt-32 lg:mt-40 border-t border-border-input sm:mb-6 mb-1 w-full" />
 
 	<footer class="grid grid-cols-12 gap-4 md:gap-3 sm:gap-2 xs:gap-1 py-6">

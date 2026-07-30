@@ -12,10 +12,7 @@
 		navItems?: NavItem[];
 	};
 
-	let {
-		entryDelay = 0,
-		navItems = [{ label: 'About Us', href: '/about' }]
-	}: Props = $props();
+	let { entryDelay = 0, navItems = [{ label: 'About Us', href: '/about' }] }: Props = $props();
 
 	const animateInitial = getAnimateInitialClass();
 </script>

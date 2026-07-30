@@ -5,7 +5,11 @@
 
 set -e  # Exit on any error
 
-echo "🚀 Starting dependency updates across all packages..."
+# Update target: pass "minor" (or "patch") to limit to safe upgrades.
+# Defaults to "latest" (includes major versions) to preserve existing behavior.
+TARGET="${1:-latest}"
+
+echo "🚀 Starting dependency updates across all packages (target: $TARGET)..."
 
 # Function to update dependencies in a directory
 update_package() {
@@ -16,11 +20,11 @@ update_package() {
         
         # Update regular dependencies
         echo "  → Updating regular dependencies..."
-        ncu --upgrade --target latest --dep prod
+        ncu --upgrade --target "$TARGET" --dep prod
         
         # Update dev dependencies
         echo "  → Updating dev dependencies..."
-        ncu --upgrade --target latest --dep dev
+        ncu --upgrade --target "$TARGET" --dep dev
         
         cd - > /dev/null
         echo "✅ Updated $dir"
@@ -36,8 +40,8 @@ cd "$SCRIPT_DIR"
 
 # Update root package.json
 echo "📦 Updating root package.json..."
-ncu --upgrade --target latest --dep prod
-ncu --upgrade --target latest --dep dev
+ncu --upgrade --target "$TARGET" --dep prod
+ncu --upgrade --target "$TARGET" --dep dev
 
 # Update all apps
 echo "📱 Updating apps..."

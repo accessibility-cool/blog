@@ -1,0 +1,26 @@
+---
+description: Git permissions — what the AI is and is not allowed to do with git
+alwaysApply: true
+---
+
+# Git Policy
+
+Claude and Cursor are allowed to use git, including committing, pushing, and
+creating pull requests.
+
+## Branches
+
+- `dev` is the integration branch — feature work and dependency updates land here first.
+- `main` is fast-forwarded from `dev`; it is checked out in a **separate worktree** at
+  `/Users/simon/Development/accessibility.cool/blog`, so `git checkout main` fails in other
+  worktrees. Push the ref directly (`git push origin dev:main`) instead.
+- Create PRs against `dev` unless the user says otherwise.
+
+## Guidelines
+
+- Commit and push when the user asks.
+- Write clear, scoped commit messages.
+- Avoid history-rewriting operations (`git reset --hard`, `git rebase`,
+  `git push --force` to shared branches) unless the user explicitly asks.
+- Never force-push `main` or `dev`. If a fast-forward is not possible, stop and report.
+- Don't rename the current branch unless the user explicitly tells you to.
