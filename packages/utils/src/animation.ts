@@ -87,8 +87,7 @@ const scheduleAnimation = (
 };
 
 const prefersReducedMotion = (): boolean =>
-	typeof window !== 'undefined' &&
-	window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export const createAnimation = (options: AnimationOptions = {}) => {
 	const {
@@ -248,8 +247,7 @@ export const animate = (node: HTMLElement, options: AnimationOptions = {}) => {
 	return {
 		update: (newOptions: AnimationOptions) => {
 			const newAnimationClass = newOptions.animationClass || animationClass;
-			const newCssClass =
-				ANIMATION_CLASSES[newAnimationClass as AnimationType] || cssClass;
+			const newCssClass = ANIMATION_CLASSES[newAnimationClass as AnimationType] || cssClass;
 			const newInitialClass = getInitialClass(newAnimationClass);
 
 			if (newCssClass !== cssClass && hasAnimated) {

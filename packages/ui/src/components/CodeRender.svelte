@@ -74,14 +74,11 @@
 			</span>
 		{/if}
 		{#if copyButton}
-			<Button
-				variant="ghost"
-				size="sm"
-				onclick={handleCopy}
-				icon={copied ? Check : CopySimple}
-				iconSize={16}
-				iconPosition="start"
-			>
+			<Button variant="ghost" size="sm" onclick={handleCopy}>
+				{#snippet leftIcon(iconProps)}
+					{@const Icon = copied ? Check : CopySimple}
+					<Icon size={16} {...iconProps} />
+				{/snippet}
 				{copied ? 'Code copied' : 'Copy code'}
 			</Button>
 		{/if}
