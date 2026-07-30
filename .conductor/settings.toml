@@ -1,0 +1,27 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+setup = "pnpm install --frozen-lockfile"
+run_mode = "concurrent"
+
+# SvelteKit dev server. Each workspace gets its own port range, so several
+# workspaces can run side by side. --strictPort makes a port clash fail loudly
+# instead of silently drifting into a neighbouring workspace's range.
+[scripts.run.dev]
+command = "pnpm --filter a11y.cool-website dev --port $CONDUCTOR_PORT --strictPort"
+default = true
+icon = "play"
+
+# Production build served locally (Netlify parity). Uses PORT+1 so it can run
+# alongside the dev server in the same workspace.
+[scripts.run.preview]
+command = "pnpm build && pnpm --filter a11y.cool-website preview --port $((CONDUCTOR_PORT + 1)) --strictPort"
+icon = "globe"
+
+[scripts.run.test]
+command = "pnpm --filter a11y.cool-website test:unit"
+icon = "test-tube"
+
+[scripts.run.check]
+command = "pnpm lint && pnpm check-types"
+icon = "wrench"
