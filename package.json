@@ -12,13 +12,13 @@
 	"devDependencies": {
 		"@a11y.cool/eslint-config": "workspace:*",
 		"@a11y.cool/typescript-config": "workspace:*",
-		"prettier": "^3.8.4",
+		"prettier": "^3.9.6",
 		"prettier-plugin-svelte": "^4.1.1",
-		"turbo": "^2.9.18",
+		"turbo": "^2.10.7",
 		"typescript": "6.0.3",
-		"@types/node": "^26.0.0"
+		"@types/node": "^26.1.2"
 	},
-	"packageManager": "pnpm@11.5.2",
+	"packageManager": "pnpm@11.18.0",
 	"engines": {
 		"node": ">=22"
 	}

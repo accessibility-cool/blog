@@ -4,12 +4,11 @@
 	const animateInitial = getAnimateInitialClass();
 	import { Warning } from 'phosphor-svelte';
 	import { resolve } from '$app/paths';
-
-	let { errors } = $props<{ errors?: Error }>();
+	import { page } from '$app/state';
 
 	// Safely extract status and message with fallbacks
-	let status: number = $derived(errors?.status || 404);
-	let message: string = $derived(errors?.message || '');
+	let status: number = $derived(page.status || 404);
+	let message: string = $derived(page.error?.message || '');
 
 	// Determine if this is a 404 error
 	let is404: boolean = $derived(status === 404);

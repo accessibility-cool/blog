@@ -60,8 +60,13 @@
 	const mergeClasses = (...classes: (string | undefined)[]): string =>
 		classes.filter(Boolean).join(' ');
 
-	const getNormalizedProperties = (properties: Element['properties']) => {
-		const newProps = { ...properties };
+	// @types/hast declares ~640 named properties whose types (e.g. `about: string[]`,
+	// `dir: string`) clash with Svelte's stricter HTMLAttributes when spread onto an
+	// element. Widen back to a plain attribute bag so the spread type-checks.
+	type AttributeBag = Record<string, Element['properties'][string]>;
+
+	const getNormalizedProperties = (properties: Element['properties']): AttributeBag => {
+		const newProps: AttributeBag = { ...properties };
 		if (newProps.className) {
 			newProps.class = normalizeClass(newProps.className);
 			delete newProps.className;

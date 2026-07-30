@@ -22,6 +22,7 @@ minimumReleaseAgeExclude:
   - playwright@1.61.1
   - svelte-check@4.7.1
   - svelte@5.56.4
+  - vite@8.2.0
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - core-js-pure
