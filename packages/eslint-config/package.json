@@ -9,7 +9,7 @@
 		"@eslint/eslintrc": "^3.3.6",
 		"@eslint/js": "^10.0.1",
 		"eslint-config-prettier": "^10.1.8",
-		"eslint-config-turbo": "^2.10.7",
+		"eslint-config-turbo": "^2.10.8",
 		"eslint-plugin-svelte": "^3.22.0",
 		"globals": "^17.8.0",
 		"typescript-eslint": "^8.65.0",

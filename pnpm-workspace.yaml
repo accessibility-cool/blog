@@ -4,16 +4,16 @@ packages:
 allowBuilds:
   esbuild: true
 minimumReleaseAgeExclude:
-  - '@turbo/darwin-64@2.9.15'
-  - '@turbo/darwin-arm64@2.9.15'
-  - '@turbo/gen@2.9.15'
-  - '@turbo/linux-64@2.9.15'
-  - '@turbo/linux-arm64@2.9.15'
-  - '@turbo/windows-64@2.9.15'
-  - '@turbo/windows-arm64@2.9.15'
-  - eslint-config-turbo@2.9.15
-  - eslint-plugin-turbo@2.9.15
-  - turbo@2.9.15
+  - '@turbo/darwin-64@2.9.15 || 2.10.8'
+  - '@turbo/darwin-arm64@2.9.15 || 2.10.8'
+  - '@turbo/gen@2.9.15 || 2.10.8'
+  - '@turbo/linux-64@2.9.15 || 2.10.8'
+  - '@turbo/linux-arm64@2.9.15 || 2.10.8'
+  - '@turbo/windows-64@2.9.15 || 2.10.8'
+  - '@turbo/windows-arm64@2.9.15 || 2.10.8'
+  - eslint-config-turbo@2.9.15 || 2.10.8
+  - eslint-plugin-turbo@2.9.15 || 2.10.8
+  - turbo@2.9.15 || 2.10.8
   - '@sveltejs/kit@2.65.2'
   - '@playwright/test@1.61.1'
   - '@sveltejs/load-config@0.2.0'
