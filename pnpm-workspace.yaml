@@ -4,17 +4,17 @@ packages:
 allowBuilds:
   esbuild: true
 minimumReleaseAgeExclude:
-  - '@turbo/darwin-64@2.9.15 || 2.10.8'
-  - '@turbo/darwin-arm64@2.9.15 || 2.10.8'
-  - '@turbo/gen@2.9.15 || 2.10.8'
-  - '@turbo/linux-64@2.9.15 || 2.10.8'
-  - '@turbo/linux-arm64@2.9.15 || 2.10.8'
-  - '@turbo/windows-64@2.9.15 || 2.10.8'
-  - '@turbo/windows-arm64@2.9.15 || 2.10.8'
-  - eslint-config-turbo@2.9.15 || 2.10.8
-  - eslint-plugin-turbo@2.9.15 || 2.10.8
-  - turbo@2.9.15 || 2.10.8
-  - '@sveltejs/kit@2.65.2'
+  - '@turbo/darwin-64@2.9.15 || 2.10.8 || 2.10.11'
+  - '@turbo/darwin-arm64@2.9.15 || 2.10.8 || 2.10.11'
+  - '@turbo/gen@2.9.15 || 2.10.8 || 2.10.11'
+  - '@turbo/linux-64@2.9.15 || 2.10.8 || 2.10.11'
+  - '@turbo/linux-arm64@2.9.15 || 2.10.8 || 2.10.11'
+  - '@turbo/windows-64@2.9.15 || 2.10.8 || 2.10.11'
+  - '@turbo/windows-arm64@2.9.15 || 2.10.8 || 2.10.11'
+  - eslint-config-turbo@2.9.15 || 2.10.8 || 2.10.11
+  - eslint-plugin-turbo@2.9.15 || 2.10.8 || 2.10.11
+  - turbo@2.9.15 || 2.10.8 || 2.10.11
+  - '@sveltejs/kit@2.65.2 || 2.70.3'
   - '@playwright/test@1.61.1'
   - '@sveltejs/load-config@0.2.0'
   - autoprefixer@10.5.1
@@ -23,6 +23,14 @@ minimumReleaseAgeExclude:
   - svelte-check@4.7.1
   - svelte@5.56.4
   - vite@8.2.0
+  - '@vitest/expect@4.1.11'
+  - '@vitest/mocker@4.1.11'
+  - '@vitest/pretty-format@4.1.11'
+  - '@vitest/runner@4.1.11'
+  - '@vitest/snapshot@4.1.11'
+  - '@vitest/spy@4.1.11'
+  - '@vitest/utils@4.1.11'
+  - vitest@4.1.11
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - core-js-pure
