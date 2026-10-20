@@ -1,3 +1,10 @@
 # a11y.cool
 
-Claude context entrypoint: **@.cursor/claude-context.md**
+@AGENTS.md
+
+## Claude Code
+
+- Skills in `.claude/skills/` are symlinks into `.agents/skills/` — edit the files under
+  `.agents/skills/`, then run `pnpm agents:link` if you added, renamed, or removed one.
+- Shared permissions and hooks live in `.claude/settings.json`; machine-local overrides go in the
+  gitignored `.claude/settings.local.json`.

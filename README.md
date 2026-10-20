@@ -82,6 +82,13 @@ This repository uses [PNPM](https://pnpm.io/) for fast, disk-efficient package m
     pnpm check-types
     ```
 
+## AI Agents
+
+Agent instructions live in [`AGENTS.md`](AGENTS.md) (read by Codex/GPT and others; `CLAUDE.md`
+imports it). Task and domain guidance is packaged as [Agent Skills](https://agentskills.io) in
+`.agents/skills/`, symlinked into `.claude/skills/` for Claude Code — run `pnpm agents:link` after
+adding or removing one.
+
 ## Deployment
 
 - **Blog app is deployed on Netlify:**  
