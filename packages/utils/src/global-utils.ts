@@ -69,33 +69,32 @@ export const getLangLabel = (lang: string) => {
 };
 
 /**
- * Builds an image URL for Directus assets with format detection
- * @param imageId - The Directus file ID
- * @param apiUrl - The base API URL (from VITE_API_URL)
- * @param quality - Image quality (default: 80)
- * @returns The complete image URL with format parameters
+ * `href` if it is safe to put in an `<a>`, otherwise `null`.
+ *
+ * Studio-side URL validation warns editors but does not constrain what the
+ * dataset can hold, so rich-text links are re-checked at render time: site
+ * paths, fragments, and http(s)/mailto/tel only — never `javascript:`.
  */
-export const buildImageUrl = (imageId: string, apiUrl: string, quality: number = 80): string => {
-	// Check if browser supports AVIF format
-	const supportsAvif =
-		typeof window !== 'undefined' &&
-		window.HTMLCanvasElement &&
-		document.createElement('canvas').toDataURL('image/avif').indexOf('data:image/avif') === 0;
-
-	// Check if browser supports WebP format
-	const supportsWebp =
-		typeof window !== 'undefined' &&
-		window.HTMLCanvasElement &&
-		document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0;
-
-	// Determine the best format to use
-	let format = 'jpg'; // fallback
-	if (supportsAvif) {
-		format = 'avif';
-	} else if (supportsWebp) {
-		format = 'webp';
+export const safeHref = (href: unknown): string | null => {
+	if (typeof href !== 'string') return null;
+	const value = href.trim();
+	if (!value) return null;
+	// Site-relative path or in-page fragment — but not protocol-relative `//host`
+	if ((value.startsWith('/') && !value.startsWith('//')) || value.startsWith('#')) return value;
+	try {
+		const { protocol } = new URL(value);
+		return ['http:', 'https:', 'mailto:', 'tel:'].includes(protocol) ? value : null;
+	} catch {
+		return null;
 	}
-
-	// Build the URL with the format
-	return `${apiUrl}/assets/${imageId}?quality=${quality}&format=${format}`;
 };
+
+/** Plain text of a Portable Text block's spans — e.g. for a heading's anchor id. */
+export const blockText = (block: { children?: ReadonlyArray<unknown> }): string =>
+	(block.children ?? [])
+		.map((child) =>
+			child && typeof child === 'object' && 'text' in child && typeof child.text === 'string'
+				? child.text
+				: ''
+		)
+		.join('');

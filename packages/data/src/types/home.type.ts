@@ -1,20 +1,5 @@
-export interface HomeCard {
-	title: string;
-	icon: string;
-	icon_aria: string;
-	description: string;
-	background_image?: {
-		id: string;
-		description?: string;
-	} | null;
-}
+import type { HomeQueryResult } from '@a11y.cool/data/sanity/sanity.types';
 
-export interface Home {
-	title: string;
-	logo_aria: string;
-	intro_chip: string;
-	intro_headline: string;
-	intro_description: string;
-	cards_headline: string;
-	cards: HomeCard[];
-}
+export type Home = NonNullable<HomeQueryResult>;
+
+export type HomeCard = NonNullable<Home['cards']>[number];

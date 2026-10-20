@@ -1,76 +1,87 @@
 <script lang="ts">
-	import type { Member } from '@a11y.cool/data';
-	import { Globe, LinkedinLogo } from 'phosphor-svelte';
-	import { buildImageUrl } from '@a11y.cool/utils';
+	import type { Person } from '@a11y.cool/data';
+	import { urlFor } from '@a11y.cool/data';
+	import { Globe, LinkedinLogo, LinkSimple } from 'phosphor-svelte';
 
-	let { member }: { member: Member } = $props();
+	let { member }: { member: Person } = $props();
 
-	// Get API URL from environment
-	const apiUrl = import.meta.env.VITE_API_URL;
+	const linkLabels: Record<string, string> = {
+		website: 'Website',
+		linkedin: 'LinkedIn',
+		mastodon: 'Mastodon',
+		bluesky: 'Bluesky',
+		github: 'GitHub',
+		instagram: 'Instagram',
+		youtube: 'YouTube',
+		x: 'X',
+		other: 'Profile'
+	};
 
-	// Build image URL with format detection
-	const imageUrl = $derived(member.image ? buildImageUrl(member.image.id, apiUrl) : null);
+	let imageUrl = $derived(urlFor(member.image, 192, 192));
+	let links = $derived((member.links ?? []).filter((link) => link.url));
 </script>
 
+<!-- `id` is the person's anchor — JSON-LD Person ids point at /about#slug -->
 <article
-	class="rounded-3xl shadow-card border border-border-input bg-background-alt p-6 flex flex-col items-start gap-4 h-full"
+	id={member.slug ?? undefined}
+	class="rounded-3xl shadow-card border border-border-input bg-background-alt p-6 flex flex-col items-start gap-4 h-full scroll-mt-24"
 >
-	<!-- Circular member image -->
-	{#if member.image}
+	{#if imageUrl}
 		<div
 			class="w-24 h-24 rounded-full overflow-hidden border-2 border-border-input mb-2 self-center"
 		>
+			<!-- The name is the adjacent heading, so a decorative portrait gets alt="" rather than repeating it -->
 			<img
 				src={imageUrl}
-				alt={member.image.description || `${member.name} profile picture`}
+				alt={member.image?.decorative ? '' : (member.image?.alt ?? '')}
+				width="96"
+				height="96"
+				loading="lazy"
 				class="w-full h-full object-cover"
 			/>
 		</div>
 	{/if}
 
-	<!-- Member name -->
 	<h3 class="text-xl md:text-2xl font-semibold text-left mb-2">
 		{member.name}
 	</h3>
 
-	<!-- Certification if available -->
-	{#if member.certification}
-		<p class="text-sm text-muted-foreground text-left mb-3">
-			{member.certification}
+	{#if member.role}
+		<p class="text-base text-left mb-0">{member.role}</p>
+	{/if}
+
+	{#if member.certifications?.length}
+		<p class="text-sm text-foreground-alt text-left mb-3">
+			{member.certifications.join(' · ')}
 		</p>
 	{/if}
 
-	<!-- Description -->
-	<p class="text-base mb-4 w-full text-left">
-		{member.description}
-	</p>
+	{#if member.bio}
+		<p class="text-base mb-4 w-full text-left">
+			{member.bio}
+		</p>
+	{/if}
 
-	<!-- URL links at the bottom -->
-	<div class="flex gap-4 mt-auto pt-4">
-		{#if member.website}
-			<a
-				href={member.website}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border-input hover:bg-muted transition-colors"
-				aria-label="Visit {member.name}'s website"
-			>
-				<Globe size={16} aria-hidden="true" />
-				<span class="text-sm">Website</span>
-			</a>
-		{/if}
-
-		{#if member.linkedin}
-			<a
-				href={member.linkedin}
-				target="_blank"
-				rel="noopener noreferrer"
-				class="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border-input hover:bg-muted transition-colors"
-				aria-label="Visit {member.name}'s LinkedIn profile"
-			>
-				<LinkedinLogo size={16} aria-hidden="true" />
-				<span class="text-sm">LinkedIn</span>
-			</a>
-		{/if}
-	</div>
+	{#if links.length}
+		<ul class="flex flex-wrap gap-4 mt-auto pt-4" aria-label="{member.name} elsewhere">
+			{#each links as link (link.url)}
+				<li>
+					<a
+						href={link.url}
+						rel="noopener noreferrer me"
+						class="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border-input hover:bg-muted transition-colors"
+					>
+						{#if link.platform === 'website'}
+							<Globe size={16} aria-hidden="true" />
+						{:else if link.platform === 'linkedin'}
+							<LinkedinLogo size={16} aria-hidden="true" />
+						{:else}
+							<LinkSimple size={16} aria-hidden="true" />
+						{/if}
+						<span class="text-sm">{linkLabels[link.platform ?? 'other']}</span>
+					</a>
+				</li>
+			{/each}
+		</ul>
+	{/if}
 </article>

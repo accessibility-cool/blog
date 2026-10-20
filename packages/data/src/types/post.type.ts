@@ -1,46 +1,17 @@
-import type { MetaTagsProps } from 'svelte-meta-tags';
+import type { PostQueryResult, PostsQueryResult } from '@a11y.cool/data/sanity/sanity.types';
 
-export interface Author {
-	id: string;
-	name: string;
-	slug: string;
-	profile_image?: string;
-	cover_image?: string;
-	bio?: string;
-	website?: string;
-	location?: string;
-	facebook?: string;
-	twitter?: string;
-	meta_title?: string;
-	meta_description?: string;
-	url?: string;
-}
+/** A full post, as `/blog/[slug]` renders it. */
+export type Post = NonNullable<PostQueryResult>;
 
-export interface Tag {
-	id: string;
-	name: string;
-	slug: string;
-	description?: string;
-	feature_image?: string;
-	visibility?: string;
-	meta_title?: string;
-	meta_description?: string;
-	url?: string;
-}
+/** A post in a listing — no body, light author data. */
+export type PostCard = PostsQueryResult[number];
 
-export interface Post {
-	_id: string;
-	title: string;
-	slug: string;
-	excerpt?: string;
-	content?: string;
-	publishedAt?: string;
-	coverImage?: string;
-	meta?: MetaTagsProps;
-	readingTime?: number;
-	authors?: Author[];
-	tags?: Tag[];
-	primary_author?: Author;
-	primary_tag?: Tag;
-	url?: string;
-}
+/** The author shape a listing carries. */
+export type PostCardAuthor = NonNullable<PostCard['authors']>[number];
+
+export type PostCategory = NonNullable<PostCard['categories']>[number];
+
+export type FaqItem = NonNullable<Post['faq']>[number];
+
+/** Portable Text as the post and page queries return it (images and internal links resolved). */
+export type BlockContent = NonNullable<Post['body']>;

@@ -23,7 +23,6 @@ minimumReleaseAgeExclude:
   - svelte-check@4.7.1
   - svelte@5.56.4
   - vite@8.2.0
-  - '@tryghost/content-api@1.12.12'
   - '@typescript-eslint/eslint-plugin@8.70.1 || 8.71.0 || 8.72.0'
   - '@typescript-eslint/parser@8.70.1 || 8.71.0 || 8.72.0'
   - '@typescript-eslint/project-service@8.70.1 || 8.71.0 || 8.72.0'
@@ -36,6 +35,18 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/visitor-keys@8.70.1 || 8.71.0 || 8.72.0'
   - dotenv@18.0.2
   - typescript-eslint@8.70.1 || 8.71.0 || 8.72.0
+  - '@sanity/access-ui@6.20.0'
+  - '@sanity/code-input@7.3.13'
+  - '@sanity/diff@6.20.0'
+  - '@sanity/mutator@6.20.0'
+  - '@sanity/schema@6.20.0'
+  - '@sanity/types@6.20.0'
+  - '@sanity/util@6.20.0'
+  - '@sanity/validation@6.20.0'
+  - '@sanity/vision@6.20.0'
+  - sanity@6.20.0
+  - '@sanity/client@8.10.0'
+  - groq@6.20.0
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - core-js-pure

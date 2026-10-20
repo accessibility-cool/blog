@@ -1,8 +1,3 @@
-import type { MetaTagsProps } from 'svelte-meta-tags';
+import type { PageQueryResult } from '@a11y.cool/data/sanity/sanity.types';
 
-export interface Page {
-	id: string;
-	title: string;
-	content: string;
-	meta?: MetaTagsProps;
-}
+export type Page = NonNullable<PageQueryResult>;

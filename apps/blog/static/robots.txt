@@ -1,42 +1,11 @@
+# accessibility.cool welcomes every crawler — search engines, AI answer engines
+# and AI training crawlers alike. Accessibility knowledge is meant to spread.
+#
+# /imprint and /privacy-policy are deliberately NOT disallowed: they carry a
+# `noindex` meta tag, and a crawler that is blocked from fetching a page can
+# never see that tag.
+
 User-agent: *
 Allow: /
 
-Disallow: /privacy-policy/
-Disallow: /imprint/
-
-# Sitemap location
 Sitemap: https://accessibility.cool/sitemap.xml
-
-# Crawl delay (optional - helps with server load)
-Crawl-delay: 1
-
-# Allow all major search engines
-User-agent: Googlebot
-Allow: /
-Disallow: /privacy-policy/
-Disallow: /imprint/
-
-User-agent: Bingbot
-Allow: /
-Disallow: /privacy-policy/
-Disallow: /imprint/
-
-User-agent: Slurp
-Allow: /
-Disallow: /privacy-policy/
-Disallow: /imprint/
-
-User-agent: DuckDuckBot
-Allow: /
-Disallow: /privacy-policy/
-Disallow: /imprint/
-
-User-agent: Baiduspider
-Allow: /
-Disallow: /privacy-policy/
-Disallow: /imprint/
-
-User-agent: YandexBot
-Allow: /
-Disallow: /privacy-policy/
-Disallow: /imprint/ 

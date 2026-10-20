@@ -2,23 +2,33 @@
 	import '../global.css';
 	import { Header, Footer } from '@a11y.cool/ui';
 	import { page } from '$app/state';
-	import { MetaTags, deepMerge, type MetaTagsProps } from 'svelte-meta-tags';
+	import { JsonLd, MetaTags, deepMerge, type JsonLdProps } from 'svelte-meta-tags';
 	import type { Snippet } from 'svelte';
+	import type { LayoutData } from './$types';
 
-	type LayoutData = {
-		data: {
-			baseMetaTags: MetaTagsProps;
-			navItems: { label: string; href: string }[];
-		};
-		children: Snippet;
-	};
+	let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
-	let { data, children }: LayoutData = $props();
-
-	let metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags));
+	// Each page's meta (from its load) on top of the site-wide defaults.
+	let metaTags = $derived(deepMerge(data.baseMetaTags, page.data.pageMetaTags ?? {}));
+	// One whole graph per page — never deep-merged (see packages/data/src/seo/jsonld.ts).
+	let jsonLd = $derived(page.data.jsonLd as JsonLdProps['schema'] | undefined);
 </script>
 
 <MetaTags {...metaTags} />
+{#if jsonLd}
+	<JsonLd schema={jsonLd} />
+{/if}
+
+<svelte:head>
+	{#if data.blogEnabled}
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title="Accessibility.cool — Blog"
+			href="/rss.xml"
+		/>
+	{/if}
+</svelte:head>
 
 <div class="mx-4 md:mx-8 lg:mx-12 grid grid-cols-12 gap-4 md:gap-3 sm:gap-2 xs:gap-1 relative">
 	<Header entryDelay={0} navItems={data.navItems} />

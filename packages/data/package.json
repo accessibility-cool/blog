@@ -5,37 +5,40 @@
 	"main": "./src/index.ts",
 	"types": "./src/index.ts",
 	"scripts": {
-		"lint": "eslint . --max-warnings 0"
+		"lint": "eslint . --max-warnings 0",
+		"test:unit": "vitest run"
 	},
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
 			"import": "./src/index.ts"
 		},
+		"./sanity/*": {
+			"types": "./src/sanity/*.ts",
+			"import": "./src/sanity/*.ts"
+		},
 		"./types/*": {
 			"types": "./src/types/*.ts",
 			"import": "./src/types/*.ts"
 		},
-		"./directus/*": {
-			"types": "./src/directus/*.ts",
-			"import": "./src/directus/*.ts"
-		},
-		"./ghost/*": {
-			"types": "./src/ghost/*.ts",
-			"import": "./src/ghost/*.ts"
+		"./seo/*": {
+			"types": "./src/seo/*.ts",
+			"import": "./src/seo/*.ts"
 		}
 	},
 	"devDependencies": {
 		"@a11y.cool/eslint-config": "workspace:*",
 		"@a11y.cool/typescript-config": "workspace:*",
-		"@types/tryghost__content-api": "^1.3.17",
+		"@portabletext/types": "^4.0.2",
+		"@sanity/image-url": "^2.1.1",
 		"@sveltejs/kit": "^3.1.0",
-		"dotenv": "^18.0.8",
 		"eslint": "^10.13.0",
+		"groq": "^6.20.0",
 		"svelte-meta-tags": "^5.0.3",
-		"typescript": "^6.0.3"
+		"typescript": "^6.0.3",
+		"vitest": "^5.0.5"
 	},
 	"dependencies": {
-		"@tryghost/content-api": "^1.12.13"
+		"@sanity/client": "^8.10.0"
 	}
 }

@@ -7,7 +7,7 @@
 		description = '',
 		iconComponent = null satisfies Component<IconComponentProps> | null,
 		iconSize = '24',
-		iconAriaLabel = 'Icon',
+		iconAriaLabel = '',
 		image = undefined satisfies Snippet | undefined,
 		children = undefined satisfies Snippet | undefined
 	} = $props();
@@ -21,7 +21,14 @@
 	>
 		{#if iconComponent}
 			{@const Component: Component<IconComponentProps> = iconComponent}
-			<Component size={iconSize} class="w-auto h-auto" aria-label={iconAriaLabel} />
+			<!-- Labelled only when the editor gave it a meaning; otherwise the title says it all -->
+			<Component
+				size={iconSize}
+				class="w-auto h-auto"
+				role={iconAriaLabel ? 'img' : undefined}
+				aria-label={iconAriaLabel || undefined}
+				aria-hidden={iconAriaLabel ? undefined : 'true'}
+			/>
 		{/if}
 		{title}
 	</h3>

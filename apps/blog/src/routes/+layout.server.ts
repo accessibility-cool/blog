@@ -1,9 +1,9 @@
-import type { MetaTagsProps } from 'svelte-meta-tags';
 import type { LayoutServerLoad } from './$types';
-import { defaultMetaTags, getAbout, getHome } from '@a11y.cool/data';
+import { defaultMetaTags } from '@a11y.cool/data';
 import { getNavItems, isBlogEnabled } from '#lib/features.ts';
+import { getSettings } from './data.remote';
 
-export const load: LayoutServerLoad = (async (event) => {
+export const load: LayoutServerLoad = async (event) => {
 	event.setHeaders({
 		'X-Frame-Options': 'DENY',
 		'X-Content-Type-Options': 'nosniff',
@@ -13,17 +13,16 @@ export const load: LayoutServerLoad = (async (event) => {
 		'Permissions-Policy':
 			'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
 		'Content-Security-Policy':
-			"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';"
+			"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cdn.sanity.io; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';"
 	});
 
-	const home = await getHome();
-	const about = await getAbout();
-	const baseMetaTags = defaultMetaTags(event.url) satisfies MetaTagsProps;
+	// Only site-wide identity here — home and about load in their own routes.
+	const settings = await getSettings();
+
 	return {
-		home,
-		about,
-		baseMetaTags,
+		settings,
+		baseMetaTags: defaultMetaTags(event.url),
 		blogEnabled: isBlogEnabled(),
 		navItems: getNavItems()
 	};
-}) satisfies LayoutServerLoad;
+};
