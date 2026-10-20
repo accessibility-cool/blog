@@ -16,7 +16,7 @@ This repository uses [PNPM](https://pnpm.io/) for fast, disk-efficient package m
     ```bash
     pnpm dev
     ```
-    This runs all app and package dev servers in parallel using TurboRepo.
+    This runs the site and the Sanity Studio dev servers in parallel using TurboRepo.
 
 ## Repository Structure
 
@@ -24,7 +24,7 @@ This repository uses [PNPM](https://pnpm.io/) for fast, disk-efficient package m
 .
 ├── apps/
 │   ├── blog/
-│   └── ghost/
+│   └── cms/
 ├── packages/
 │   ├── data/
 │   ├── eslint-config/
@@ -39,25 +39,31 @@ This repository uses [PNPM](https://pnpm.io/) for fast, disk-efficient package m
 ### Apps
 
 - **apps/blog**  
-  The main SvelteKit 5 blog application.
+  The website — SvelteKit 3 + Svelte 5. Content is fetched from Sanity with SvelteKit remote functions.
 
-    - Local dev: `pnpm dev` (from root)
+    - Local dev: `pnpm dev` (from root) or `pnpm --filter a11y.cool-website dev`
     - Production build: `pnpm build`
     - Hosted on [Netlify](https://app.netlify.com/sites/a11y-cool/deploys) (see `apps/blog/netlify.toml` for config).
 
-- **apps/ghost**  
-  (Currently empty/reserved for future use or integration with Ghost CMS.)
+- **apps/cms**  
+  The [Sanity](https://www.sanity.io/) Studio (project `8mj49az4`, dataset `production`), hosted at
+  <https://accessibility-cool.sanity.studio>. Schema types live in `apps/cms/schemaTypes/`.
+
+    - Local dev: `pnpm --filter @a11y.cool/cms dev`
+    - Deploy the Studio: `pnpm --filter @a11y.cool/cms deploy`
+    - Deploy the schema: `pnpm --filter @a11y.cool/cms deploy-schema`
+    - Regenerate types after a schema or query change: `pnpm generate:types` (from root)
 
 ### Packages
 
 - **packages/data**  
-  Shared types and data utilities, including page/post types and default meta data. Used by the blog and UI packages.
+  The Sanity client, GROQ queries, TypeGen-generated types, image URL helpers, and the meta-tag and JSON-LD builders. Used by the blog and UI packages.
 
 - **packages/ui**  
-  Shared Svelte UI components (Button, Header, Footer, Avatar, Navigation, Card, etc.) and styles for use across apps.
+  Shared Svelte UI components (Button, Header, Footer, Avatar, Navigation, Card, RichText for Portable Text, etc.) and styles for use across apps.
 
 - **packages/utils**  
-  General utility functions (e.g., `slugify`, `formatDate`) for use across the monorepo.
+  General utility functions (e.g., `slugify`, `formatDate`, `safeHref`) and the sitemap / `llms.txt` / RSS renderers.
 
 - **packages/eslint-config**  
   Centralized ESLint configuration for consistent code quality and linting across all packages and apps.
@@ -75,11 +81,19 @@ This repository uses [PNPM](https://pnpm.io/) for fast, disk-efficient package m
 
     This will start the development server for all apps (including the blog) using TurboRepo.
 
-- **Lint, build, and check types:**
+- **Lint, build, check types, and test:**
+
     ```bash
     pnpm lint
     pnpm build
     pnpm check-types
+    pnpm test:unit
+    pnpm --filter a11y.cool-website test:integration   # Playwright SEO suite
+    ```
+
+- **Regenerate Sanity types** (after changing a schema type or a GROQ query):
+    ```bash
+    pnpm generate:types
     ```
 
 ## AI Agents
@@ -94,3 +108,6 @@ adding or removing one.
 - **Blog app is deployed on Netlify:**  
   The production build and deployment for the blog app is managed by Netlify.  
   See the [Netlify dashboard](https://app.netlify.com/sites/a11y-cool/deploys) and `apps/blog/netlify.toml` for configuration.
+
+- **Sanity Studio is deployed to Sanity:**  
+  `pnpm --filter @a11y.cool/cms deploy` publishes it to <https://accessibility-cool.sanity.studio>.

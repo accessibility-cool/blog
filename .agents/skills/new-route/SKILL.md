@@ -1,6 +1,6 @@
 ---
 name: new-route
-description: Create a new SvelteKit page route in apps/blog with a server load, meta tags, and an accessible page shell. Use when asked to add a page or route.
+description: Create a new SvelteKit 3 page route in apps/blog with a universal load over remote functions, meta tags, JSON-LD, and an accessible page shell. Use when asked to add a page or route.
 ---
 
 # New SvelteKit Route
@@ -13,43 +13,60 @@ Route path: $ARGUMENTS
 
 ---
 
-### `+page.server.ts` — server-side load & actions
+### `+page.ts` — universal load
 
-All CMS access lives here. The Ghost and Directus clients read `process.env`, so they must never run
-in a universal load.
+Pages use universal loads that call **remote functions** (`*.remote.ts`); there are no
+`+page.server.ts` files. Reuse an existing remote function (`getPage(slug)` in
+`routes/data.remote.ts` for a Sanity `page` document) or add one — see the
+[`sanity-data`](../sanity-data/SKILL.md) skill. An indexable route, modelled on `about/+page.ts`:
 
 ```typescript
-import type { PageServerLoad, Actions } from './$types';
-import type { MetaTagsProps } from 'svelte-meta-tags';
-import { getPage } from '@a11y.cool/data';
-import { fail, error } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
+import {
+	ENTITY_SENTENCE,
+	aboutGraph,
+	graphContext,
+	resolvePageMeta,
+	truncateAtWord
+} from '@a11y.cool/data';
+import { getAbout } from '../data.remote';
 
-export const load = (async ({ params }) => {
-	const page = await getPage('$ARGUMENTS');
+export const load: PageLoad = async ({ url, parent }) => {
+	const [{ settings }, about] = await Promise.all([parent(), getAbout()]);
 
-	if (!page) {
-		error(404, 'Not found');
-	}
+	// Sanity's `meta` wins; these literals are the fallback. `description` is required.
+	const pageMetaTags = resolvePageMeta(about?.meta, {
+		title: about?.title || 'About',
+		description: about?.intro ? truncateAtWord(about.intro, 155) : ENTITY_SENTENCE
+	});
 
-	const pageMetaTags = {
-		title: page.title,
-		description: 'Page description'
-	} satisfies MetaTagsProps;
+	// One whole graph from a builder in packages/data/src/seo/jsonld.ts — add one if none fits.
+	const jsonLd = aboutGraph(graphContext(url, settings), {
+		title: pageMetaTags.title ?? 'About',
+		description: pageMetaTags.description ?? ENTITY_SENTENCE,
+		members: about?.members
+	});
 
-	return { page, pageMetaTags };
-}) satisfies PageServerLoad;
-
-// Only add if the page has form actions
-export const actions: Actions = {
-	default: async ({ request }) => {
-		const form = await request.formData();
-		const value = form.get('field') as string;
-		if (!value) {
-			return fail(400, { field: value, missing: true });
-		}
-		return { success: true };
-	}
+	return { about, pageMetaTags, jsonLd };
 };
+```
+
+- Remote functions never throw — they return `null` when the document is missing or Sanity is
+  down. Decide here: `error(404, 'Not found')` (as `blog/[slug]/+page.ts` does) or render an empty
+  state (as `about/+page.svelte` does)
+- A **noindex** route sets `robots` itself and returns **no** `jsonLd` — copy
+  `imprint/+page.ts`:
+
+```typescript
+const pageMetaTags = {
+	...resolvePageMeta(page?.meta, {
+		title: page?.title || 'Imprint',
+		description: 'Imprint of Accessibility.cool.'
+	}),
+	robots: 'noindex, nofollow, noarchive, nosnippet, noimageindex'
+};
+
+return { page, pageMetaTags };
 ```
 
 ### `+page.svelte` — page component
@@ -57,35 +74,40 @@ export const actions: Actions = {
 ```svelte
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { animate, getAnimateInitialClass, processHtml } from '@a11y.cool/utils';
-	import { HtmlRender } from '@a11y.cool/ui';
+	import { RichText } from '@a11y.cool/ui';
+	import { animate, getAnimateInitialClass } from '@a11y.cool/utils';
 
 	let { data }: { data: PageData } = $props();
 
 	const animateInitial = getAnimateInitialClass();
-	let content = $derived(processHtml(data.page?.content));
 </script>
 
 <section
 	class="col-span-12 col-start-1 flex justify-center {animateInitial}"
 	use:animate={{ delay: 100, triggerOnMount: true }}
 >
-	<article class="pt-10 max-w-[580px] w-full">
-		<h1 class="text-4xl font-bold mb-4">{data.page.title}</h1>
-		{#if content}
-			<HtmlRender node={content} />
+	<article class="max-w-[580px] w-full space-y-4 py-12 md:py-24">
+		<h1>{data.page?.title || '…'}</h1>
+		{#if data.page?.body?.length}
+			<RichText value={data.page.body} />
+		{:else}
+			<p>This page is being updated. Please check back soon.</p>
 		{/if}
 	</article>
 </section>
 ```
 
+A plain Sanity `page` (title + body) can reuse `#lib/LegalPage.svelte` outright:
+`<LegalPage page={data.page} fallbackTitle="…" />`.
+
 Notes:
 
 - Do **not** add `<svelte:head><title>` — SEO is handled by `svelte-meta-tags`. Return
-  `pageMetaTags` from `load` and `+layout.svelte` merges it with `baseMetaTags`.
+  `pageMetaTags` from `load` and `+layout.svelte` merges it with `baseMetaTags`; it also renders
+  `jsonLd` once.
 - The root layout renders a 12-column grid; page sections opt in with
   `col-span-12 col-start-1`.
-- Never `{@html}` CMS content — run it through `processHtml()` and render with `HtmlRender`.
+- Never `{@html}` CMS content — Portable Text goes through `RichText`.
 
 ### `+layout.svelte` — only if this route segment needs its own layout
 
@@ -119,18 +141,21 @@ Notes:
 
 If the new section should be feature-flagged like `/blog`:
 
-1. Add the flag reader to `apps/blog/src/lib/features.ts`
+1. Declare the variable in `apps/blog/src/env.ts` (`defineEnvVars`, `public: true`,
+   `v.optional(v.string())`) and add the flag reader to `apps/blog/src/lib/features.ts`
+   (`import { … } from '$app/env/public'`)
 2. Gate the subtree in `apps/blog/src/hooks.server.ts` with `error(404, 'Not found')`
 3. Add/remove the nav entry in `getNavItems()`
+4. Drop the section's URLs from `sitemap.xml`, `llms.txt` (and any feed) when the flag is off
 
-All three must stay in sync — a nav link to a 404 is worse than no link.
+All of them must stay in sync — a nav link to a 404 is worse than no link.
 
 ---
 
 ## Streaming Deferred Data
 
 ```typescript
-export const load: PageServerLoad = async () => {
+export const load: PageLoad = async () => {
 	return {
 		critical: await loadCriticalData(),
 		deferred: loadSlowData() // not awaited — streams to the client
@@ -152,12 +177,15 @@ export const load: PageServerLoad = async () => {
 
 ## Rules
 
-- Always use `./$types` for `PageLoad`, `PageServerLoad`, `Actions` — never type manually
-- Keep tokens and CMS calls in `+page.server.ts`, never `+page.ts`
-- Import shared types and CMS getters from `@a11y.cool/data`; UI from `@a11y.cool/ui`; helpers from
-  `@a11y.cool/utils`; app-local helpers from `$lib/`
+- Always use `./$types` for `PageLoad`, `LayoutServerLoad`, `RequestHandler` — never type manually
+- Fetch through remote functions from a universal `+page.ts`; never call the Sanity client directly
+  from a load or component
+- Import shared types and builders from `@a11y.cool/data`; UI from `@a11y.cool/ui`; helpers from
+  `@a11y.cool/utils`; app-local helpers from `#lib/<file>.ts` (extension required — `$lib` is gone)
 - Use Svelte 5 runes — `$props()`, never `export let data`
 - `$derived(expr)`, not `$derived(() => expr)`
 - One `<h1>` per page; use semantic landmarks. See the [`accessibility`](../accessibility/SKILL.md) skill
-- Adding a new sitemap entry? Update `apps/blog/src/routes/sitemap.xml/+server.ts`
+- Indexable page? Add it to `apps/blog/src/routes/sitemap.xml/+server.ts` and `llms.txt/+server.ts`
+  (and to `contentIndexQuery` if it needs a `lastmod`/summary), and extend `tests/seo.spec.ts`.
+  noindex pages stay **out** of the sitemap
 - After creating, run: `pnpm --filter a11y.cool-website check && pnpm lint`

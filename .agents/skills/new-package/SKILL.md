@@ -11,12 +11,14 @@ Package name: $ARGUMENTS
 
 > **Check first — most new code does not need a new package:**
 >
-> | You want to add            | Put it in                             |
-> | -------------------------- | ------------------------------------- |
-> | A shared type or interface | `packages/data/src/types/*.type.ts`   |
-> | A CMS query or fetcher     | `packages/data/src/{ghost,directus}/` |
-> | A Svelte component         | `packages/ui/src/components/`         |
-> | A pure helper function     | `packages/utils/src/`                 |
+> | You want to add            | Put it in                                               |
+> | -------------------------- | ------------------------------------------------------- |
+> | A shared type or interface | `packages/data/src/types/*.type.ts`                     |
+> | A CMS query                | `packages/data/src/sanity/queries.ts`                   |
+> | A CMS fetch                | a remote function in `apps/blog/src/routes/*.remote.ts` |
+> | A Sanity schema type       | `apps/cms/schemaTypes/`                                 |
+> | A Svelte component         | `packages/ui/src/components/`                           |
+> | A pure helper function     | `packages/utils/src/`                                   |
 >
 > Only create a package for a genuinely new concern with its own dependency set.
 
@@ -72,6 +74,8 @@ Notes:
   already used elsewhere in the repo.
 - Add a `check-types` script (`"check-types": "tsc --noEmit"`) if the package can stand alone —
   currently only `apps/blog` has one, which is a known gap.
+- Pure logic gets unit tests: add `"test:unit": "vitest run"`, a `vitest.config.ts`, and
+  `vitest` to `devDependencies` — mirror `packages/utils` (root `pnpm test:unit` picks it up).
 
 > If the package exports Svelte components, also add `"svelte": "^5.56.4"` to `devDependencies`, an
 > `eslint.config.js`, and a `svelte.d.ts` — mirror `packages/ui`.
