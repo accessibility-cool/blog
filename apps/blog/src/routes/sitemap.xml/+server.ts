@@ -1,5 +1,5 @@
 import { getPosts } from '@a11y.cool/data';
-import { isBlogEnabled } from '$lib/features';
+import { isBlogEnabled } from '#lib/features.ts';
 
 type SitemapPage = {
 	url: string;

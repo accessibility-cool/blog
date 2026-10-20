@@ -5,7 +5,7 @@
 	import { ArticleNyTimesIcon, ListChecksIcon, CursorClickIcon } from 'phosphor-svelte';
 
 	const animateInitial = getAnimateInitialClass();
-	import { browser } from '$app/environment';
+	import { browser } from '$app/env';
 
 	let { data }: { data: PageData } = $props();
 	let { home } = $derived(data);

@@ -1,6 +1,6 @@
 [build]
   command = "pnpm build"
-  publish = ".svelte-kit/netlify"
+  publish = "build"
   base = "apps/blog"
 
 # Deploy contexts
