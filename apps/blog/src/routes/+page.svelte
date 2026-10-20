@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { Card, Eyes } from '@a11y.cool/ui';
-	import { animate, getAnimateInitialClass } from '@a11y.cool/utils';
+	import { animate, getAnimateInitialClass, safeHref } from '@a11y.cool/utils';
 	import { ArticleNyTimesIcon, ListChecksIcon, CursorClickIcon } from 'phosphor-svelte';
 
 	const animateInitial = getAnimateInitialClass();
@@ -78,10 +78,12 @@
 								iconAriaLabel={card.iconAria ?? ''}
 								description={card.description ?? ''}
 							>
-								{#if card.href}
-									<!-- CMS-authored: a site path or an external https URL (validated in the Studio), so not a route id resolve() can type -->
+								{@const href = safeHref(card.href)}
+								{#if href}
+									<!-- CMS-authored: a site path or an external https URL, so not a route id resolve() can type.
+									     Re-checked by safeHref — Studio validation does not constrain what the dataset holds. -->
 									<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-									<a href={card.href} class="mt-auto self-start underline underline-offset-2">
+									<a {href} class="mt-auto self-start underline underline-offset-2">
 										Read more<span class="sr-only"> about {card.title}</span>
 									</a>
 								{/if}

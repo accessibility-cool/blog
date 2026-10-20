@@ -1,0 +1,8 @@
+# Static assets (served by the Netlify CDN; they never reach hooks.server.ts).
+# No Content-Security-Policy here: browsers enforce every CSP they receive, so a
+# second, nonce-less policy on a page would block Kit's inline scripts.
+/*
+  X-Content-Type-Options: nosniff
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
