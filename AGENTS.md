@@ -60,9 +60,10 @@ apps/
       env.ts                   defineEnvVars — every env var the app reads via $app/env/*
       global.css               Tailwind v4 entry + @a11y.cool/ui globals
       app.d.ts                 App.PageData augmentation (pageMetaTags, jsonLd)
-      hooks.server.ts          Route gating (blog feature flag)
+      hooks.server.ts          Security headers + route gating (blog feature flag)
     tests/seo.spec.ts          Playwright SEO suite
-    kit.config.ts              Kit options (adapter-netlify, remoteFunctions, async) → sveltekit()
+    tests/security.spec.ts     Playwright headers + CSP suite (no violations on any page)
+    kit.config.ts              Kit options (adapter-netlify, csp, remoteFunctions, async) → sveltekit()
     vite.config.ts             sveltekit(kitOptions) + tailwindcss() + devtoolsJson()
 
   cms/                         Sanity Studio v6 — package name: @a11y.cool/cms
@@ -146,7 +147,7 @@ pnpm agents:link      # re-link .agents/skills into .claude/skills (see "Maintai
 # Target a specific package
 pnpm --filter a11y.cool-website dev
 pnpm --filter a11y.cool-website check   # svelte-check — the broad signal
-pnpm --filter a11y.cool-website test:integration   # Playwright SEO suite (tests/seo.spec.ts)
+pnpm --filter a11y.cool-website test:integration   # Playwright SEO + security suites (tests/)
 pnpm --filter @a11y.cool/cms dev        # Sanity Studio locally
 pnpm --filter @a11y.cool/data test:unit
 pnpm --filter @a11y.cool/utils test:unit
@@ -182,8 +183,16 @@ run before `apps/*`. A new package's `check-types` script is picked up automatic
 ## Deployment & Feature Flags
 
 `apps/blog` deploys to Netlify via `@sveltejs/adapter-netlify` 7, which publishes to `build/`
-(`netlify.toml`). Security headers and CSP (`img-src` allows `https://cdn.sanity.io`) are set in
-`apps/blog/src/routes/+layout.server.ts` — update them there, not in `netlify.toml`.
+(`netlify.toml`). Security headers live in three places — update them there, not in `netlify.toml`:
+
+- **Page CSP** — `csp` in `apps/blog/kit.config.ts`. Kit nonces its own inline scripts, so
+  `script-src` has no `'unsafe-inline'`; never add it (or an inline `<script>`/`on*=` attribute).
+  `img-src` allows `https://cdn.sanity.io`.
+- **Every other header**, plus a deny-all CSP for non-page responses — `apps/blog/src/hooks.server.ts`.
+- **Static assets** (served by the CDN, never reach hooks) — `apps/blog/_headers`. Never put a CSP
+  there: a second policy on a page would block Kit's nonced scripts.
+
+`tests/security.spec.ts` asserts all of it against a production build and fails on any CSP violation.
 
 The Studio deploys separately with `pnpm --filter @a11y.cool/cms deploy`
 (→ <https://accessibility-cool.sanity.studio>); schema changes also need

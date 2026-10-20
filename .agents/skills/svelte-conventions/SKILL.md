@@ -62,9 +62,11 @@ told to maintain a legacy file.
   (`v.pipe(v.string(), v.maxLength(SLUG_MAX_LENGTH))`) — never `'unchecked'`.
 - Server-only code goes in modules with a `.server` segment (`#lib/sanity.server.ts`) — Kit 3
   refuses to bundle them into the client, wherever they live.
-- Security headers and the CSP live in `apps/blog/src/routes/+layout.server.ts`. Adding an inline
-  script or a third-party origin (images are already allowed from `https://cdn.sanity.io`) requires
-  updating the CSP there.
+- The page CSP is `csp` in `apps/blog/kit.config.ts` (Kit nonces its own scripts — no
+  `'unsafe-inline'` in `script-src`); every other security header is set in `src/hooks.server.ts`,
+  static assets get theirs from `apps/blog/_headers`. Adding a third-party origin (images are already
+  allowed from `https://cdn.sanity.io`) means updating the CSP in `kit.config.ts`. Never add an inline
+  `<script>` or an `on*=` attribute string — they are blocked; use Svelte event handlers.
 
 ## Import Rules
 
@@ -329,7 +331,7 @@ export {};
 
 CMS data is fetched by **remote functions** (`query()` from `$app/server`) in `*.remote.ts` files
 next to the routes, and consumed from **universal `+page.ts`** loads. There are no
-`+page.server.ts` files; `+layout.server.ts` exists only for security headers and site-wide data.
+`+page.server.ts` files; `+layout.server.ts` exists only for site-wide data.
 
 ```ts
 // ✅ apps/blog/src/routes/data.remote.ts

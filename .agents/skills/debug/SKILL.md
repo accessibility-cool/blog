@@ -153,8 +153,12 @@ class={`text-${size}`}      // WRONG — Tailwind scans for literal strings
 // Fix: return `pageMetaTags` (resolvePageMeta) and `jsonLd` from load — +layout.svelte merges the
 //      tags onto baseMetaTags and renders the graph once. Playwright: tests/seo.spec.ts
 
-// ❌ CSP blocks a script/font/image in production
-// Fix: the CSP is set in apps/blog/src/routes/+layout.server.ts, not netlify.toml
+// ❌ CSP blocks a script/font/image ("violates the following Content Security Policy directive")
+// Fix: the page CSP is `csp` in apps/blog/kit.config.ts — not netlify.toml, _headers or hooks.
+//      Add the origin to the right directive; never add 'unsafe-inline' to script-src.
+//      "Executing inline event handler" means an on*= attribute string in SSR HTML — Svelte's own
+//      `onload="this.__e=event"` is allowed by hash (see the comment there); anything else, rewrite
+//      as a Svelte handler. Playwright: tests/security.spec.ts
 ```
 
 ### Build / Turborepo
