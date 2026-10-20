@@ -8,6 +8,10 @@ on:
             - 'dev'
             - '**'
 
+# Least privilege: CI only reads the repo
+permissions:
+    contents: read
+
 jobs:
     lint:
         runs-on: ubuntu-latest

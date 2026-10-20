@@ -2,6 +2,7 @@
 	import type { Person } from '@a11y.cool/data';
 	import { urlFor } from '@a11y.cool/data';
 	import { Globe, LinkedinLogo, LinkSimple } from 'phosphor-svelte';
+	import { safeHref } from '@a11y.cool/utils';
 
 	let { member }: { member: Person } = $props();
 
@@ -18,7 +19,13 @@
 	};
 
 	let imageUrl = $derived(urlFor(member.image, 192, 192));
-	let links = $derived((member.links ?? []).filter((link) => link.url));
+	// Re-checked at render time like rich-text links: Studio validation does not constrain the dataset
+	let links = $derived(
+		(member.links ?? []).flatMap((link) => {
+			const href = safeHref(link.url);
+			return href ? [{ ...link, href }] : [];
+		})
+	);
 </script>
 
 <!-- `id` is the person's anchor — JSON-LD Person ids point at /about#slug -->
@@ -64,10 +71,10 @@
 
 	{#if links.length}
 		<ul class="flex flex-wrap gap-4 mt-auto pt-4" aria-label="{member.name} elsewhere">
-			{#each links as link (link.url)}
+			{#each links as link (link.href)}
 				<li>
 					<a
-						href={link.url}
+						href={link.href}
 						rel="noopener noreferrer me"
 						class="flex items-center gap-2 px-3 py-2 rounded-lg bg-background border border-border-input hover:bg-muted transition-colors"
 					>

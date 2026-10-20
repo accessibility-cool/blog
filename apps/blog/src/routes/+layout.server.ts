@@ -7,7 +7,7 @@ export const load: LayoutServerLoad = async (event) => {
 	event.setHeaders({
 		'X-Frame-Options': 'DENY',
 		'X-Content-Type-Options': 'nosniff',
-		'Referrer-Policy': 'no-referrer-when-downgrade',
+		'Referrer-Policy': 'strict-origin-when-cross-origin',
 		'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
 		'Cross-Origin-Opener-Policy': 'same-origin',
 		'Permissions-Policy':
