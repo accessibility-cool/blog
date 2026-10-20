@@ -19,7 +19,6 @@
 		"lint": "eslint . --max-warnings 0"
 	},
 	"devDependencies": {
-		"@a11y.cool/data": "workspace:*",
 		"@a11y.cool/eslint-config": "workspace:*",
 		"@a11y.cool/typescript-config": "workspace:*",
 		"@tailwindcss/postcss": "^4.3.3",
@@ -33,13 +32,12 @@
 		"typescript": "^6.0.3"
 	},
 	"dependencies": {
+		"@a11y.cool/data": "workspace:*",
 		"@a11y.cool/utils": "workspace:*",
-		"@types/hast": "^3.0.5",
+		"@portabletext/svelte": "^4.0.0",
+		"@portabletext/types": "^4.0.2",
 		"bits-ui": "^2.19.5",
 		"highlight.js": "^11.12.0",
-		"phosphor-svelte": "^3.1.1",
-		"rehype": "^13.0.2",
-		"rehype-parse": "^9.0.1",
-		"unified": "^11.0.5"
+		"phosphor-svelte": "^3.1.1"
 	}
 }

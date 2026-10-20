@@ -7,6 +7,8 @@
 		"lint": "turbo run lint",
 		"format": "prettier --write .",
 		"check-types": "turbo run check-types",
+		"test:unit": "turbo run test:unit",
+		"generate:types": "pnpm --filter @a11y.cool/cms run extract-schema && pnpm --filter @a11y.cool/cms run generate-types",
 		"update-deps": "./update-deps.sh",
 		"agents:link": "./link-agent-skills.sh"
 	},

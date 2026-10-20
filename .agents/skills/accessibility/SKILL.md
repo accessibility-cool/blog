@@ -34,7 +34,10 @@ Consequences:
 
 `prefers-reduced-motion: reduce` is honoured in three places — keep all three working:
 
-1. `globals.css` neutralises every `animate-*` and `animate-initial-*` class
+1. `globals.css` neutralises every `animate-*` and `animate-initial-*` class. The
+   `@media (prefers-reduced-motion: reduce)` block **must stay after** the `.animate-initial*`
+   rules: same specificity, so source order decides — moved above them, `opacity: 0` wins and every
+   animated section stays invisible for reduced-motion users
 2. The `animate` action in `@a11y.cool/utils` returns a no-op before observing anything
 3. `Eyes.svelte` checks `matchMedia('(prefers-reduced-motion: reduce)')` for its JS-driven motion
 
@@ -59,6 +62,8 @@ action, the element stays permanently invisible for users with JS disabled.
 - A `<button>` that navigates should be an `<a>`; an `<a>` that acts should be a `<button>`
 - One `<h1>` per page. Never skip heading levels to get a font size — sizes come from
   `typography.css`, which styles `h1`–`h5` by element
+- The route owns the page's only `<h1>`: `RichText` renders a Portable Text `h1` as a paragraph, and
+  gives `h2`–`h4` slug `id`s so they can be linked
 - Reach for Bits UI before writing ARIA by hand — see
   the [`bits-ui-components`](../bits-ui-components/SKILL.md) skill
 - Interactive non-button elements need `role`, `tabindex="0"`, and Enter/Space key handling. This is
@@ -69,17 +74,20 @@ action, the element stays permanently invisible for users with JS disabled.
 `@tailwindcss/typography` is **not installed** and there is no `@plugin` directive, so `prose` /
 `prose-lg` generate no CSS. Do not reach for them.
 
-CMS HTML is styled by the bare-element rules in `packages/ui/src/styles/typography.css` (`h1`–`h5`,
-`p`, and helper classes), which apply globally. To restyle rendered content, edit that file rather
-than adding `prose-*` modifiers.
+CMS rich text (Portable Text via `RichText`) is styled by the bare-element rules in
+`packages/ui/src/styles/typography.css` (`h1`–`h5`, `p`, and helper classes), which apply globally.
+To restyle rendered content, edit that file rather than adding `prose-*` modifiers.
 
 ## Images and Media
 
 - Every `<img>` needs an `alt`. Decorative images get `alt=""`, never a missing attribute
 - Do not use the post title as the cover-image `alt` when the title is already an adjacent `<h1>` —
   that double-announces. Prefer `alt=""` for a purely decorative cover
-- Directus images come from `mediaUrl(uuid)`; the collection carries a `description` field — use it
-  as the `alt` text
+- CMS images are Sanity `accessibleImage`s: the Studio blocks publishing without `alt` unless the
+  editor marks the image `decorative`. Render exactly
+  `alt={image.decorative ? '' : (image.alt ?? '')}` (see `RichTextImage.svelte`) — never substitute
+  the title or filename
+- Pass `width` / `height` from `dimensionsOf(image)` so images don't shift the layout
 
 ## Forms
 

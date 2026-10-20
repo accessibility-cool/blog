@@ -20,7 +20,7 @@ function processUser({ id, name }: { id: string; name: string }) {
 }
 
 // ✅ Fine — single, unambiguous argument
-export const getPost = async (slug: string): Promise<Post | null> => { … };
+export const lqipOf = (source: ImageSource): string | undefined => { … };
 
 // ❌ Bad — positional same-typed args are easy to swap
 function processUser(id: string, name: string) { … }
@@ -30,52 +30,55 @@ function processUser(id: string, name: string) { … }
 
 - **Never use `any`.** This includes `as any` assertions and generic `T = any` defaults.
 - Use explicit types, interfaces, or `unknown` with type guards.
-- When mapping an untyped third-party payload, take `unknown` and narrow it — the Ghost mappers in
-  `packages/data/src/ghost/ghost.api.ts` are the reference:
+- CMS shapes are never hand-typed — they are Sanity TypeGen results re-exported from
+  `packages/data/src/types` (`export type Post = NonNullable<PostQueryResult>`).
+- When handling an untyped value, take `unknown` and narrow it — `safeHref` in
+  `packages/utils/src/global-utils.ts` is the reference:
 
     ```ts
-    function mapTag(tag: unknown): Tag {
-    	const t = tag as Record<string, unknown>;
-    	return {
-    		id: (t.id as string) || '',
-    		name: (t.name as string) || ''
-    	};
-    }
+    export const safeHref = (href: unknown): string | null => {
+    	if (typeof href !== 'string') return null;
+    	…
+    };
     ```
 
 - **Use union types, not enums.** Enums generate runtime code; prefer `type Status = 'active' | 'inactive'`.
 - Prefer `interface` for object shapes that may be extended; `type` for aliases and unions.
 - Use `satisfies` to validate a literal against a type without widening it — the repo uses this for
-  `MetaTagsProps` and `PageServerLoad`.
+  `kitOptions` in `apps/blog/kit.config.ts`.
 
 ## Imports & Path Aliases
 
 Use the project's defined aliases — **never** deep relative paths across package boundaries.
 
-| Alias                 | Resolves to                                              |
-| --------------------- | -------------------------------------------------------- |
-| `$lib/*`              | `apps/blog/src/lib/*`                                    |
-| `$env/dynamic/public` | SvelteKit public runtime env (app only)                  |
-| `@a11y.cool/data`     | `packages/data` — shared types, Ghost + Directus clients |
-| `@a11y.cool/ui`       | `packages/ui` — Svelte component library                 |
-| `@a11y.cool/utils`    | `packages/utils` — pure functions (no shared types)      |
+| Alias                      | Resolves to                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `#lib/*`                   | `apps/blog/src/lib/*` — `package.json` subpath import, extension needed  |
+| `$app/env/public`          | SvelteKit public env, declared in `apps/blog/src/env.ts` (app only)      |
+| `@a11y.cool/data`          | `packages/data` — types, Sanity client/queries/images, meta + JSON-LD    |
+| `@a11y.cool/data/sanity/*` | one module of it, e.g. `sanity/queries`, `sanity/sanity.types` (TypeGen) |
+| `@a11y.cool/ui`            | `packages/ui` — Svelte component library                                 |
+| `@a11y.cool/utils`         | `packages/utils` — pure functions (no shared types)                      |
 
 ```ts
 // ✅ Good
 import type { Post } from '@a11y.cool/data';
-import { getPost } from '@a11y.cool/data';
-import { PostInfo, HtmlRender } from '@a11y.cool/ui';
-import { formatDate, processHtml } from '@a11y.cool/utils';
-import { isBlogEnabled } from '$lib/features';
+import { postQuery, SLUG_MAX_LENGTH } from '@a11y.cool/data/sanity/queries';
+import { PostInfo, RichText } from '@a11y.cool/ui';
+import { formatDate, safeHref } from '@a11y.cool/utils';
+import { isBlogEnabled } from '#lib/features.ts';
 
 // ❌ Bad — relative path crossing a package boundary
 import type { Post } from '../../../packages/data/src/types/post.type';
+// ❌ Bad — `$lib` is gone in SvelteKit 3, and `#lib` needs the extension
+import { isBlogEnabled } from '$lib/features';
 ```
 
 ### Shared types (`@a11y.cool/data`)
 
 - **All** types used across apps or packages live in `packages/data/src/types/` (one concern per
-  `*.type.ts` file: `post.type.ts`, `page.type.ts`, `home.type.ts`, `about.type.ts`).
+  `*.type.ts` file: `post.type.ts`, `page.type.ts`, `person.type.ts`, `settings.type.ts`, …) —
+  mostly re-exports of TypeGen query results from `sanity/sanity.types.ts` (generated; never edit).
 - Export from `packages/data/src/index.ts` so consumers import `@a11y.cool/data` (deep imports via
   `@a11y.cool/data/types/…` also work and are used inside the package itself).
 - `@a11y.cool/ui` may **re-export** types for convenience; it must not **define** shared interfaces.
@@ -89,7 +92,7 @@ Use named exports everywhere. The only default exports are `.svelte` component f
 
 ```ts
 // ✅ Good
-export const getPosts = async (): Promise<Post[]> => { … };
+export const getPosts = query(async () => fetchOr<PostsQueryResult>('posts', [], postsQuery));
 export type { Post };
 export { default as Button } from './src/components/Button.svelte';
 
@@ -119,10 +122,10 @@ class DateFormatter {
 
 ```ts
 // ✅ Good
-if (!isGhostConfigured()) {
-	return [];
+if (!hasAsset(source)) {
+	return '';
 }
-return fetchPosts();
+return builder.image(source).url();
 
 // ❌ Bad
 if (isActive) doSomething();
@@ -131,28 +134,29 @@ else doOtherThing();
 
 ## Error Handling
 
-Data-fetching functions in `packages/data` **degrade, they do not throw**. When a CMS is
-unconfigured or unreachable they log a warning and return an empty/null result so the site still
-renders. Preserve that contract when adding a fetcher:
+CMS fetching **degrades, it does not throw**. Every remote function goes through `fetchOr()` in
+`apps/blog/src/lib/sanity.server.ts`, which logs a warning and returns the fallback so the site still
+renders when Sanity is unreachable:
 
 ```ts
-export const getThing = async (): Promise<Thing | null> => {
-	if (!apiUrl || !apiToken) {
-		console.warn('Directus API is not configured; skipping data fetch.');
-		return null;
-	}
-
+export async function fetchOr<T>(
+	label: string,
+	fallback: T,
+	query: string,
+	params: Record<string, unknown> = {}
+): Promise<T> {
 	try {
-		// …
-	} catch (err) {
-		console.warn('Failed to fetch thing:', err);
-		return null;
+		return (await client.fetch<T>(query, params)) ?? fallback;
+	} catch (error) {
+		console.warn(`Sanity: failed to fetch ${label}; rendering without it.`, error);
+		return fallback;
 	}
-};
+}
 ```
 
 Route-level `load` functions decide what a missing result means — `error(404, …)` for a missing post,
-a rendered empty state for missing page content.
+a rendered empty state for missing page content. Pure helpers follow the same spirit: `urlFor`
+returns `''` and `dimensionsOf` returns `undefined` rather than throwing.
 
 ## Comments and Documentation
 
@@ -177,13 +181,16 @@ count++;
 
 ## Environment Variables
 
-| Where                         | How to read              | Example                                |
-| ----------------------------- | ------------------------ | -------------------------------------- |
-| `packages/data` (server-only) | `process.env` + `dotenv` | `VITE_GHOST_API_URL`, `VITE_API_TOKEN` |
-| `apps/blog` (public, runtime) | `$env/dynamic/public`    | `PUBLIC_BLOG_ENABLED`                  |
+| Where                       | How to read                                    | Example                               |
+| --------------------------- | ---------------------------------------------- | ------------------------------------- |
+| `apps/blog` (public)        | `$app/env/public`, declared in `src/env.ts`    | `PUBLIC_BLOG_ENABLED`                 |
+| `apps/blog` (secret)        | `$app/env/private` (server-only), `src/env.ts` | none today                            |
+| `apps/cms` (Studio tooling) | `process.env` + `dotenv` in `sanity.cli.ts`    | `SANITY_STUDIO_PROJECT_ID` (optional) |
 
-Never read a token in code that can reach the browser. Always guard on the variable being present
-and degrade gracefully rather than throwing at import time.
+Every app variable must be declared with `defineEnvVars` in `apps/blog/src/env.ts` (valibot schema;
+make it `v.optional(...)` when "unset" is a valid state, or `vite build` fails without it). The
+Sanity project id and dataset are public constants in `packages/data/src/sanity/api.ts`, not env
+vars. The client is anonymous — never add a token to it; anything secret belongs in `.server` code.
 
 ## Strict TypeScript Config
 

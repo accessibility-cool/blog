@@ -448,7 +448,37 @@ pre[data-language] {
 	animation: var(--animate-exit-to-right);
 }
 
-/* Respect user's motion preferences */
+/* Initial states for animations */
+.animate-initial {
+	opacity: 0;
+	transform: translateY(30px);
+}
+
+.animate-initial-fade {
+	opacity: 0;
+}
+
+.animate-initial-scale {
+	opacity: 0;
+	transform: scale(0.95);
+}
+
+.animate-initial-left {
+	opacity: 0;
+	transform: translateX(-200px);
+}
+
+.animate-initial-right {
+	opacity: 0;
+	transform: translateX(200px);
+}
+
+/*
+ * Respect user's motion preferences.
+ * MUST stay after the initial states above: same specificity, so source order
+ * decides — declared earlier, `.animate-initial { opacity: 0 }` won and every
+ * animated section stayed invisible for reduced-motion users.
+ */
 @media (prefers-reduced-motion: reduce) {
 	.animate-fly-in-up,
 	.animate-fly-in-up-fast,
@@ -473,29 +503,4 @@ pre[data-language] {
 		opacity: 1;
 		transform: none;
 	}
-}
-
-/* Initial states for animations */
-.animate-initial {
-	opacity: 0;
-	transform: translateY(30px);
-}
-
-.animate-initial-fade {
-	opacity: 0;
-}
-
-.animate-initial-scale {
-	opacity: 0;
-	transform: scale(0.95);
-}
-
-.animate-initial-left {
-	opacity: 0;
-	transform: translateX(-200px);
-}
-
-.animate-initial-right {
-	opacity: 0;
-	transform: translateX(200px);
 }

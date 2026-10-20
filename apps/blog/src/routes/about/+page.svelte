@@ -16,34 +16,32 @@
 		use:animate={{ delay: 100, triggerOnMount: true }}
 	>
 		<div class="flex flex-col justify-center items-center py-24">
-			{#if about.title}
-				<h1 class="text-center mb-8 text-teasered">{about.title}</h1>
-			{/if}
-			{#if about.about_intro}
+			<h1 class="text-center mb-8 text-teasered">{about.title || 'About'}</h1>
+			{#if about.intro}
 				<p class="max-w-2xl text-center text-lg">
-					{about.about_intro}
+					{about.intro}
 				</p>
 			{/if}
 		</div>
 	</section>
 
-	{#if about.members.length}
+	{#if about.members?.length}
 		<section
 			class="col-span-12 col-start-1 lg:col-span-12 lg:col-start-1 xl:col-span-8 xl:col-start-3 my-16 md:my-24 lg:my-32 {animateInitial}"
 			use:animate={{ delay: 250, triggerOnMount: true }}
 		>
-			{#if about.members_headline}
+			{#if about.membersHeadline}
 				<div class="grid grid-cols-12">
 					<h2
 						class="text-center mb-10 font-bold text-2xl md:text-3xl col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4"
 					>
-						{about.members_headline}
+						{about.membersHeadline}
 					</h2>
 				</div>
 			{/if}
-			{#if about.members.length >= 1}
+			{#if about.members?.length}
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full items-stretch">
-					{#each about.members as member, index (member.name)}
+					{#each about.members as member, index (member._id)}
 						<div
 							class={animateInitial}
 							use:animate={{ delay: 350 + index * 100, triggerOnMount: true }}
@@ -56,25 +54,26 @@
 		</section>
 	{/if}
 
-	{#if about.about_outro_headline && about.about_outro_description}
+	{#if about.outroHeadline && about.outroDescription}
 		<section
 			class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-6 lg:col-start-4 {animateInitial}"
 			use:animate={{ delay: 550, triggerOnMount: true }}
 		>
 			<div class="flex flex-col justify-center items-center py-24">
-				<PersonSimpleCircle
-					size={128}
-					weight="light"
-					aria-label="Person with impairments icon"
-					class="pb-8"
-				/>
+				<PersonSimpleCircle size={128} weight="light" aria-hidden="true" class="pb-8" />
 				<h2 class="text-teasered text-center mb-8">
-					{about.about_outro_headline}
+					{about.outroHeadline}
 				</h2>
 				<p class="max-w-2xl text-center text-lg">
-					{about.about_outro_description}
+					{about.outroDescription}
 				</p>
 			</div>
 		</section>
 	{/if}
+{:else}
+	<section class="col-span-12 col-start-1 md:col-span-8 md:col-start-3">
+		<div class="flex flex-col justify-center items-center py-24">
+			<h1 class="text-center text-teasered">About</h1>
+		</div>
+	</section>
 {/if}

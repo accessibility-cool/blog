@@ -1,71 +1,51 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 
-export const defaultMetaTags = (url: { pathname: string; origin: string }) =>
-	Object.freeze({
-		title: '',
+/** The site-wide share card in apps/blog/static, resolved against the request origin. */
+const META_IMAGE = 'accessibility-cool-meta.jpg';
+
+/** Share previews are read aloud by Slack, iMessage and other clients — describe the card. */
+const META_IMAGE_ALT =
+	'Accessibility.cool — practical guidance on digital accessibility and inclusive design.';
+
+/**
+ * The base every page's meta tags are deep-merged onto (see the root layout).
+ *
+ * NO `openGraph.title`/`description` and NO `twitter.title`/`description`:
+ * set here, they would win on every page and every link would preview as the
+ * site name. Absent, svelte-meta-tags falls back to each page's own title and
+ * description. No `keywords` either — no engine reads them, and `deepMerge`
+ * replacing arrays wholesale made them a footgun. The topics now live in
+ * `ENTITY.knowsAbout` on the JSON-LD graph.
+ */
+export const defaultMetaTags = (url: { pathname: string; origin: string }): MetaTagsProps => {
+	const canonical = new URL(url.pathname, url.origin).href;
+	const image = new URL(`/${META_IMAGE}`, url.origin).href;
+
+	return Object.freeze({
 		titleTemplate: '%s — Accessibility.cool',
 		description:
-			'Expert digital accessibility guidance, WCAG compliance tips, and inclusive design resources. Learn web accessibility best practices, testing tools, and how to create accessible websites for all users.',
-		canonical: new URL(url.pathname, url.origin).href,
-		keywords: [
-			'digital accessibility',
-			'web accessibility',
-			'inclusive design',
-			'WCAG compliance',
-			'accessibility testing',
-			'screen reader accessibility',
-			'keyboard navigation',
-			'ARIA labels',
-			'semantic HTML',
-			'accessibility guidelines',
-			'universal design',
-			'accessible websites',
-			'UX accessibility',
-			'disability-friendly design',
-			'assistive technology',
-			'barrierefreies user interface design',
-			'barrierefreiheitsberatung',
-			'barrierefreie webentwicklung',
-			'barrierefreie websites',
-			'barrierefreies design',
-			'barrierefreie software',
-			'barrierefreie apps',
-			'barrierefreie digitale anwendungen',
-			'barrierefreie benutzeroberflächen',
-			'barrierefreie navigation',
-			'barrierefreie technologien',
-			'barrierefreie lösungen',
-			'barrierefreie gestaltung',
-			'barrierefreie kommunikation',
-			'barrierefreie informationstechnik',
-			'digitale barrierefreiheit'
-		],
+			'Practical guidance on digital accessibility, WCAG conformance and inclusive design — testing techniques, checklists and patterns for building websites everyone can use.',
+		canonical,
 		openGraph: {
 			type: 'website',
-			url: new URL(url.pathname, url.origin).href,
+			url: canonical,
 			locale: 'en_US',
-			title: 'Accessibility.cool - Digital Accessibility & Inclusive Design Resources',
-			description:
-				'Expert digital accessibility guidance, WCAG compliance tips, and inclusive design resources. Learn web accessibility best practices, testing tools, and how to create accessible websites for all users.',
 			siteName: 'Accessibility.cool',
 			images: [
 				{
-					url: 'https://accessibility.cool/accessibility-cool-meta.jpg',
-					alt: 'Accessibility.cool Logo - Digital Accessibility and Inclusive Design Resources',
+					url: image,
+					alt: META_IMAGE_ALT,
 					width: 1200,
 					height: 630,
-					secureUrl: 'https://accessibility.cool/accessibility-cool-meta.jpg',
+					secureUrl: image,
 					type: 'image/jpeg'
 				}
 			]
 		},
 		twitter: {
 			cardType: 'summary_large_image' as const,
-			title: 'Accessibility.cool - Digital Accessibility & Inclusive Design Resources',
-			description:
-				'Expert digital accessibility guidance, WCAG compliance tips, and inclusive design resources. Learn web accessibility best practices, testing tools, and how to create accessible websites for all users.',
-			image: 'https://accessibility.cool/accessibility-cool-meta.jpg',
-			imageAlt:
-				'Accessibility.cool Logo - Digital Accessibility and Inclusive Design Resources'
+			image,
+			imageAlt: META_IMAGE_ALT
 		}
 	}) satisfies MetaTagsProps;
+};

@@ -1,12 +1,12 @@
 ---
 name: svelte-conventions
-description: Svelte 5 runes and SvelteKit 2 conventions for this repo — props, state, snippets, load functions, routing, SSR. Use when writing or reviewing any .svelte file, +page/+layout load, or SvelteKit route in apps/blog or packages/ui.
+description: "Svelte 5 runes and SvelteKit 3 conventions for this repo — props, state, snippets, kit.config.ts, #lib imports, $app/env, remote functions, universal loads, routing, SSR. Use when writing or reviewing any .svelte file, +page/+layout load, or SvelteKit route in apps/blog or packages/ui."
 ---
 
 # Svelte
 
 This rule explains how to correctly use Svelte/SvelteKit and related technologies.
-You are an expert TypeScript, Svelte 5, SvelteKit 2, Bits UI, and Tailwind CSS v4 engineer. You write
+You are an expert TypeScript, Svelte 5, SvelteKit 3, Bits UI, and Tailwind CSS v4 engineer. You write
 idiomatic, type-safe, accessible, and performant code. You always use Svelte 5 runes. You never
 regress to Svelte 4 APIs (`$:`, `export let`, `createEventDispatcher`, `<slot>`) unless explicitly
 told to maintain a legacy file.
@@ -55,18 +55,24 @@ told to maintain a legacy file.
 ## Security
 
 - Sanitize user inputs to prevent XSS attacks.
-- CMS HTML (Ghost post bodies, Directus rich text) is **untrusted**. Never pass it to `{@html}`
-  directly — run it through `processHtml()` from `@a11y.cool/utils` (rehype-sanitize) and render the
-  resulting hast tree via the `HtmlRender` component from `@a11y.cool/ui`.
+- CMS rich text is **Portable Text**, rendered by `RichText` from `@a11y.cool/ui`. Never `{@html}`
+  CMS content. CMS-authored hrefs go through `safeHref()` from `@a11y.cool/utils` (rejects
+  `javascript:` and other unsafe schemes).
+- Remote functions are public HTTP endpoints: validate every argument with a valibot schema
+  (`v.pipe(v.string(), v.maxLength(SLUG_MAX_LENGTH))`) — never `'unchecked'`.
+- Server-only code goes in modules with a `.server` segment (`#lib/sanity.server.ts`) — Kit 3
+  refuses to bundle them into the client, wherever they live.
 - Security headers and the CSP live in `apps/blog/src/routes/+layout.server.ts`. Adding an inline
-  script or a third-party origin requires updating the CSP there.
+  script or a third-party origin (images are already allowed from `https://cdn.sanity.io`) requires
+  updating the CSP there.
 
 ## Import Rules
 
-- Import shared types, Ghost/Directus clients and queries from `@a11y.cool/data`
+- Import shared types, Sanity queries/images and meta/JSON-LD builders from `@a11y.cool/data`
 - Import UI components from `@a11y.cool/ui`
 - Import pure helpers from `@a11y.cool/utils`
-- Import app-local helpers from `$lib/`
+- Import app-local helpers from `#lib/` **with the file extension** (`#lib/features.ts`,
+  `#lib/LegalPage.svelte`) — it is a `package.json` subpath import; `$lib` no longer exists
 - Never import from `apps/blog` inside any `packages/` folder
 - Never import `.svelte` files directly across package boundaries — use the `index.ts` barrel
 
@@ -257,26 +263,23 @@ let data = $state<Post | null>(null);
 Always import from `./$types` — never type load functions manually.
 
 ```ts
-// +page.server.ts — the repo's established pattern uses `satisfies`
-import type { PageServerLoad } from './$types';
-import type { MetaTagsProps } from 'svelte-meta-tags';
-import { getPost } from '@a11y.cool/data';
-import { error } from '@sveltejs/kit';
+// +page.ts — universal load calling remote queries (apps/blog/src/routes/+page.ts)
+import type { PageLoad } from './$types';
+import { ENTITY_SENTENCE, graphContext, homeGraph, resolvePageMeta } from '@a11y.cool/data';
+import { getHome } from './data.remote';
 
-export const load = (async ({ params }) => {
-	const post = await getPost(params.slug);
+export const load: PageLoad = async ({ url, parent }) => {
+	const [{ settings }, home] = await Promise.all([parent(), getHome()]);
 
-	if (!post) {
-		error(404, 'Post not found');
-	}
+	const pageMetaTags = resolvePageMeta(home?.meta, {
+		title: home?.title || 'Digital accessibility, made practical',
+		description: home?.introDescription || settings?.description || ENTITY_SENTENCE
+	});
 
-	const pageMetaTags = {
-		title: `${post.title} — Blog`,
-		description: post.excerpt || 'Read this article on Accessibility.cool'
-	} satisfies MetaTagsProps;
+	const jsonLd = homeGraph(graphContext(url, settings));
 
-	return { post, pageMetaTags };
-}) satisfies PageServerLoad;
+	return { home, pageMetaTags, jsonLd };
+};
 ```
 
 ```ts
@@ -290,14 +293,18 @@ export const GET: RequestHandler = async ({ url }) => {
 
 ### App Type Augmentation
 
-Keep `apps/blog/src/app.d.ts` up to date when you add `locals` or shared page data:
+Keep `apps/blog/src/app.d.ts` up to date when you add `locals` or shared page data. Every page may
+return `pageMetaTags` and `jsonLd`, so they are declared once:
 
 ```ts
 declare global {
 	namespace App {
-		interface Locals {}
-		interface PageData {}
-		interface Error {}
+		interface PageData {
+			/** Deep-merged onto `baseMetaTags` by the root layout. */
+			pageMetaTags?: MetaTagsProps;
+			/** One whole graph per page, rendered once by the root layout. Absent on noindex routes. */
+			jsonLd?: JsonLdSchema;
+		}
 	}
 }
 
@@ -306,23 +313,61 @@ export {};
 
 ## SvelteKit Routing and Data
 
-### Server-only by default
+### SvelteKit 3 setup
 
-All CMS access in this repo happens in `+page.server.ts` / `+layout.server.ts`, because the Ghost and
-Directus clients read tokens from `process.env`. Do not move a CMS call into `+page.ts`.
+- **No `svelte.config.js`.** Kit options live in `apps/blog/kit.config.ts` (exported `kitOptions`,
+  passed to `sveltekit(kitOptions)` in `vite.config.ts`) with the old `kit.*` keys at the top level.
+  `experimental.remoteFunctions` and `compilerOptions.experimental.async` are on
+- `tsconfig.json` extends `$app/tsconfig` (no generated `.svelte-kit/tsconfig.json`)
+- `$app/environment` → `$app/env` (`import { browser } from '$app/env'`)
+- `$env/*` → `$app/env/public` (and `$app/env/private`). Every variable is declared in
+  `apps/blog/src/env.ts` with `defineEnvVars` and a valibot schema — undeclared variables don't exist
+- `Handle` and friends are imported from `@sveltejs/kit/hooks`
+- A `.server` segment in a file name makes the module server-only anywhere, not just in `$lib/server`
 
-### Meta tags
+### Fetching: remote functions + universal loads
+
+CMS data is fetched by **remote functions** (`query()` from `$app/server`) in `*.remote.ts` files
+next to the routes, and consumed from **universal `+page.ts`** loads. There are no
+`+page.server.ts` files; `+layout.server.ts` exists only for security headers and site-wide data.
+
+```ts
+// ✅ apps/blog/src/routes/data.remote.ts
+export const getPage = query(v.pipe(v.string(), v.maxLength(SLUG_MAX_LENGTH)), async (slug) =>
+	fetchOr<PageQueryResult>(`page "${slug}"`, null, pageQuery, { slug })
+);
+
+// ❌ Fetching Sanity directly in a load (or a component) — bypasses the degradation contract
+const page = await client.fetch(pageQuery, { slug: 'imprint' });
+```
+
+Every remote function goes through `fetchOr()` (`#lib/sanity.server.ts`), which never throws. See
+the [`sanity-data`](../sanity-data/SKILL.md) skill.
+
+### Meta tags and JSON-LD
 
 SEO uses `svelte-meta-tags`. `+layout.server.ts` returns `baseMetaTags` from
-`defaultMetaTags(url)`; each page returns `pageMetaTags` and they are merged in `+layout.svelte`.
-Return a `pageMetaTags` object from every new page's load function.
+`defaultMetaTags(url)`; each page returns `pageMetaTags` from `resolvePageMeta(doc.meta, fallback)`
+and `+layout.svelte` deep-merges them. Each indexable page also returns one `jsonLd` graph from a
+builder in `@a11y.cool/data`; the layout renders it once. Never `deepMerge` a graph; noindex routes
+(`/imprint`, `/privacy-policy`) return none.
+
+### Rich text
+
+```svelte
+<!-- ✅ -->
+<RichText value={post.body} />
+
+<!-- ❌ -->
+{@html post.body}
+```
 
 ### Streaming Deferred Data
 
 Return a Promise without awaiting it — SvelteKit streams it to the client:
 
 ```ts
-export const load: PageServerLoad = async () => {
+export const load: PageLoad = async () => {
 	return {
 		eager: await getEagerData(),
 		slow: getSlowData() // not awaited — streamed
@@ -386,10 +431,11 @@ Component conventions:
 
 ## packages/data Conventions
 
-All shared TypeScript types and CMS access live here. See
-the [`ghost-directus-data`](../ghost-directus-data/SKILL.md) skill.
+The Sanity client, GROQ queries, generated types and SEO builders live here — fetching does not.
+See the [`sanity-data`](../sanity-data/SKILL.md) skill.
 
 - Never import Svelte or SvelteKit runtime APIs inside `packages/data`
+- Never hand-write a CMS type — re-export the TypeGen result (`pnpm generate:types`)
 - All exports are pure TypeScript — no `.svelte` files
 - Every new type file must be exported from `packages/data/src/index.ts`
 
@@ -409,7 +455,9 @@ Never write the following in Svelte 5:
 - `<svelte:component this={X} />` — assign to a capitalised local
 - `const store = writable(0)` for local state — use `$state`
 - `on:click={...}` — use `onclick={...}`
-- Fetching data in `onMount` — use `load` functions
+- Fetching data in `onMount` — use a remote function from a `load`
+- `{@html}` for CMS content — use `RichText`
+- `$lib/…`, `$app/environment`, `$env/…` — gone in Kit 3; use `#lib/….ts`, `$app/env`, `$app/env/public`
 - Mutating a prop directly — use a callback prop or `$bindable`
 - Chaining `$effect` blocks to propagate state — use `$derived`
 

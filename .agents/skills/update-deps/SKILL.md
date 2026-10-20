@@ -56,9 +56,10 @@ pnpm install
 pnpm lint
 pnpm --filter a11y.cool-website check     # svelte-check — the broad signal
 pnpm check-types                           # tsc, apps/blog only
+pnpm test:unit                             # vitest — data, utils, blog
 ```
 
-- All three must pass before committing. (Build is intentionally omitted for speed — run
+- All four must pass before committing. (Build is intentionally omitted for speed — run
   `pnpm build` too only if asked, or if an adapter/Vite/Tailwind major changed.)
 - Note that `pnpm check-types` only covers `apps/blog`; no `packages/*` defines a `check-types`
   script. `svelte-check` is what actually exercises the shared UI and data packages.
@@ -73,7 +74,7 @@ unrelated to this update?
 - **Caused by a stable major** (e.g. TypeScript 7 crashing `svelte-check` with
   `Cannot read properties of undefined (reading 'useCaseSensitiveFileNames')`): pin **only that
   dependency** back to its previous major across every package.json that declares it (root,
-  `apps/blog`, `packages/*`), preserving each file's existing range style (`^x.y.z` vs pinned), then:
+  `apps/*`, `packages/*`), preserving each file's existing range style (`^x.y.z` vs pinned), then:
     ```bash
     pnpm install
     pnpm lint && pnpm --filter a11y.cool-website check
@@ -82,27 +83,27 @@ unrelated to this update?
 
 Known held-back deps:
 
-- **TypeScript** — pinned to `6.0.3` (exact, not `^`) in the root and `apps/blog`, `^6.0.3` in
-  `packages/data` and `packages/ui`; keep at latest `6.x` until `svelte-check` supports TS 7.
-- **`@sveltejs/kit` 3 + `@sveltejs/adapter-netlify` 7** — held at `^2.x` / `^6.x` (Kit in `apps/blog`
-  and `packages/data`). Kit 3 is a migration, not a bump: `svelte.config.js` is rejected (config moves
-  into `sveltekit({...})` in `vite.config.ts`), `$lib` is removed in favour of `#lib`, the generated
-  `.svelte-kit/tsconfig.json` is replaced by `extends: "$app/tsconfig"`, and `$env/*` /
-  `$app/environment` imports change. Do it as its own PR.
+- **TypeScript** — pinned to `6.0.3` (exact, not `^`) in the root, `apps/blog` and `apps/cms`,
+  `^6.0.3` in `packages/data` and `packages/ui`; keep at latest `6.x` until `svelte-check` supports
+  TS 7.
+
+(SvelteKit 3 + adapter-netlify 7 are done — Kit options live in `apps/blog/kit.config.ts`.)
 
 pnpm pin: test the new pin with `pnpm --version` inside the repo. pnpm 12.9.x crashed under an
 older global launcher; 12.14.0 works with global pnpm 11.25.
 
 Watch list for this repo — these have cross-cutting majors, check release notes before accepting:
 
-| Dep                                                          | Why it's risky                                                                                       |
-| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| `tailwindcss` / `@tailwindcss/vite` / `@tailwindcss/postcss` | must move together; v4 config is CSS-first (`@theme inline` in `packages/ui/src/styles/globals.css`) |
-| `svelte` / `svelte-check` / `@sveltejs/vite-plugin-svelte`   | rune and compiler-warning changes                                                                    |
-| `@sveltejs/kit` / `@sveltejs/adapter-netlify`                | adapter must match the Kit major                                                                     |
-| `bits-ui`                                                    | data-attribute and snippet API changes ripple through `packages/ui`                                  |
-| `eslint` / `typescript-eslint` / `eslint-plugin-svelte`      | flat-config shape changes in `packages/eslint-config/index.js`                                       |
-| `vite`                                                       | plugin-API breaks for `@tailwindcss/vite` and `vite-plugin-devtools-json`                            |
+| Dep                                                          | Why it's risky                                                                                                |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `tailwindcss` / `@tailwindcss/vite` / `@tailwindcss/postcss` | must move together; v4 config is CSS-first (`@theme inline` in `packages/ui/src/styles/globals.css`)          |
+| `svelte` / `svelte-check` / `@sveltejs/vite-plugin-svelte`   | rune and compiler-warning changes                                                                             |
+| `@sveltejs/kit` / `@sveltejs/adapter-netlify`                | adapter must match the Kit major; remote functions + async are still `experimental` in `kit.config.ts`        |
+| `sanity` / `@sanity/*` / `groq` / `@sanity/client`           | Studio (`apps/cms`) and `packages/data` move together; rerun `pnpm generate:types` and diff `sanity.types.ts` |
+| `@portabletext/svelte`                                       | `RichText*.svelte` component prop shapes in `packages/ui`                                                     |
+| `bits-ui`                                                    | data-attribute and snippet API changes ripple through `packages/ui`                                           |
+| `eslint` / `typescript-eslint` / `eslint-plugin-svelte`      | flat-config shape changes in `packages/eslint-config/index.js`                                                |
+| `vite`                                                       | plugin-API breaks for `@tailwindcss/vite` and `vite-plugin-devtools-json`                                     |
 
 ## 6. Commit and ship
 

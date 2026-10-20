@@ -15,8 +15,10 @@ Issue or error message: $ARGUMENTS
 pnpm lint                                  # ESLint across all workspaces
 pnpm --filter a11y.cool-website check      # svelte-check — the broad signal
 pnpm check-types                           # tsc, apps/blog only
+pnpm test:unit                             # vitest — data, utils, blog
 pnpm --filter @a11y.cool/ui lint
 pnpm --filter @a11y.cool/data lint
+pnpm --filter @a11y.cool/cms lint
 ```
 
 ## Step 2 — Common Error Patterns & Fixes
@@ -36,7 +38,7 @@ pnpm --filter @a11y.cool/data lint
 | Shared type in the wrong package             | Move the interface to `packages/data/src/types/`; import from `@a11y.cool/data`                                  |
 | Type `any` not allowed                       | Replace with an explicit type or `unknown` + type guard                                                          |
 | Missing `./$types`                           | Run `pnpm --filter a11y.cool-website dev` once to generate `.svelte-kit/types/`                                  |
-| `Property X does not exist on type PageData` | Check what `+page.server.ts`'s `load` actually returns                                                           |
+| `Property X does not exist on type PageData` | Check what the route's `+page.ts` `load` actually returns                                                        |
 
 ```ts
 // ❌ 'children' is not a valid prop
@@ -69,7 +71,7 @@ let { value = $bindable('') }: { value?: string } = $props();
 
 // ❌ prose / prose-lg do nothing
 // Cause: @tailwindcss/typography is NOT installed and there is no @plugin directive.
-// Fix: style CMS HTML via element selectors in packages/ui/src/styles/typography.css
+// Fix: style rendered rich text via element selectors in packages/ui/src/styles/typography.css
 
 // ❌ bg-primary / bg-secondary / ring-ring / border-input produce no color
 // Cause: this design system has no primary/secondary/ring/input tokens — the shadcn names
@@ -82,20 +84,34 @@ class={`text-${size}`}      // WRONG — Tailwind scans for literal strings
 // Fix: use a Record<Variant, string> map of complete class strings
 ```
 
-### Ghost / Directus data
+### Sanity data
 
 ```
-// ❌ Posts list is empty with no error
-// Cause: isGhostConfigured() returned false — VITE_GHOST_API_URL / VITE_GHOST_CONTENT_API_KEY unset.
-// This is by design: the data layer warns and returns [] instead of throwing. Check the server log.
+// ❌ Page renders its empty state / posts list is empty, no error on screen
+// Cause: fetchOr() caught a failure — by design it warns and returns null/[] instead of
+// throwing. Look for "Sanity: failed to fetch …" in the server log.
 
-// ❌ getHome()/getAbout() returns null
-// Cause: VITE_API_URL / VITE_API_TOKEN unset, or GraphQL errors (logged as a warning by directusFetch).
+// ❌ A new field is always undefined
+// Fix: add it to the GROQ projection in packages/data/src/sanity/queries.ts, then
+//      `pnpm generate:types`. A field in the schema but not the projection is never fetched.
 
-// ❌ New Ghost field is always undefined
-// Fix: add it to BOTH the `fields` array in the browse() call AND the mapper AND post.type.ts
+// ❌ Property X does not exist on type Post / PostQueryResult
+// Cause: sanity.types.ts is stale. Run `pnpm generate:types` (never edit sanity.types.ts by hand).
 
-// ❌ /blog returns 404 in dev
+// ❌ Query result type is `unknown` / missing from sanity.types.ts
+// Fix: wrap the query in defineQuery() — TypeGen only sees defineQuery calls under packages/data/src.
+
+// ❌ Content edited in the Studio doesn't show up
+// Cause: the client reads `perspective: 'published'` through the CDN — publish the draft and allow
+//        for CDN propagation.
+
+// ❌ Remote function returns 400 for a slug
+// Cause: the valibot schema rejected it (e.g. longer than SLUG_MAX_LENGTH).
+
+// ❌ Image renders without alt / with alt=""
+// Fix: the accessibleImage needs alt text in the Studio, or is marked decorative (alt="" is right).
+
+// ❌ /blog, /rss.xml return 404 in dev
 // Cause: PUBLIC_BLOG_ENABLED is not 'true'. hooks.server.ts gates the whole /blog subtree.
 ```
 
@@ -122,11 +138,20 @@ class={`text-${size}`}      // WRONG — Tailwind scans for literal strings
 ### SvelteKit routing
 
 ```
-// ❌ Cannot import a server-side module in +page.ts
-// Fix: move it to +page.server.ts. All CMS access is server-only here (clients read process.env).
+// ❌ Cannot import a server-only module (*.server.ts) into +page.ts / a component
+// Fix: call it from a remote function (*.remote.ts) and call that from the load. Files with a
+//      `.server` segment are server-only anywhere.
 
-// ❌ Page renders but has no meta tags
-// Fix: return `pageMetaTags` from load — +layout.svelte deep-merges it with baseMetaTags
+// ❌ Cannot find module '$lib/…' / '$app/environment' / '$env/dynamic/public'
+// Cause: removed in SvelteKit 3. Use '#lib/<file>.ts' (with extension), '$app/env',
+//        '$app/env/public' (declare the variable in apps/blog/src/env.ts).
+
+// ❌ `vite build` fails on a missing env var
+// Fix: give it a `v.optional(...)` schema in apps/blog/src/env.ts if unset is a valid state.
+
+// ❌ Page renders but has no meta tags / JSON-LD
+// Fix: return `pageMetaTags` (resolvePageMeta) and `jsonLd` from load — +layout.svelte merges the
+//      tags onto baseMetaTags and renders the graph once. Playwright: tests/seo.spec.ts
 
 // ❌ CSP blocks a script/font/image in production
 // Fix: the CSP is set in apps/blog/src/routes/+layout.server.ts, not netlify.toml

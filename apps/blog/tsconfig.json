@@ -1,3 +1,16 @@
 {
-	"extends": ["@a11y.cool/typescript-config/svelte.json", "./.svelte-kit/tsconfig.json"]
+	"extends": ["@a11y.cool/typescript-config/svelte.json", "$app/tsconfig"],
+	"compilerOptions": {
+		"types": ["svelte", "$app/types"]
+	},
+	"include": [
+		"src/**/*.js",
+		"src/**/*.ts",
+		"src/**/*.svelte",
+		"tests/**/*.js",
+		"tests/**/*.ts",
+		"vite.config.ts",
+		"kit.config.ts"
+	],
+	"exclude": ["node_modules"]
 }

@@ -1,55 +1,39 @@
-import { getPosts } from '@a11y.cool/data';
-import { isBlogEnabled } from '$lib/features';
+import type { RequestHandler } from './$types';
+import { renderSitemap, type SitemapEntry } from '@a11y.cool/utils';
+import { isBlogEnabled } from '#lib/features.ts';
+import { CRAWL_CACHE_CONTROL, getContentIndex } from '#lib/content-index.server.ts';
 
-type SitemapPage = {
-	url: string;
-	priority: string;
-	changefreq: string;
-	lastmod?: string;
-};
-
-export const GET = async ({ url }: { url: URL }) => {
-	const posts = await getPosts();
-	const baseUrl = url.origin;
-
+/**
+ * Indexable pages only. `/imprint` and `/privacy-policy` are `noindex` and are
+ * left out — listing a URL here while telling crawlers not to index it is a
+ * contradiction Search Console flags.
+ */
+export const GET: RequestHandler = async ({ url }) => {
 	const blogEnabled = isBlogEnabled();
+	const index = await getContentIndex();
 
-	// Static pages (excluding sensitive pages with personal information)
-	const staticPages: SitemapPage[] = [
-		{ url: '/', priority: '1.0', changefreq: 'weekly' },
-		{ url: '/about', priority: '0.8', changefreq: 'monthly' },
-		...(blogEnabled ? [{ url: '/blog', priority: '0.9', changefreq: 'weekly' as const }] : [])
+	const entries: SitemapEntry[] = [
+		{ path: '/', lastmod: index?.home?.lastmod, changefreq: 'weekly', priority: 1 },
+		{ path: '/about', lastmod: index?.about?.lastmod, changefreq: 'monthly', priority: 0.8 }
 	];
 
-	const blogPages: SitemapPage[] = blogEnabled
-		? posts.map((post) => ({
-				url: `/blog/${post.slug}`,
-				priority: '0.7',
+	if (blogEnabled) {
+		const posts = index?.posts ?? [];
+		entries.push(
+			{ path: '/blog', lastmod: posts[0]?.lastmod, changefreq: 'weekly', priority: 0.9 },
+			...posts.map((post): SitemapEntry => ({
+				path: `/blog/${post.slug}`,
+				lastmod: post.lastmod,
 				changefreq: 'monthly',
-				lastmod: post.publishedAt ? new Date(post.publishedAt).toISOString() : undefined
+				priority: 0.7
 			}))
-		: [];
+		);
+	}
 
-	const allPages = [...staticPages, ...blogPages];
-
-	// Generate XML sitemap
-	const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allPages
-	.map(
-		(page) => `  <url>
-    <loc>${baseUrl}${page.url}</loc>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>${page.lastmod ? `\n    <lastmod>${page.lastmod}</lastmod>` : ''}
-  </url>`
-	)
-	.join('\n')}
-</urlset>`;
-
-	return new Response(sitemap, {
+	return new Response(renderSitemap(url.origin, entries), {
 		headers: {
-			'Content-Type': 'application/xml',
-			'Cache-Control': 'public, max-age=3600' // Cache for 1 hour
+			'Content-Type': 'application/xml; charset=utf-8',
+			'Cache-Control': CRAWL_CACHE_CONTROL
 		}
 	});
 };

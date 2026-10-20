@@ -1,0 +1,38 @@
+{
+	"name": "@a11y.cool/cms",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"main": "package.json",
+	"license": "MIT",
+	"scripts": {
+		"dev": "sanity dev",
+		"start": "sanity start",
+		"build": "sanity build",
+		"lint": "eslint . --max-warnings 0",
+		"deploy": "sanity deploy",
+		"deploy-schema": "sanity schema deploy",
+		"extract-schema": "sanity schema extract --path ../../packages/data/schema.json --force",
+		"generate-types": "sanity typegen generate"
+	},
+	"keywords": [
+		"sanity"
+	],
+	"dependencies": {
+		"@sanity/code-input": "^7.3.13",
+		"@sanity/icons": "^5.2.3",
+		"@sanity/ui": "^4.4.9",
+		"@sanity/vision": "^6.20.0",
+		"dotenv": "^18.0.8",
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1",
+		"sanity": "^6.20.0",
+		"styled-components": "^6.6.0"
+	},
+	"devDependencies": {
+		"@sanity/eslint-config-studio": "^7.0.0",
+		"@types/react": "^19.3.0",
+		"eslint": "^10.13.0",
+		"typescript": "6.0.3"
+	}
+}
