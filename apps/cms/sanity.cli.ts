@@ -15,7 +15,8 @@ export default defineCliConfig({
 		dataset
 	},
 	deployment: {
-		autoUpdates: true
+		autoUpdates: true,
+		appId: 'bnl15ib6y30844txchjm37g8'
 	},
 	studioHost,
 	typegen: {
