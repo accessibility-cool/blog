@@ -6,7 +6,7 @@
 	import type { PageData } from './$types';
 	import { PersonSimpleCircle } from 'phosphor-svelte';
 
-	let { data } = $props<{ data: PageData }>();
+	let { data }: { data: PageData } = $props();
 	let { about } = $derived(data);
 </script>
 

@@ -9,14 +9,14 @@
 		initials = undefined,
 		size = 40,
 		browser = undefined
-	} = $props<{
+	}: {
 		src?: string;
 		alt?: string;
 		name?: string;
 		initials?: string;
 		size?: number;
 		browser?: boolean;
-	}>();
+	} = $props();
 
 	const isBrowser = $derived(browser ?? typeof window !== 'undefined');
 

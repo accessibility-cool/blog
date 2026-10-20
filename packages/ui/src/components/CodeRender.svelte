@@ -30,7 +30,7 @@
 		code = '',
 		language = '',
 		copyButton = false
-	} = $props<{ code?: string; language?: string; copyButton?: boolean }>();
+	}: { code?: string; language?: string; copyButton?: boolean } = $props();
 
 	let highlighted = $state('');
 	let copied = $state(false);

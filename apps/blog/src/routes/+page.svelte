@@ -7,7 +7,7 @@
 	const animateInitial = getAnimateInitialClass();
 	import { browser } from '$app/environment';
 
-	let { data } = $props<{ data: PageData }>();
+	let { data }: { data: PageData } = $props();
 	let { home } = $derived(data);
 
 	const iconComponents = {

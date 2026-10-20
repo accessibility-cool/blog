@@ -5,7 +5,7 @@
 	const animateInitial = getAnimateInitialClass();
 	import { HtmlRender } from '@a11y.cool/ui';
 
-	let { data } = $props<{ data: PageData }>();
+	let { data }: { data: PageData } = $props();
 
 	let page = $derived(data.page);
 	let content = $derived(processHtml(page?.content));

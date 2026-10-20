@@ -4,9 +4,11 @@
 	import CodeRender from './CodeRender.svelte';
 	import HtmlRender from './HtmlRender.svelte';
 
-	let { node } = $props<{
+	let {
+		node
+	}: {
 		node?: Element | Root;
-	}>();
+	} = $props();
 
 	const voidElements = new Set([
 		'area',

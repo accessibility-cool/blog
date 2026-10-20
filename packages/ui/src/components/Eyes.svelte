@@ -1,8 +1,11 @@
 <script lang="ts">
-	let { browser = undefined, size = undefined } = $props<{
+	let {
+		browser = undefined,
+		size = undefined
+	}: {
 		browser?: boolean;
 		size?: number;
-	}>();
+	} = $props();
 
 	const isBrowser = $derived(browser ?? typeof window !== 'undefined');
 

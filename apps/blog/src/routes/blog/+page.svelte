@@ -5,7 +5,7 @@
 
 	const animateInitial = getAnimateInitialClass();
 
-	let { data } = $props<{ data: PageData }>();
+	let { data }: { data: PageData } = $props();
 	let { posts } = $derived(data);
 </script>
 
