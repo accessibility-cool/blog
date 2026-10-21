@@ -21,7 +21,7 @@
 	"dependencies": {
 		"@sanity/code-input": "^7.3.13",
 		"@sanity/icons": "^5.2.3",
-		"@sanity/ui": "^4.4.9",
+		"@sanity/ui": "^4.4.10",
 		"@sanity/vision": "^6.20.0",
 		"dotenv": "^18.0.8",
 		"react": "^19.3.1",
