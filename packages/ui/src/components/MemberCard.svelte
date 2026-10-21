@@ -70,7 +70,12 @@
 	{/if}
 
 	{#if links.length}
-		<ul class="flex flex-wrap gap-4 mt-auto pt-4" aria-label="{member.name} elsewhere">
+		<!-- role="list": Safari/VoiceOver drops list semantics once list-style is none -->
+		<ul
+			role="list"
+			class="list-none ml-0 flex flex-wrap gap-4 mt-auto pt-4"
+			aria-label="{member.name} elsewhere"
+		>
 			{#each links as link (link.href)}
 				<li>
 					<a
