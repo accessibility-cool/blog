@@ -49,6 +49,10 @@ pnpm install
 
 - `pnpm-workspace.yaml` may gain auto-entries under `minimumReleaseAgeExclude` (pnpm's release-age
   gate registering the new versions). This is expected — keep it.
+- If an install **fails partway** (e.g. a `prepare` script crashes) and you then fix a version and
+  reinstall, the lockfile can come out with dependency edges missing (seen: `eventsource@5.1.3: {}`
+  without `eventsource-parser`, so vitest failed with `Cannot find package`). Restore it with
+  `git checkout origin/dev -- pnpm-lock.yaml` and run `pnpm install` again.
 
 ## 4. Verify everything
 
@@ -85,12 +89,13 @@ Known held-back deps:
 
 - **TypeScript** — pinned to `6.0.3` (exact, not `^`) in the root, `apps/blog` and `apps/cms`,
   `^6.0.3` in `packages/data` and `packages/ui`; keep at latest `6.x` until `svelte-check` supports
-  TS 7.
+  TS 7. As of TS 7.0.2 / Kit 3.1.0 it already fails in `pnpm install`: `svelte-kit sync` (the
+  `apps/blog` `prepare` script) crashes in `load_user_tsconfig`, so pin it back before installing.
 
 (SvelteKit 3 + adapter-netlify 7 are done — Kit options live in `apps/blog/kit.config.ts`.)
 
 pnpm pin: test the new pin with `pnpm --version` inside the repo. pnpm 12.9.x crashed under an
-older global launcher; 12.14.0 works with global pnpm 11.25.
+older global launcher; 12.14.0 and 12.15.0 work with global pnpm 11.25.
 
 Watch list for this repo — these have cross-cutting majors, check release notes before accepting:
 
