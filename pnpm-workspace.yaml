@@ -40,19 +40,39 @@ minimumReleaseAgeExclude:
   - '@typescript-eslint/visitor-keys@8.70.1 || 8.71.0 || 8.72.0'
   - dotenv@18.0.2
   - typescript-eslint@8.70.1 || 8.71.0 || 8.72.0
-  - '@sanity/access-ui@6.20.0'
+  - '@sanity/access-ui@6.20.0 || 6.22.0'
   - '@sanity/code-input@7.3.13'
-  - '@sanity/diff@6.20.0'
-  - '@sanity/mutator@6.20.0'
-  - '@sanity/schema@6.20.0'
-  - '@sanity/types@6.20.0'
-  - '@sanity/util@6.20.0'
-  - '@sanity/validation@6.20.0'
-  - '@sanity/vision@6.20.0'
-  - sanity@6.20.0
+  - '@sanity/diff@6.20.0 || 6.22.0'
+  - '@sanity/mutator@6.20.0 || 6.22.0'
+  - '@sanity/schema@6.20.0 || 6.22.0'
+  - '@sanity/types@6.20.0 || 6.22.0'
+  - '@sanity/util@6.20.0 || 6.22.0'
+  - '@sanity/validation@6.20.0 || 6.22.0'
+  - '@sanity/vision@6.20.0 || 6.22.0'
+  - sanity@6.20.0 || 6.22.0
   - '@sanity/client@8.10.0 || 8.10.1'
-  - groq@6.20.0
+  - groq@6.20.0 || 6.22.0
   - '@sanity/ui@4.4.10'
+  - '@tailwindcss/node@4.3.4'
+  - '@tailwindcss/oxide-android-arm64@4.3.4'
+  - '@tailwindcss/oxide-darwin-arm64@4.3.4'
+  - '@tailwindcss/oxide-darwin-x64@4.3.4'
+  - '@tailwindcss/oxide-freebsd-x64@4.3.4'
+  - '@tailwindcss/oxide-linux-arm-gnueabihf@4.3.4'
+  - '@tailwindcss/oxide-linux-arm64-gnu@4.3.4'
+  - '@tailwindcss/oxide-linux-arm64-musl@4.3.4'
+  - '@tailwindcss/oxide-linux-x64-gnu@4.3.4'
+  - '@tailwindcss/oxide-linux-x64-musl@4.3.4'
+  - '@tailwindcss/oxide-wasm32-wasi@4.3.4'
+  - '@tailwindcss/oxide-win32-arm64-msvc@4.3.4'
+  - '@tailwindcss/oxide-win32-x64-msvc@4.3.4'
+  - '@tailwindcss/oxide@4.3.4'
+  - '@tailwindcss/postcss@4.3.4'
+  - '@tailwindcss/vite@4.3.4'
+  - bits-ui@2.20.4
+  - eslint-plugin-svelte@3.24.0
+  - svelte-eslint-parser@1.10.1
+  - tailwindcss@4.3.4
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - core-js-pure
