@@ -20,11 +20,11 @@ minimumReleaseAgeExclude:
   - eslint-plugin-turbo@2.9.15 || 2.10.8 || 2.11.10
   - turbo@2.9.15 || 2.10.8 || 2.11.10
   - '@sveltejs/kit@2.65.2'
-  - '@playwright/test@1.61.1'
+  - '@playwright/test@1.61.1 || 1.65.0'
   - '@sveltejs/load-config@0.2.0'
   - autoprefixer@10.5.1
-  - playwright-core@1.61.1
-  - playwright@1.61.1
+  - playwright-core@1.61.1 || 1.65.0
+  - playwright@1.61.1 || 1.65.0
   - svelte-check@4.7.1
   - svelte@5.56.4
   - vite@8.2.0 || 8.3.5
