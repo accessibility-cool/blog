@@ -73,6 +73,7 @@ minimumReleaseAgeExclude:
   - eslint-plugin-svelte@3.24.0
   - svelte-eslint-parser@1.10.1
   - tailwindcss@4.3.4
+  - '@sanity/image-url@2.2.0'
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - core-js-pure
