@@ -23,11 +23,11 @@
 		"@a11y.cool/typescript-config": "workspace:*",
 		"@tailwindcss/postcss": "^4.3.5",
 		"@tailwindcss/vite": "^4.3.5",
-		"@turbo/gen": "^2.11.11",
+		"@turbo/gen": "^2.11.13",
 		"@types/node": "^26.6.6",
 		"autoprefixer": "^10.6.2",
 		"eslint": "^10.15.0",
-		"svelte": "^5.57.3",
+		"svelte": "^5.58.0",
 		"tailwindcss": "^4.3.5",
 		"typescript": "^6.0.3"
 	},
