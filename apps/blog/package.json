@@ -29,15 +29,15 @@
 		"@a11y.cool/utils": "workspace:*",
 		"@playwright/test": "^1.65.1",
 		"@sveltejs/adapter-netlify": "^7.0.1",
-		"@sveltejs/kit": "^3.2.0",
+		"@sveltejs/kit": "^3.4.0",
 		"@sveltejs/vite-plugin-svelte": "^7.3.1",
 		"@tailwindcss/postcss": "^4.3.5",
 		"@tailwindcss/vite": "^4.3.5",
 		"autoprefixer": "^10.6.2",
 		"eslint": "^10.15.0",
 		"prettier": "^3.10.1",
-		"prettier-plugin-svelte": "^4.1.1",
-		"svelte": "^5.57.3",
+		"prettier-plugin-svelte": "^4.2.0",
+		"svelte": "^5.58.0",
 		"svelte-check": "^4.7.8",
 		"svelte-meta-tags": "^5.0.3",
 		"tailwindcss": "^4.3.5",
@@ -45,7 +45,7 @@
 		"typescript": "6.0.3",
 		"vite": "^8.3.8",
 		"vite-plugin-devtools-json": "^1.1.2",
-		"vitest": "^5.1.0"
+		"vitest": "^5.1.1"
 	},
 	"imports": {
 		"#lib/*": "./src/lib/*"
