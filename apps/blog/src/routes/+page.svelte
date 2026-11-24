@@ -25,12 +25,17 @@
 		class="col-span-12 col-start-1 py-16 md:py-24 xl:py-16 {animateInitial}"
 		use:animate={{ delay: 100, triggerOnMount: true }}
 	>
-		<AnnotatedHero
-			headline={home.introHeadline ?? ''}
-			highlight={home.introHighlight}
-			description={home.introDescription}
-			cta={ctaHref && home.introCtaLabel ? { label: home.introCtaLabel, href: ctaHref } : null}
-		/>
+		{#if home.introHeadline?.trim()}
+			<AnnotatedHero
+				headline={home.introHeadline}
+				highlight={home.introHighlight}
+				description={home.introDescription}
+				cta={ctaHref && home.introCtaLabel ? { label: home.introCtaLabel, href: ctaHref } : null}
+			/>
+		{:else}
+			<!-- No headline in the dataset: keep the page's one h1 rather than an empty, annotated one -->
+			<h1 class="text-center text-teasered">Accessibility.cool</h1>
+		{/if}
 	</section>
 
 	<!-- Teaser cards section -->

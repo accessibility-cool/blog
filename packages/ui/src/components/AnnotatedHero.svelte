@@ -24,8 +24,11 @@
 	// 72px from `xl` to `2xl`: at 96px a two-word phrase no longer fits a 66% column at 1280px and
 	// the selection box breaks across lines. `!` because typography.css is unlayered and beats utilities.
 	const headlineClass = 'text-teasered text-balance xl:text-7xl! 2xl:text-8xl!';
-	// One box, never split across lines; a phrase longer than the column runs into the gutter instead.
-	const phraseClass = 'xl:whitespace-nowrap';
+	// The phrase is one box that never extends past the column: a phrase wider than the column wraps
+	// inside its own rectangle. The group glues it to trailing punctuation and to chip #3's anchor, so
+	// the chip always starts at the box's right edge, inside the column, with the gutter to its right.
+	const groupClass = 'xl:whitespace-nowrap';
+	const phraseClass = 'xl:inline-block xl:max-w-full xl:whitespace-normal';
 	// Square handles centred on the selection box's corners.
 	const handles = [
 		'-top-1 -left-1',
@@ -60,11 +63,15 @@
 		}
 	};
 
+	// Editorial cap (mirrors the Studio's `introHighlight` validation): a longer phrase is ignored and
+	// chip #3 attaches to the end of the headline instead.
+	const HIGHLIGHT_MAX_LENGTH = 24;
+
 	// Split once around the first occurrence of the phrase. Any punctuation glued to its end stays on
 	// its line; at `xl` the rest of the headline starts a new line so chip #3 never sits on text.
 	const parts = $derived.by(() => {
 		const index = highlight ? headline.indexOf(highlight) : -1;
-		if (!highlight || index < 0) {
+		if (!highlight || highlight.length > HIGHLIGHT_MAX_LENGTH || index < 0) {
 			return null;
 		}
 		const [, trailing = '', after = ''] =
@@ -72,12 +79,9 @@
 		return { before: headline.slice(0, index), phrase: highlight, trailing, after };
 	});
 
-	// Chip #3's anchor shares a no-wrap span with the text before it: a trailing empty inline is
-	// otherwise free to land on a line of its own (Chrome does this under text-wrap: balance).
+	// Without a phrase, chip #3's anchor shares a no-wrap span with the last word: a trailing empty
+	// inline is otherwise free to land on a line of its own (Chrome does this under text-wrap: balance).
 	const tail = $derived.by(() => {
-		if (parts) {
-			return { lead: '', glued: parts.trailing };
-		}
 		const [, lead = '', glued = ''] = /^([\s\S]*?)(\S*)$/.exec(headline) ?? [];
 		return { lead, glued };
 	});
@@ -243,12 +247,16 @@
 	</span>
 {/snippet}
 
+{#snippet resizeChip(position: string)}
+	{@render beside('resize', TextAaIcon, 'text resizes to 200% · 1.4.4', position)}
+{/snippet}
+
 <div class="relative isolate">
 	<div class={columnClass}>
 		<h1 bind:this={heading} class={headlineClass}>
-			{#if parts}{parts.before}<span class={phraseClass}>
-					{parts.phrase}
-				</span>{parts.trailing}{#if parts.after}<br
+			{#if parts}{parts.before}<span class={groupClass}>
+					<span class={phraseClass}>{parts.phrase}</span>{parts.trailing}
+				</span>{#if parts.after}<br
 						class="hidden xl:inline"
 					/>{/if}{parts.after}{:else}{headline}{/if}
 		</h1>
@@ -282,26 +290,25 @@
 	>
 		<div class={columnClass}>
 			<div class="relative font-highlight tracking-wide {headlineClass}">
-				{#if parts}{parts.before}<span class="relative {phraseClass}">
-						{parts.phrase}<span
-							class="visible absolute -inset-x-1.5 inset-y-[0.06em] rounded-[2px] border border-primary bg-primary/8 forced-colors:bg-transparent"
-						>
-							{#each handles as corner (corner)}
-								<span
-									class="absolute size-[7px] border border-primary bg-background {corner}"
-								></span>
-							{/each}
+				{#if parts}{parts.before}<span class={groupClass}>
+						<span class="relative {phraseClass}">
+							{parts.phrase}<span
+								class="visible absolute -inset-x-1.5 inset-y-0 rounded-[2px] border border-primary bg-primary/8 forced-colors:bg-transparent"
+							>
+								{#each handles as corner (corner)}
+									<span
+										class="absolute size-[7px] border border-primary bg-background {corner}"
+									></span>
+								{/each}
+							</span>
+						</span>{parts.trailing}<span class="relative">
+							{@render resizeChip('left-4')}
 						</span>
-					</span>{/if}{tail.lead}<span class="whitespace-nowrap">
-					{tail.glued}<span class="relative">
-						{@render beside(
-							'resize',
-							TextAaIcon,
-							'text resizes to 200% · 1.4.4',
-							parts ? 'left-4' : 'left-2'
-						)}
-					</span>
-				</span>{#if parts?.after}<br />{parts.after}{/if}
+					</span>{#if parts.after}<br />{parts.after}{/if}{:else}{tail.lead}<span
+						class="whitespace-nowrap"
+					>
+						{tail.glued}<span class="relative">{@render resizeChip('left-2')}</span>
+					</span>{/if}
 				{@render above('heading', TextHIcon, '<h1> · level 1', 'left-0')}
 				{#if contrast}
 					{@render above(

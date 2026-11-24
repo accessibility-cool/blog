@@ -46,16 +46,23 @@ export const homeType = defineType({
 			name: 'introHighlight',
 			title: 'Highlighted phrase',
 			type: 'string',
-			description: 'Optional. A phrase from the headline to draw the selection box around.',
+			description:
+				'Optional. A short phrase from the headline (up to 24 characters) to draw the selection box around.',
 			group: 'content',
 			validation: (rule) =>
-				rule.custom((value, ctx) =>
-					!value ||
-					(typeof ctx.document?.introHeadline === 'string' &&
-						ctx.document.introHeadline.includes(value))
+				rule.custom((value, ctx) => {
+					if (!value) {
+						return true;
+					}
+					// Mirrors HIGHLIGHT_MAX_LENGTH in packages/ui AnnotatedHero.svelte, which ignores longer phrases.
+					if (value.length > 24) {
+						return 'Keep it to 24 characters or fewer — a longer phrase does not fit beside its annotation, so the site ignores it.';
+					}
+					return typeof ctx.document?.introHeadline === 'string' &&
+						ctx.document.introHeadline.includes(value)
 						? true
-						: 'Must appear exactly in the intro headline.'
-				)
+						: 'Must appear exactly in the intro headline.';
+				})
 		}),
 		defineField({
 			name: 'introCtaLabel',
