@@ -107,3 +107,16 @@ test('keyboard reaches only the CTA and the summary inside the hero', async ({ p
 	const inside = await root.evaluate((root) => root.contains(document.activeElement));
 	expect(inside).toBe(false);
 });
+
+test('the summary is a 24px target and the facts call the CTA a link', async ({ page }) => {
+	const { hasCta } = await measured(page);
+	const summary = page.getByTestId('hero-facts').locator('summary');
+	const box = await summary.boundingBox();
+	expect(box?.height).toBeGreaterThanOrEqual(24);
+	if (hasCta) {
+		await expect(page.locator('[data-fact="target"]')).toContainText(' link ');
+		await expect(page.locator('[data-fact="focus"]')).toContainText('The link ');
+		await realCta(page).hover();
+		await expect(realCta(page)).toHaveCSS('text-decoration-line', 'none');
+	}
+});

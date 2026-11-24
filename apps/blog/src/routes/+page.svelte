@@ -11,6 +11,8 @@
 	let { home } = $derived(data);
 	// CMS-authored: re-checked here because Studio validation does not constrain the dataset.
 	let ctaHref = $derived(safeHref(home?.introCtaHref));
+	// Trimmed: a whitespace-only label would render a link with no accessible name.
+	let ctaLabel = $derived(home?.introCtaLabel?.trim());
 
 	const iconComponents = {
 		ArticleNyTimes: ArticleNyTimesIcon,
@@ -30,7 +32,7 @@
 				headline={home.introHeadline}
 				highlight={home.introHighlight}
 				description={home.introDescription}
-				cta={ctaHref && home.introCtaLabel ? { label: home.introCtaLabel, href: ctaHref } : null}
+				cta={ctaHref && ctaLabel ? { label: ctaLabel, href: ctaHref } : null}
 			/>
 		{:else}
 			<!-- No headline in the dataset: keep the page's one h1 rather than an empty, annotated one -->

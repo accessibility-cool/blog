@@ -51,8 +51,10 @@
 	// box-shadow is deliberately NOT transitioned: the global focus ring is a box-shadow and must
 	// appear instantly (and never animate under prefers-reduced-motion).
 	// The press scale is motion-safe only (prefers-reduced-motion).
+	// Rendered as an <a>, a pill would inherit the base-layer `a:hover { underline }` from globals.css;
+	// `no-underline` (utilities layer) cancels it, except on `link`, which underlines on hover by design.
 	const buttonClass = $derived(
-		`inline-flex items-center justify-center rounded-full border text-center text-sm font-medium transition-[color,background-color,scale,--tw-gradient-from,--tw-gradient-to] duration-200 ease-out motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`
+		`inline-flex items-center justify-center rounded-full border text-center text-sm font-medium transition-[color,background-color,scale,--tw-gradient-from,--tw-gradient-to] duration-200 ease-out motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 ${variant === 'link' ? '' : 'no-underline'} ${variants[variant]} ${sizes[size]} ${className}`
 	);
 </script>
 

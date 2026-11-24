@@ -88,8 +88,10 @@ site's brand signature and quietly shows the site practising what it preaches.
   the last word of the `h1` when there is no highlight), with a horizontal leader into the gutter.
 - Each chip is positioned relative to its target element with CSS (the target is a
   `relative` inline wrapper; chip + leader are `absolute` children). No JS layout measurement.
-- The selection box wraps the **highlight phrase** (see CMS) with a 1px `primary` border, a faint
-  `primary` tint, and four small square corner handles.
+- The selection box wraps the **highlight phrase** (see CMS) with a 1px `primary` border and four
+  small square corner handles. No tint: a fill behind the phrase's glyphs would lower their
+  contrast below the ratio chip #2 measures against the page background (truthfulness wins over
+  the reference design).
 - The pink measurement marker sits beside the CTA and spans its full height.
 
 ## Annotations

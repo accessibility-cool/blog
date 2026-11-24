@@ -27,6 +27,8 @@
 	// The phrase is one box that never extends past the column: a phrase wider than the column wraps
 	// inside its own rectangle. The group glues it to trailing punctuation and to chip #3's anchor, so
 	// the chip always starts at the box's right edge, inside the column, with the gutter to its right.
+	// Without a phrase it glues the last word instead. Both copies apply it, so a hyphen or dash in
+	// the glued word breaks (or not) identically in each; `xl:` only, so small screens still reflow.
 	const groupClass = 'xl:whitespace-nowrap';
 	const phraseClass = 'xl:inline-block xl:max-w-full xl:whitespace-normal';
 	// Square handles centred on the selection box's corners.
@@ -170,17 +172,18 @@
 			id: 'resize',
 			text: 'The headline can be zoomed to 200% without losing content (WCAG 1.4.4, Resize Text).'
 		});
+		// The CTA is an <a>: screen readers announce it as a link, so the facts call it one too.
 		if (cta) {
 			list.push({
 				id: 'target',
 				text:
 					targetPx === null
-						? 'The button’s height is measured live in your browser against the 24-pixel minimum target size (WCAG 2.5.8).'
-						: `The “${cta.label}” button is ${targetPx} pixels tall, which ${meetsTarget ? 'meets' : 'is under'} the 24-pixel minimum target size (WCAG 2.5.8).`
+						? 'The link’s height is measured live in your browser against the 24-pixel minimum target size (WCAG 2.5.8).'
+						: `The “${cta.label}” link is ${targetPx} pixels tall, which ${meetsTarget ? 'meets' : 'is under'} the 24-pixel minimum target size (WCAG 2.5.8).`
 			});
 			list.push({
 				id: 'focus',
-				text: 'The button shows a 2-pixel focus ring when reached with the keyboard (WCAG 2.4.7, Focus Visible).'
+				text: 'The link shows a 2-pixel focus ring when reached with the keyboard (WCAG 2.4.7, Focus Visible).'
 			});
 		}
 		return list;
@@ -258,7 +261,9 @@
 					<span class={phraseClass}>{parts.phrase}</span>{parts.trailing}
 				</span>{#if parts.after}<br
 						class="hidden xl:inline"
-					/>{/if}{parts.after}{:else}{headline}{/if}
+					/>{/if}{parts.after}{:else}{tail.lead}<span class={groupClass}>
+					{tail.glued}
+				</span>{/if}
 		</h1>
 		{#if description}
 			<p class={descriptionClass}>{description}</p>
@@ -269,7 +274,9 @@
 			</div>
 		{/if}
 		<details data-testid="hero-facts" class="mt-8">
-			<summary class="w-fit cursor-pointer font-mono text-xs text-foreground-alt">
+			<!-- py-1 around the 16px line: a 24px target on its own (WCAG 2.5.8), not only through the
+			     spacing exception. Padding, not flex, so the summary keeps its list-item disclosure marker. -->
+			<summary class="w-fit cursor-pointer py-1 font-mono text-xs text-foreground-alt">
 				About this header
 			</summary>
 			<ul class="mt-3 max-w-2xl list-disc pl-5 text-sm text-foreground-alt">
@@ -281,8 +288,9 @@
 	</div>
 
 	<!-- Decorative: the same facts are in the disclosure above, the only place assistive tech meets them.
-	     Behind the text so the tint sits under the glyphs — except in forced colours, where the
-	     text backplate would paint over it. -->
+	     Behind the text so the box's edges never cross the glyphs — except in forced colours, where
+	     the text backplate would paint over it. The box is border-only: a tint would sit behind the
+	     phrase's glyphs and lower their contrast below the ratio chip #2 reports. -->
 	<div
 		data-testid="hero-annotations"
 		aria-hidden="true"
@@ -293,7 +301,7 @@
 				{#if parts}{parts.before}<span class={groupClass}>
 						<span class="relative {phraseClass}">
 							{parts.phrase}<span
-								class="visible absolute -inset-x-1.5 inset-y-0 rounded-[2px] border border-primary bg-primary/8 forced-colors:bg-transparent"
+								class="visible absolute -inset-x-1.5 inset-y-0 rounded-[2px] border border-primary"
 							>
 								{#each handles as corner (corner)}
 									<span
@@ -305,7 +313,7 @@
 							{@render resizeChip('left-4')}
 						</span>
 					</span>{#if parts.after}<br />{parts.after}{/if}{:else}{tail.lead}<span
-						class="whitespace-nowrap"
+						class={groupClass}
 					>
 						{tail.glued}<span class="relative">{@render resizeChip('left-2')}</span>
 					</span>{/if}
