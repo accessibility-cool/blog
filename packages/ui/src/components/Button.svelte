@@ -14,6 +14,7 @@
 		class: className = '',
 		disabled = false,
 		type = 'button' as ButtonType,
+		href = undefined as string | undefined,
 		leftIcon = undefined as IconSnippet | undefined,
 		rightIcon = undefined as IconSnippet | undefined,
 		children = undefined as Snippet | undefined,
@@ -55,7 +56,7 @@
 	);
 </script>
 
-<button {type} class={buttonClass} {disabled} {...props}>
+{#snippet content()}
 	{#if leftIcon}
 		{@render leftIcon({ class: 'mr-2 h-4 w-4', 'aria-hidden': 'true' })}
 	{/if}
@@ -65,4 +66,13 @@
 	{#if rightIcon}
 		{@render rightIcon({ class: 'ml-2 h-4 w-4', 'aria-hidden': 'true' })}
 	{/if}
-</button>
+{/snippet}
+
+<!-- A link styled as a button navigates; `type` and `disabled` mean nothing on an <a>. -->
+{#if href}
+	<!-- Caller-supplied (often CMS-authored and safeHref-checked), so not a route id resolve() can type. -->
+	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+	<a {href} class={buttonClass} {...props}>{@render content()}</a>
+{:else}
+	<button {type} class={buttonClass} {disabled} {...props}>{@render content()}</button>
+{/if}

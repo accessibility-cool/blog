@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import { Card, Eyes } from '@a11y.cool/ui';
+	import { AnnotatedHero, Card, Eyes } from '@a11y.cool/ui';
 	import { animate, getAnimateInitialClass, safeHref } from '@a11y.cool/utils';
 	import { ArticleNyTimesIcon, ListChecksIcon, CursorClickIcon } from 'phosphor-svelte';
 
@@ -9,6 +9,8 @@
 
 	let { data }: { data: PageData } = $props();
 	let { home } = $derived(data);
+	// CMS-authored: re-checked here because Studio validation does not constrain the dataset.
+	let ctaHref = $derived(safeHref(home?.introCtaHref));
 
 	const iconComponents = {
 		ArticleNyTimes: ArticleNyTimesIcon,
@@ -20,34 +22,15 @@
 {#if home}
 	<!-- Hero (intro) section -->
 	<section
-		class="col-span-12 col-start-1 md:col-span-8 md:col-start-3 lg:col-span-8 lg:col-start-3 {animateInitial}"
+		class="col-span-12 col-start-1 py-16 md:py-24 xl:py-16 {animateInitial}"
 		use:animate={{ delay: 100, triggerOnMount: true }}
 	>
-		<article class="flex flex-col justify-center items-center py-24">
-			{#if home.introChip}
-				<div class="mb-8">
-					<span
-						class="inline-block p-[2px] rounded-full bg-gradient-to-r from-green-700 to-green-400"
-					>
-						<span
-							class="block px-5 py-2 rounded-full bg-[var(--background)] text-base font-medium shadow-md"
-						>
-							{home.introChip}
-						</span>
-					</span>
-				</div>
-			{/if}
-			{#if home.introHeadline}
-				<h1 class="text-center text-teasered mb-8">
-					{home.introHeadline}
-				</h1>
-			{/if}
-			{#if home.introDescription}
-				<p class="max-w-2xl text-center text-lg">
-					{home.introDescription}
-				</p>
-			{/if}
-		</article>
+		<AnnotatedHero
+			headline={home.introHeadline ?? ''}
+			highlight={home.introHighlight}
+			description={home.introDescription}
+			cta={ctaHref && home.introCtaLabel ? { label: home.introCtaLabel, href: ctaHref } : null}
+		/>
 	</section>
 
 	<!-- Teaser cards section -->
