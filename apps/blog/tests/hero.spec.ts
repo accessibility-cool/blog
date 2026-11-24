@@ -13,9 +13,19 @@ test.use({ viewport: { width: 1440, height: 900 } });
 
 const chips = (page: Page) => page.locator('[data-annotation]');
 
-async function measured(page: Page) {
+// The hero root; the real CTA is the only link in it (the layer's copy is a span inside aria-hidden).
+const hero = (page: Page) => page.locator('div.isolate', { has: page.locator('h1') });
+const realCta = (page: Page) => hero(page).locator('a');
+
+/** Waits for every measured chip: contrast always, target only when a real CTA is rendered. */
+async function measured(page: Page): Promise<{ hasCta: boolean }> {
 	await page.goto('/');
+	const hasCta = (await realCta(page).count()) > 0;
 	await expect(page.locator('[data-annotation="contrast"]')).toBeVisible();
+	if (hasCta) {
+		await expect(page.locator('[data-annotation="target"]')).toBeVisible();
+	}
+	return { hasCta };
 }
 
 test('exactly one h1 and the annotation layer is hidden from assistive tech', async ({ page }) => {
@@ -77,17 +87,16 @@ test('reduced motion runs no annotation animation', async ({ page }) => {
 });
 
 test('keyboard reaches only the CTA and the summary inside the hero', async ({ page }) => {
-	await measured(page);
-	const hasCta = (await page.locator('[data-annotation="target"]').count()) > 0;
+	const { hasCta } = await measured(page);
 	await page.locator('h1').evaluate((h1) => {
 		h1.setAttribute('tabindex', '-1');
 		h1.focus();
 	});
 	const expected = hasCta ? ['A', 'SUMMARY'] : ['SUMMARY'];
-	const hero = page.locator('h1').locator('xpath=ancestor::div[contains(@class,"isolate")][1]');
+	const root = hero(page);
 	for (const tag of expected) {
 		await page.keyboard.press('Tab');
-		const focused = await hero.evaluate((root) => {
+		const focused = await root.evaluate((root) => {
 			const active = document.activeElement;
 			return root.contains(active) ? (active?.tagName ?? null) : null;
 		});
@@ -95,6 +104,6 @@ test('keyboard reaches only the CTA and the summary inside the hero', async ({ p
 	}
 	// The next stop is outside the hero: nothing in the annotation layer is focusable.
 	await page.keyboard.press('Tab');
-	const inside = await hero.evaluate((root) => root.contains(document.activeElement));
+	const inside = await root.evaluate((root) => root.contains(document.activeElement));
 	expect(inside).toBe(false);
 });
