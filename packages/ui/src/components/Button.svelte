@@ -47,9 +47,11 @@
 	// Every variant sets a border colour (transparent unless outlined): invisible normally, but a real
 	// system-coloured edge in forced colors (Windows High Contrast), where box-shadows are dropped.
 	// Gradient stops are registered @properties in Tailwind v4, so the hover darkening can transition.
+	// box-shadow is deliberately NOT transitioned: the global focus ring is a box-shadow and must
+	// appear instantly (and never animate under prefers-reduced-motion).
 	// The press scale is motion-safe only (prefers-reduced-motion).
 	const buttonClass = $derived(
-		`inline-flex items-center justify-center rounded-full border text-center text-sm font-medium transition-[color,background-color,box-shadow,scale,--tw-gradient-from,--tw-gradient-to] duration-200 ease-out motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`
+		`inline-flex items-center justify-center rounded-full border text-center text-sm font-medium transition-[color,background-color,scale,--tw-gradient-from,--tw-gradient-to] duration-200 ease-out motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`
 	);
 </script>
 
