@@ -30,6 +30,14 @@
 	--line: hsl(0 0% 100%);
 	--contrast: hsl(0 0% 0%);
 
+	/* Primary (pill buttons): Apple blue. White text measures 4.7:1 on --primary, 5.9:1 on
+	   --primary-strong and 7.4:1 on --primary-deep — AA at every point of the gradient. Not
+	   redefined for dark mode: Apple's lighter dark-mode blue fails with white text (~3.6:1). */
+	--primary: hsl(210 100% 44.5%);
+	--primary-strong: hsl(210 100% 38.4%);
+	--primary-deep: hsl(210 100% 33%);
+	--primary-foreground: hsl(0 0% 100%);
+
 	/* Shadows */
 	--shadow-mini: 0px 1px 0px 1px rgba(0, 0, 0, 0.04);
 	--shadow-mini-inset: 0px 1px 0px 0px rgba(0, 0, 0, 0.04) inset;
@@ -38,6 +46,11 @@
 	--shadow-btn: 0px 1px 0px 1px rgba(0, 0, 0, 0.03);
 	--shadow-card: 0px 2px 0px 1px rgba(0, 0, 0, 0.04);
 	--shadow-date-field-focus: 0px 0px 0px 3px rgba(24, 24, 27, 0.17);
+	/* Inner highlight + soft drop + 1px edge. The edge lives here (→ --tw-shadow), not in a ring-*
+	   utility, so it composes with the global focus-visible ring instead of replacing it. */
+	--shadow-btn-primary:
+		inset 0 0 1px 1px hsl(0 0% 100% / 0.06), 0 1.5px 2px 0 hsl(0 0% 0% / 0.1),
+		0 0 0 1px var(--primary-strong);
 
 	--code-block-border: hsla(0 0% 15% /1);
 }
@@ -101,6 +114,10 @@
 	--color-tertiary: var(--tertiary);
 	--color-line: var(--line);
 	--color-contrast: var(--contrast);
+	--color-primary: var(--primary);
+	--color-primary-strong: var(--primary-strong);
+	--color-primary-deep: var(--primary-deep);
+	--color-primary-foreground: var(--primary-foreground);
 
 	--shadow-mini: var(--shadow-mini);
 	--shadow-mini-inset: var(--shadow-mini-inset);
@@ -109,6 +126,7 @@
 	--shadow-btn: var(--shadow-btn);
 	--shadow-card: var(--shadow-card);
 	--shadow-date-field-focus: var(--shadow-date-field-focus);
+	--shadow-btn-primary: var(--shadow-btn-primary);
 
 	--text-xxs: 10px;
 
