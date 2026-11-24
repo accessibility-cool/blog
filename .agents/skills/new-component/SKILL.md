@@ -149,8 +149,8 @@ type $ARGUMENTSProps = ComponentProps<typeof $ARGUMENTS>;
 - Use design tokens only (`bg-background`, `text-foreground`, `border-border-input`, `rounded-card`,
   `shadow-card`) — never raw hex, never Tailwind's default palette, **never UnoCSS**
 - Before using a token, confirm it is mapped in `@theme inline` in `packages/ui/src/styles/globals.css`.
-  There is no `primary`, `secondary`, `ring`, `input`, `card`, or `popover` in this system — those
-  shadcn-style names emit nothing. Use `dark`/`line`, `muted`, `accent`, `border-input`, `destructive`
+  There is no `secondary`, `ring`, `input`, `card`, or `popover` in this system — those
+  shadcn-style names emit nothing (`primary` exists: the Apple-blue button colour). Use `dark`/`line`, `muted`, `accent`, `border-input`, `destructive`
 - Use Bits UI primitives for interactive components — never hand-roll ARIA
 - Use snippets (`{@render children?.()}`) — never `<slot>`
 - Do **not** add `focus-visible:ring-*` — `globals.css` applies a global focus ring to every element.

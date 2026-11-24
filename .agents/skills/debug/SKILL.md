@@ -73,11 +73,13 @@ let { value = $bindable('') }: { value?: string } = $props();
 // Cause: @tailwindcss/typography is NOT installed and there is no @plugin directive.
 // Fix: style rendered rich text via element selectors in packages/ui/src/styles/typography.css
 
-// ❌ bg-primary / bg-secondary / ring-ring / border-input produce no color
-// Cause: this design system has no primary/secondary/ring/input tokens — the shadcn names
+// ❌ bg-secondary / ring-ring / border-input produce no color
+// Cause: this design system has no secondary/ring/input tokens — the shadcn names
 //        emit nothing. Tailwind does not warn; the class is simply dropped.
 // Fix: use a mapped token (bg-dark, text-line, bg-muted, bg-accent, border-border-input,
 //      text-destructive-foreground), or add + map a new one in globals.css
+// Note: bg-primary / from-primary / text-primary-foreground ARE valid — the Apple-blue
+//       primary-button tokens. Do not "fix" them to bg-dark.
 
 // ❌ Class built by string interpolation never appears
 class={`text-${size}`}      // WRONG — Tailwind scans for literal strings

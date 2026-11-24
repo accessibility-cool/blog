@@ -214,9 +214,11 @@ block, then add the class to the `prefers-reduced-motion: reduce` reset block fu
 
 ## Step 6 — Design Token Reference
 
-Use only tokens mapped in `@theme inline`. **Verify before use** — this system has no `primary`,
-`secondary`, `ring`, `input`, `card`, or `popover`. Those shadcn-style names emit no CSS at all and
-Tailwind gives no warning.
+Use only tokens mapped in `@theme inline`. **Verify before use** — this system has no `secondary`,
+`ring`, `input`, `card`, or `popover`. Those shadcn-style names emit no CSS at all and Tailwind gives
+no warning. `primary` exists, but only as the Apple-blue primary-button colour (see `Button.svelte`).
+Keep its 1px edge inside `shadow-btn-primary` — never a `ring-*` utility, which would replace the
+global focus ring.
 
 ```
 BACKGROUNDS            FOREGROUNDS               BORDERS
@@ -227,6 +229,9 @@ bg-accent              text-accent-foreground    border-border-card
 bg-dark                text-line
 bg-destructive         text-destructive-foreground
 bg-tertiary            text-contrast
+bg-primary             text-primary-foreground
+bg-primary-strong
+bg-primary-deep
 
 RADIUS                 SHADOWS                   OPACITY
 rounded-card           shadow-card               bg-dark/40
@@ -234,6 +239,7 @@ rounded-card-lg        shadow-btn                text-foreground/80
 rounded-card-sm        shadow-popover
 rounded-input          shadow-mini
 rounded-button         shadow-kbd
+                       shadow-btn-primary
 
 TYPE                   SPACING
 font-sans (Geist)      spacing-input

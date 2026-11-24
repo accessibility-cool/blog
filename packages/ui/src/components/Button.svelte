@@ -21,27 +21,37 @@
 	} = $props();
 
 	// Only tokens mapped in @theme inline (packages/ui/src/styles/globals.css) may be used here.
-	// `primary`/`secondary`/`ring`/`input` are NOT mapped — classes referencing them render nothing.
-	// Focus styling is intentionally absent: globals.css applies a focus-visible ring to every
-	// element, so re-declaring it here would be redundant.
+	// `secondary`/`ring`/`input` are NOT mapped — classes referencing them render nothing.
+	// Focus styling is intentionally absent: globals.css applies a focus-visible ring (a box-shadow)
+	// to every element. Never add ring-* here — a utility-layer ring would replace that focus ring;
+	// the primary's 1px edge lives in `shadow-btn-primary` so the two compose.
 	const variants: Record<ButtonVariant, string> = {
-		default: 'bg-dark text-line hover:bg-dark/90',
-		destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-		outline: 'border border-border-input hover:bg-muted hover:text-accent-foreground',
-		secondary: 'bg-muted text-foreground hover:bg-muted/80',
-		ghost: 'hover:bg-muted hover:text-accent-foreground',
-		link: 'text-foreground underline-offset-4 hover:underline'
+		default:
+			'border-transparent bg-linear-to-b from-primary to-primary-strong shadow-btn-primary text-primary-foreground hover:from-primary-strong hover:to-primary-deep',
+		destructive:
+			'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/90',
+		outline: 'border-border-input hover:bg-muted hover:text-accent-foreground',
+		secondary: 'border-transparent bg-muted text-foreground hover:bg-muted/80',
+		ghost: 'border-transparent hover:bg-muted hover:text-accent-foreground',
+		link: 'border-transparent text-foreground underline-offset-4 hover:underline'
 	};
 
+	// min-h, not h: a label that wraps at 200% zoom stays inside the pill (WCAG 1.4.10).
 	const sizes: Record<ButtonSize, string> = {
-		default: 'h-10 px-4 py-2',
-		sm: 'h-9 rounded-md px-3',
-		lg: 'h-11 rounded-md px-8',
-		icon: 'h-10 w-10'
+		default: 'min-h-10 px-5 py-2',
+		sm: 'min-h-9 px-4 py-1.5',
+		lg: 'min-h-11 px-8 py-2.5',
+		icon: 'size-10 p-0'
 	};
 
+	// Every variant sets a border colour (transparent unless outlined): invisible normally, but a real
+	// system-coloured edge in forced colors (Windows High Contrast), where box-shadows are dropped.
+	// Gradient stops are registered @properties in Tailwind v4, so the hover darkening can transition.
+	// box-shadow is deliberately NOT transitioned: the global focus ring is a box-shadow and must
+	// appear instantly (and never animate under prefers-reduced-motion).
+	// The press scale is motion-safe only (prefers-reduced-motion).
 	const buttonClass = $derived(
-		`inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`
+		`inline-flex items-center justify-center rounded-full border text-center text-sm font-medium transition-[color,background-color,scale,--tw-gradient-from,--tw-gradient-to] duration-200 ease-out motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`
 	);
 </script>
 

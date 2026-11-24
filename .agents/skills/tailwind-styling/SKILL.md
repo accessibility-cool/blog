@@ -95,10 +95,11 @@ Never use raw hex values or Tailwind's default palette in components — always 
 ```
 
 > **Before using a token, confirm it exists in `@theme inline`.** An unmapped name is not an error —
-> Tailwind simply emits nothing, so the class silently does nothing. There is no `primary`,
-> `secondary`, `ring`, `input`, `card`, or `popover` in this system; the shadcn-style names do not
-> apply here. Use `dark`/`line`, `muted`, `accent`, `border-input`, `destructive` instead, or add and
-> map a new token.
+> Tailwind simply emits nothing, so the class silently does nothing. There is no `secondary`,
+> `ring`, `input`, `card`, or `popover` in this system; those shadcn-style names do not apply here.
+> Use `dark`/`line`, `muted`, `accent`, `border-input`, `destructive` instead, or add and map a new
+> token. `primary` **does** exist, but it is this site's Apple-blue button colour (`primary`,
+> `primary-strong`, `primary-deep`, `primary-foreground`, `shadow-btn-primary`), not a shadcn alias.
 
 ## Class Organization
 
