@@ -43,6 +43,40 @@ export const homeType = defineType({
 			group: 'content'
 		}),
 		defineField({
+			name: 'introHighlight',
+			title: 'Highlighted phrase',
+			type: 'string',
+			description: 'Optional. A phrase from the headline to draw the selection box around.',
+			group: 'content',
+			validation: (rule) =>
+				rule.custom((value, ctx) =>
+					!value ||
+					(typeof ctx.document?.introHeadline === 'string' &&
+						ctx.document.introHeadline.includes(value))
+						? true
+						: 'Must appear exactly in the intro headline.'
+				)
+		}),
+		defineField({
+			name: 'introCtaLabel',
+			title: 'Button label',
+			type: 'string',
+			group: 'content'
+		}),
+		defineField({
+			name: 'introCtaHref',
+			title: 'Button link',
+			type: 'string',
+			description: 'A site path like /about or a full https:// URL.',
+			group: 'content',
+			validation: (rule) =>
+				rule.custom((href) =>
+					!href || /^(\/|https:\/\/)/.test(href)
+						? true
+						: 'Start with / for a site path or https:// for an external link.'
+				)
+		}),
+		defineField({
 			name: 'cardsHeadline',
 			title: 'Cards headline',
 			type: 'string',
