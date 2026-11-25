@@ -23,7 +23,9 @@ async function measured(page: Page): Promise<{ hasCta: boolean }> {
 	const hasCta = (await realCta(page).count()) > 0;
 	await expect(page.locator('[data-annotation="contrast"]')).toBeVisible();
 	if (hasCta) {
-		await expect(page.locator('[data-annotation="target"]')).toBeVisible();
+		// The target annotation is a zero-width anchor for the pink marker, which Playwright treats
+		// as hidden — it only exists once the CTA height has been measured, so wait for it to attach.
+		await expect(page.locator('[data-annotation="target"]')).toBeAttached();
 	}
 	return { hasCta };
 }
