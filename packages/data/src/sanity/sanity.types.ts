@@ -173,6 +173,9 @@ export type Home = {
 	introChip?: string;
 	introHeadline?: string;
 	introDescription?: string;
+	introHighlight?: string;
+	introCtaLabel?: string;
+	introCtaHref?: string;
 	cardsHeadline?: string;
 	cards?: Array<{
 		title?: string;
@@ -456,7 +459,7 @@ export type SettingsQueryResult =
 
 // Source: ../../packages/data/src/sanity/queries.ts
 // Variable: homeQuery
-// Query: *[_id == "home"][0] {		_id,		_updatedAt,		title,		logoAria,		introChip,		introHeadline,		introDescription,		cardsHeadline,		cards[] { _key, title, icon, iconAria, description, href },		meta	}
+// Query: *[_id == "home"][0] {		_id,		_updatedAt,		title,		logoAria,		introChip,		introHeadline,		introDescription,		introHighlight,		introCtaLabel,		introCtaHref,		cardsHeadline,		cards[] { _key, title, icon, iconAria, description, href },		meta	}
 export type HomeQueryResult =
 	| {
 			_id: 'home';
@@ -466,6 +469,9 @@ export type HomeQueryResult =
 			introChip: null;
 			introHeadline: null;
 			introDescription: null;
+			introHighlight: null;
+			introCtaLabel: null;
+			introCtaHref: null;
 			cardsHeadline: null;
 			cards: null;
 			meta: null;
@@ -478,6 +484,9 @@ export type HomeQueryResult =
 			introChip: null;
 			introHeadline: null;
 			introDescription: null;
+			introHighlight: null;
+			introCtaLabel: null;
+			introCtaHref: null;
 			cardsHeadline: null;
 			cards: null;
 			meta: null;
@@ -490,6 +499,9 @@ export type HomeQueryResult =
 			introChip: null;
 			introHeadline: null;
 			introDescription: null;
+			introHighlight: null;
+			introCtaLabel: null;
+			introCtaHref: null;
 			cardsHeadline: null;
 			cards: null;
 			meta: Meta | null;
@@ -502,6 +514,9 @@ export type HomeQueryResult =
 			introChip: string | null;
 			introHeadline: string | null;
 			introDescription: string | null;
+			introHighlight: string | null;
+			introCtaLabel: string | null;
+			introCtaHref: string | null;
 			cardsHeadline: string | null;
 			cards: Array<{
 				_key: string;

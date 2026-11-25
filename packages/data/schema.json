@@ -904,6 +904,27 @@
 				},
 				"optional": true
 			},
+			"introHighlight": {
+				"type": "objectAttribute",
+				"value": {
+					"type": "string"
+				},
+				"optional": true
+			},
+			"introCtaLabel": {
+				"type": "objectAttribute",
+				"value": {
+					"type": "string"
+				},
+				"optional": true
+			},
+			"introCtaHref": {
+				"type": "objectAttribute",
+				"value": {
+					"type": "string"
+				},
+				"optional": true
+			},
 			"cardsHeadline": {
 				"type": "objectAttribute",
 				"value": {

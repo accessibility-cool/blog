@@ -30,13 +30,16 @@
 	--line: hsl(0 0% 100%);
 	--contrast: hsl(0 0% 0%);
 
-	/* Primary (pill buttons): Apple blue. White text measures 4.7:1 on --primary, 5.9:1 on
+	/* Primary (pill buttons): Apple blue. White text measures 4.6:1 on --primary, 5.9:1 on
 	   --primary-strong and 7.4:1 on --primary-deep — AA at every point of the gradient. Not
 	   redefined for dark mode: Apple's lighter dark-mode blue fails with white text (~3.6:1). */
 	--primary: hsl(210 100% 44.5%);
 	--primary-strong: hsl(210 100% 38.4%);
 	--primary-deep: hsl(210 100% 33%);
 	--primary-foreground: hsl(0 0% 100%);
+
+	/* Hero annotations: the pink measurement marker and its label. 6.1:1 on --background (AA). */
+	--annotation-measure: hsl(330 80% 40%);
 
 	/* Shadows */
 	--shadow-mini: 0px 1px 0px 1px rgba(0, 0, 0, 0.04);
@@ -80,6 +83,9 @@
 		--tertiary: hsl(61.3 100% 82.2%);
 		--contrast: hsl(0 0% 100%);
 
+		/* 7.2:1 on the dark --background (AA). */
+		--annotation-measure: hsl(330 90% 70%);
+
 		--shadow-mini: 0px 1px 0px 1px rgba(0, 0, 0, 0.3);
 		--shadow-mini-inset: 0px 1px 0px 0px rgba(0, 0, 0, 0.5) inset;
 		--shadow-popover: 0px 7px 12px 3px hsla(0deg 0% 0% / 30%);
@@ -118,6 +124,7 @@
 	--color-primary-strong: var(--primary-strong);
 	--color-primary-deep: var(--primary-deep);
 	--color-primary-foreground: var(--primary-foreground);
+	--color-annotation-measure: var(--annotation-measure);
 
 	--shadow-mini: var(--shadow-mini);
 	--shadow-mini-inset: var(--shadow-mini-inset);
@@ -158,6 +165,10 @@
 	--animate-exit-to-right: exit-to-right 0.2s ease;
 	--animate-fly-in-up: fly-in-up 0.6s ease-out;
 	--animate-fly-in-up-fast: fly-in-up 0.4s ease-out;
+	/* Hero annotations; always used behind `motion-safe:`, so reduced motion never runs them. */
+	--animate-annotation-in: annotation-in 0.5s ease-out both;
+	--animate-leader-draw-x: leader-draw-x 0.4s ease-out both;
+	--animate-leader-draw-y: leader-draw-y 0.4s ease-out both;
 
 	--font-sans: 'Geist', 'sans-serif';
 	--font-highlight: 'Clash Grotesk', 'serif';
@@ -288,6 +299,35 @@
 		to {
 			opacity: 1;
 			transform: translateY(0);
+		}
+	}
+
+	@keyframes annotation-in {
+		from {
+			opacity: 0;
+			transform: translateY(2px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes leader-draw-x {
+		from {
+			transform: scaleX(0);
+		}
+		to {
+			transform: scaleX(1);
+		}
+	}
+
+	@keyframes leader-draw-y {
+		from {
+			transform: scaleY(0);
+		}
+		to {
+			transform: scaleY(1);
 		}
 	}
 }

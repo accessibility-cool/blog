@@ -83,6 +83,9 @@ export const homeQuery = defineQuery(`
 		introChip,
 		introHeadline,
 		introDescription,
+		introHighlight,
+		introCtaLabel,
+		introCtaHref,
 		cardsHeadline,
 		cards[] { _key, title, icon, iconAria, description, href },
 		meta
