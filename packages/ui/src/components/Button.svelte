@@ -14,6 +14,7 @@
 		class: className = '',
 		disabled = false,
 		type = 'button' as ButtonType,
+		href = undefined as string | undefined,
 		leftIcon = undefined as IconSnippet | undefined,
 		rightIcon = undefined as IconSnippet | undefined,
 		children = undefined as Snippet | undefined,
@@ -50,12 +51,14 @@
 	// box-shadow is deliberately NOT transitioned: the global focus ring is a box-shadow and must
 	// appear instantly (and never animate under prefers-reduced-motion).
 	// The press scale is motion-safe only (prefers-reduced-motion).
+	// Rendered as an <a>, a pill would inherit the base-layer `a:hover { underline }` from globals.css;
+	// `no-underline` (utilities layer) cancels it, except on `link`, which underlines on hover by design.
 	const buttonClass = $derived(
-		`inline-flex items-center justify-center rounded-full border text-center text-sm font-medium transition-[color,background-color,scale,--tw-gradient-from,--tw-gradient-to] duration-200 ease-out motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`
+		`inline-flex items-center justify-center rounded-full border text-center text-sm font-medium transition-[color,background-color,scale,--tw-gradient-from,--tw-gradient-to] duration-200 ease-out motion-safe:active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 ${variant === 'link' ? '' : 'no-underline'} ${variants[variant]} ${sizes[size]} ${className}`
 	);
 </script>
 
-<button {type} class={buttonClass} {disabled} {...props}>
+{#snippet content()}
 	{#if leftIcon}
 		{@render leftIcon({ class: 'mr-2 h-4 w-4', 'aria-hidden': 'true' })}
 	{/if}
@@ -65,4 +68,13 @@
 	{#if rightIcon}
 		{@render rightIcon({ class: 'ml-2 h-4 w-4', 'aria-hidden': 'true' })}
 	{/if}
-</button>
+{/snippet}
+
+<!-- A link styled as a button navigates; `type` and `disabled` mean nothing on an <a>. -->
+{#if href}
+	<!-- Caller-supplied (often CMS-authored and safeHref-checked), so not a route id resolve() can type. -->
+	<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+	<a {href} class={buttonClass} {...props}>{@render content()}</a>
+{:else}
+	<button {type} class={buttonClass} {disabled} {...props}>{@render content()}</button>
+{/if}
