@@ -291,6 +291,44 @@ export type SanityImageHotspot = {
 	width?: number;
 };
 
+export type SanityReleaseMetadata = {
+	_type: 'sanity.releaseMetadata';
+	title?: string;
+	description?: string;
+	releaseType?: 'asap' | 'scheduled' | 'undecided';
+	intendedPublishAt?: string;
+	cardinality?: 'many' | 'one';
+};
+
+export type SystemRelease = {
+	_id: string;
+	_type: 'system.release';
+	_createdAt: string;
+	_updatedAt: string;
+	_rev: string;
+	name?: string;
+	state?:
+		| 'active'
+		| 'archiving'
+		| 'unarchiving'
+		| 'archived'
+		| 'published'
+		| 'publishing'
+		| 'scheduled'
+		| 'scheduling';
+	error?: {
+		message?: string;
+	};
+	publishAt?: string;
+	publishedAt?: string;
+	metadata?: SanityReleaseMetadata;
+	finalDocumentStates?: Array<{
+		id?: string;
+		_key: string;
+	}>;
+	userId?: string;
+};
+
 export type Code = {
 	_type: 'code';
 	language?: string;
@@ -417,6 +455,8 @@ export type AllSanitySchemaTypes =
 	| Page
 	| SanityImageCrop
 	| SanityImageHotspot
+	| SanityReleaseMetadata
+	| SystemRelease
 	| Code
 	| SanityImagePaletteSwatch
 	| SanityImagePalette
@@ -705,7 +745,7 @@ export type PostsQueryResult = Array<{
 	_id: string;
 	_updatedAt: string;
 	title: string | null;
-	slug: string | null;
+	slug: string;
 	excerpt: string | null;
 	publishedAt: string | null;
 	mainImage: {
@@ -765,7 +805,7 @@ export type PostQueryResult = {
 	_id: string;
 	_updatedAt: string;
 	title: string | null;
-	slug: string | null;
+	slug: string;
 	excerpt: string | null;
 	publishedAt: string | null;
 	mainImage: {
@@ -973,7 +1013,7 @@ export type ContentIndexQueryResult = {
 		| null;
 	posts: Array<{
 		title: string | null;
-		slug: string | null;
+		slug: string;
 		publishedAt: string | null;
 		lastmod: string;
 		summary: string | null;
